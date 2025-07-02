@@ -9,7 +9,7 @@ using PlutoFramework.View;
 
 namespace PlutoFramework.Components.Settings;
 
-public partial class SettingsPage : ContentPage
+public partial class SettingsPage : PlutoFramework.Components.Page.Page
 {
     public SettingsPage()
     {
