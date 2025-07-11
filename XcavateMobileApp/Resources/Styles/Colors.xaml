@@ -4,28 +4,40 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
-    <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
+    <Color x:Key="GentlePink">#ffebef</Color>
 
-    <Color x:Key="Primary">#512BD4</Color>
-    <Color x:Key="PrimaryDark">#ac99ea</Color>
-    <Color x:Key="PrimaryDarkText">#242424</Color>
+    <Color x:Key="X-BLUE">#3B4F74</Color>
+    <Color x:Key="X-BLUE-DISABLED">#627290</Color>
+   
+    <Color x:Key="X-PINK">#dc7da6</Color>
+    <Color x:Key="X-LEAFGREEN">#357461</Color>
+
+    <Color x:Key="Positive">#357461</Color>
+    <Color x:Key="Negative">#dc7da6</Color>
+
+    <Color x:Key="GrayButtonBackground">#FFFFFF</Color>
+    <Color x:Key="GrayButtonDisabledBackground">#FFFFFF</Color>
+    <Color x:Key="GrayButtonWarningBackground">#FFFFFF</Color>
+    
+    <Color x:Key="GrayButtonText">#3B4F74</Color>
+    <Color x:Key="GrayButtonDisabledText">#627290</Color>
+    <Color x:Key="GrayButtonWarningText">#dc7da6</Color>
+    
+    <Color x:Key="GrayButtonBorder">#3B4F74</Color>
+    <Color x:Key="GrayButtonDisabledBorder">#627290</Color>
+    <Color x:Key="GrayButtonWarningBorder">#dc7da6</Color>
+
+    <Color x:Key="Primary">#3B4F74</Color>
+    <Color x:Key="PrimaryUnimportant">#627290</Color>
+    <Color x:Key="PrimaryGray">#e9e9e9</Color>
+    <Color x:Key="PrimaryGrayUnimportant">#bbbbbb</Color>
+    <Color x:Key="DangerousRed">#dc7da6</Color>
     <Color x:Key="Secondary">#DFD8F7</Color>
-    <Color x:Key="SecondaryDarkText">#9880e5</Color>
-    <Color x:Key="Tertiary">#2B0B98</Color>
-
-    <Color x:Key="DarkBackground">#17171a</Color>
-    <Color x:Key="LightOnDarkBackground">#C3C3C3</Color>
-    <Color x:Key="LightBackground">#F2F2F2</Color>
-    <Color x:Key="DarkOnLightBackground">#0D0D0D</Color>
-
-    <Color x:Key="LightSecondaryBackground">#E0E0E0</Color>
-    <Color x:Key="DarkSecondaryBackground">#222228</Color>
+    <Color x:Key="Tertiary">#65def1</Color>
+    <Color x:Key="SelectedGreen">#7aff7a</Color>
 
     <Color x:Key="White">White</Color>
     <Color x:Key="Black">Black</Color>
-    <Color x:Key="Magenta">#D600AA</Color>
-    <Color x:Key="MidnightBlue">#190649</Color>
-    <Color x:Key="OffBlack">#1f1f1f</Color>
 
     <Color x:Key="Gray100">#E1E1E1</Color>
     <Color x:Key="Gray200">#C8C8C8</Color>

@@ -12,14 +12,12 @@ namespace XcavateMobileApp
             noAccountViewModel.AfterCreateAccountNavigation = () => Application.Current.MainPage.Navigation.PushAsync(
                 new UserTypeSelectionPage()
             );
-
+            
             InitializeComponent();
 
             DependencyService.Register<ModifyUserProfilePopupViewModel>();
 
             DependencyService.Register<MainPageViewModel>();
-
-
 
             if (Preferences.Get(PreferencesModel.SHOW_WELCOME_SCREEN, true))
             {
@@ -35,9 +33,6 @@ namespace XcavateMobileApp
                         (Preferences.Get(PreferencesModel.USE_PRIVATE_KEY, false) ? AccountType.PrivateKey : AccountType.Mnemonic).ToString()
                     );
                 }
-                ;
-
-                Console.WriteLine("Loading app shell");
 
                 MainPage = new XcavateAppShell();
             }

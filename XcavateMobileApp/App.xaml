@@ -2,14 +2,17 @@
 <Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:XcavateMobileApp"
-             xmlns:templates="clr-namespace:PlutoFramework.Templates;assembly=PlutoFramework"
+             xmlns:plutoframework="clr-namespace:PlutoFramework;assembly=PlutoFramework"
              x:Class="XcavateMobileApp.App">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
+
+                <plutoframework:DefaultResourceDictionary />
+
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
-                <templates:TemplateDictionary />
+
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
