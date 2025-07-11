@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Shell xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:xcavateproperty="clr-namespace:PlutoFramework.Components.XcavateProperty;assembly=PlutoFramework"
+             xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
+            xmlns:pages="clr-namespace:XcavateMobileApp.Pages"
+             x:Class="XcavateMobileApp.XcavateAppShell">
+    <ShellContent ContentTemplate="{DataTemplate pages:MainPage}"
+                  Route="Account" >
+    </ShellContent>
+    <ShellContent ContentTemplate="{DataTemplate xcavate:HelpPage}"
+                  Route="Help" >
+    </ShellContent>
+    <ShellContent ContentTemplate="{DataTemplate xcavateproperty:XcavatePropertyMarketplacePage}" 
+                  Route="Marketplace">
+    </ShellContent>
+</Shell>
