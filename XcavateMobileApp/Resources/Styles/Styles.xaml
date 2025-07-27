@@ -20,4 +20,14 @@
     <x:Int32 x:Key="ButtonCornerRadius">24</x:Int32>
     <x:Double x:Key="ButtonHeight">48</x:Double>
 
+    <x:String x:Key="TransactionAnalyzerPalletCallNameSubstitution">Call details</x:String>
+    <x:Boolean x:Key="DisplayNetworks">false</x:Boolean>
+    <x:String x:Key="DefaultEndpoints">[XcavatePaseo, Polkadot]</x:String>
+
+    <x:String x:Key="PrimaryButtonIcon">xcavatexwhite.png</x:String>
+    
+    <x:String x:Key="Location">UK</x:String>
+    <x:String x:Key="CurrencyFormat">{0:0}</x:String>
+    <x:String x:Key="ButtonFontFamily">XcavateFont</x:String>
+
 </ResourceDictionary>

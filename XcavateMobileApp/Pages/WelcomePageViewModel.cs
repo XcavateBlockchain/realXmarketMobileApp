@@ -66,9 +66,9 @@ namespace XcavateMobileApp.Pages
         );
         public async Task CreateAccountNavigationAsync()
         {
-            await KeysModel.GenerateNewAccountAsync(null, accountVariant: "");
+            await KeysModel.GenerateNewAccountAsync(accountVariant: "");
 
-            await KeysModel.GenerateNewAccountAsync(null, accountVariant: "kilt1");
+            await KeysModel.GenerateNewAccountAsync(accountVariant: "kilt1");
 
             await Application.Current.MainPage.Navigation.PushAsync(
                 new UserTypeSelectionPage()

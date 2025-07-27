@@ -24,7 +24,7 @@ public partial class MainPage : ContentPage, IPlutoFrameworkMainPage
         var viewModel = DependencyService.Get<MainPageViewModel>();
         BindingContext = viewModel;
 
-        networksView.IsVisible = Preferences.Get(PreferencesModel.SETTINGS_DISPLAY_NETWORKS, DefaultAppConfiguration.DISPLAY_NETWORKS);
+        networksView.IsVisible = Preferences.Get(PreferencesModel.SETTINGS_DISPLAY_NETWORKS, (bool)Application.Current.Resources["DisplayNetworks"]);
         NetworksView = networksView;
 
         StackLayout = stackLayout;

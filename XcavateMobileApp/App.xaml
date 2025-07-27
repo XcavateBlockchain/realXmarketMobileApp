@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:XcavateMobileApp"
              xmlns:plutoframework="clr-namespace:PlutoFramework;assembly=PlutoFramework"
+             xmlns:templates="clr-namespace:XcavateMobileApp.Templates"
              x:Class="XcavateMobileApp.App">
     <Application.Resources>
         <ResourceDictionary>
@@ -12,6 +13,8 @@
 
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+
+                <templates:TemplateDictionary />
 
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

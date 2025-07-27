@@ -206,7 +206,7 @@ namespace XcavateMobileApp.Pages
                     applicant,
                     navigation: () =>
                     {
-
+                        Application.Current.MainPage = new XcavateAppShell();
 
                         return Task.FromResult(0);
                     }
@@ -215,6 +215,8 @@ namespace XcavateMobileApp.Pages
             catch (Exception ex)
             {
                 Console.WriteLine("UserTypeSelectionPage error:");
+
+                Console.WriteLine(ex);
 
                 // Most likely bad internet connection
 
