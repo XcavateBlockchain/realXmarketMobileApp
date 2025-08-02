@@ -1,6 +1,8 @@
+using PlutoFramework.Templates.PageTemplate;
+
 namespace XcavateMobileApp.Pages
 {
-    public partial class UserTypeSelectionPage : ContentPage
+    public partial class UserTypeSelectionPage : PageTemplate
     {
         public UserTypeSelectionPage()
         {

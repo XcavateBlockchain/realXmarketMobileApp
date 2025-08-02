@@ -16,6 +16,9 @@
             Opacity="0.25">
     </Shadow>
 
+    <Color x:Key="TextCardBackgroundColorDark">#0D3B4F74</Color>
+    <Color x:Key="TextCardBackgroundColorLight">#0D3B4F74</Color>
+
     <x:Double x:Key="GrayButtonBorderWidth">2</x:Double>
     <x:Int32 x:Key="ButtonCornerRadius">24</x:Int32>
     <x:Double x:Key="ButtonHeight">48</x:Double>
@@ -30,4 +33,5 @@
     <x:String x:Key="CurrencyFormat">{0:0}</x:String>
     <x:String x:Key="ButtonFontFamily">XcavateFont</x:String>
 
+    
 </ResourceDictionary>
