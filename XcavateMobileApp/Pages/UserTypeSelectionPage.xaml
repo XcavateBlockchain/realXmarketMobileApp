@@ -207,4 +207,8 @@
             </card:TextCard>
         </Grid>
     </Grid>
+
+    <page:PageTemplate.PopupContent>
+        <pages:ModifyUserProfilePopupView />
+    </page:PageTemplate.PopupContent>
 </page:PageTemplate>

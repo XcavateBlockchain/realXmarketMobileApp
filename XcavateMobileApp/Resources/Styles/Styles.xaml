@@ -33,5 +33,8 @@
     <x:String x:Key="CurrencyFormat">{0:0}</x:String>
     <x:String x:Key="ButtonFontFamily">XcavateFont</x:String>
 
-    
+
+    <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="XcavateFont" />
+    </Style>
 </ResourceDictionary>

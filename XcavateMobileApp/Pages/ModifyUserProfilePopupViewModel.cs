@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Model;
 
 namespace XcavateMobileApp.Pages
@@ -16,6 +17,30 @@ namespace XcavateMobileApp.Pages
             LastName = "";
             Email = "";
             PhoneNumber = "";
+        }
+
+        private bool loading = false;
+
+        public Func<string, string, string, string, Task>? ContinueFunction { get; set; } = null;
+
+        [RelayCommand]
+        public async Task ContinueAsync()
+        {
+            if (ContinueFunction == null)
+            {
+                return;
+            }
+
+            if (loading)
+            {
+                return;
+            }
+
+            loading = true;
+
+            await ContinueFunction.Invoke(FirstName, LastName, Email, PhoneNumber);
+
+            loading = false;
         }
     }
 }
