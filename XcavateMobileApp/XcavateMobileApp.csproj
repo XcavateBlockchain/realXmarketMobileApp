@@ -56,7 +56,7 @@
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.png">
 		  <Color>#3B4F74</Color>
-		  <ForegroundScale>0.65</ForegroundScale>
+		  <ForegroundScale Condition="'$(TargetFramework)'=='net9.0-android35'">0.65</ForegroundScale>
 		</MauiIcon>
 
     <!-- Splash Screen -->
