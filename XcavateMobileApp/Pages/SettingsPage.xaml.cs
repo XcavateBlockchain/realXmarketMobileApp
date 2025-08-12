@@ -54,35 +54,7 @@ public partial class SettingsPage : PageTemplate
 
     async void OnXcavateProfileClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
-        var userInfo = await XcavateUserDatabase.GetUserInformationAsync();
-
-        if (userInfo is null)
-        {
-            return;
-        }
-
-        var viewModel = new UserProfileViewModel
-        {
-            CanEdit = true,
-            User = userInfo,
-        };
-
-        // Clean temporary files
-        string tempProfileBackgroundPath = Path.Combine(FileSystem.Current.AppDataDirectory, "temporaryprofilebackground");
-
-        if (File.Exists(tempProfileBackgroundPath))
-        {
-            File.Delete(tempProfileBackgroundPath);
-        }
-
-        string tempProfilePicturePath = Path.Combine(FileSystem.Current.AppDataDirectory, "temporaryprofilepicture");
-
-        if (File.Exists(tempProfilePicturePath))
-        {
-            File.Delete(tempProfilePicturePath);
-        }
-
-        await Navigation.PushAsync(new UserProfilePage(viewModel));
+        await NavigationModel.NavigateToUserPageAsync();
     }
     private async void OnXcavateCompanyClicked(object sender, TappedEventArgs e)
     {
@@ -138,25 +110,7 @@ public partial class SettingsPage : PageTemplate
 
     async void OnShowMnemonicsClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
-        if (!KeysModel.HasSubstrateKey())
-        {
-            var noAccountPopupViewModel = DependencyService.Get<NoAccountPopupViewModel>();
-
-            noAccountPopupViewModel.IsVisible = true;
-
-            return;
-        }
-
-        try
-        {
-            var secret = await KeysModel.GetMnemonicsOrPrivateKeyAsync();
-
-            await Navigation.PushAsync(new MnemonicsPage(secret));
-        }
-        catch
-        {
-            // Failed to authenticate
-        }
+        await NavigationModel.NavigateToMnemonicsPageAsync();
     }
 
     async void OnManageKiltDidClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)

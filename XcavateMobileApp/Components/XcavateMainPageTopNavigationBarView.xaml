@@ -84,7 +84,7 @@
                    />
 
             <Border.GestureRecognizers>
-                <TapGestureRecognizer Command="{Binding OpenSettingsCommand}"/>
+                <TapGestureRecognizer Command="{Binding OpenMenuCommand}"/>
 
             </Border.GestureRecognizers>
 

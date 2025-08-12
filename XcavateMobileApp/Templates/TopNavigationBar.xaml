@@ -18,12 +18,11 @@
             </xcavate:PageBottomBarView.ColumnDefinitions>
 
             <Border HeightRequest="35"
-            WidthRequest="35"
-            Grid.Column="0"
-            BackgroundColor="#1A4E4E4E"
-            StrokeThickness="0"
-            Padding="5"
-            >
+                    WidthRequest="35"
+                    Grid.Column="0"
+                    BackgroundColor="#1A4E4E4E"
+                    StrokeThickness="0"
+                    Padding="5">
                 <Image HeightRequest="25"
                WidthRequest="25"
                 Source="xcavatebackarrow.png" />
@@ -85,6 +84,7 @@
                 <Border.StrokeShape>
                     <RoundRectangle CornerRadius="17.5" />
                 </Border.StrokeShape>
+                
                 <Image HeightRequest="25"
                        WidthRequest="25"
                        Source="{TemplateBinding Extra1Image}"/>
