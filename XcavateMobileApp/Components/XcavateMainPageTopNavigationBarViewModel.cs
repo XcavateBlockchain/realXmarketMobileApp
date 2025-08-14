@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.Menu;
 using PlutoFramework.Components.Messaging;
+using PlutoFramework.Components.Notifications;
 using PlutoFramework.Model;
 
 namespace XcavateMobileApp.Components
@@ -18,7 +19,7 @@ namespace XcavateMobileApp.Components
         [RelayCommand]
         public async Task OpenMessagingAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new MessagingOverviewPage());
+            await Application.Current.MainPage.Navigation.PushAsync(new NotificationsPage());
         }
 
         [RelayCommand]
