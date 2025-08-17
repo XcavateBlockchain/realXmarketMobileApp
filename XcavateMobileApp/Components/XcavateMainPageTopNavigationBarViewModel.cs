@@ -13,13 +13,13 @@ namespace XcavateMobileApp.Components
         [RelayCommand]
         public async Task OpenMenuAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new MainMenuPage());
+            await Shell.Current.Navigation.PushAsync(new MainMenuPage());
         }
 
         [RelayCommand]
         public async Task OpenMessagingAsync()
         {
-            await Application.Current.MainPage.Navigation.PushAsync(new NotificationsPage());
+            await Shell.Current.Navigation.PushAsync(new NotificationsPage());
         }
 
         [RelayCommand]
