@@ -42,20 +42,30 @@ namespace XcavateMobileApp.Pages
             string address = Preferences.Get(PreferencesModel.PUBLIC_KEY, "None");
             string didAddress = Preferences.Get($"{PreferencesModel.PUBLIC_KEY}kilt1", "None");
 
-            var questions = await QuestionaireModel.GetXcavateQuestionsAsync();
-            var questionaireInfo = new QuestionaireInfo
+            try
             {
-                QuestionId = 0,
-                Questions = questions,
-                Navigation = () => SumsubVerificationAsync(email, phoneNumber, address, didAddress)
-            };
+                var questions = await QuestionaireModel.GetXcavateQuestionsAsync();
+                var questionaireInfo = new QuestionaireInfo
+                {
+                    QuestionId = 0,
+                    Questions = questions,
+                    Navigation = () => SumsubVerificationAsync(email, phoneNumber, address, didAddress)
+                };
 
-            if (questions.Count == 0)
-            {
-                return;
+                if (questions.Count == 0)
+                {
+                    return;
+                }
+
+                await Shell.Current.Navigation.PushAsync(new QuestionairePage(questionaireInfo));
             }
+            catch (Exception ex)
+            {
+                Console.WriteLine("UserTypeSelectionPage error:");
+                Console.WriteLine(ex);
 
-            await Shell.Current.Navigation.PushAsync(new QuestionairePage(questionaireInfo));
+                await Shell.Current.Navigation.PushAsync(new BadInternetConnectionPage());
+            }
         }
 
         public async Task SumsubVerificationAsync(

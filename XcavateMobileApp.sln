@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UniqueryPlus.Stick", "realX
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BifrostPolkadot.NetApi", "realXmarketPlutoFramework\Generated\BifrostPolkadot\BifrostPolkadot.NetApi\BifrostPolkadot.NetApi.csproj", "{3E4A81C1-628B-DD5E-715E-413A85239D03}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlutoFrameworkCore", "realXmarketPlutoFramework\PlutoFrameworkCore\PlutoFrameworkCore.csproj", "{A79879A0-7892-416B-ADB7-0A7B530B88FA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -152,6 +154,10 @@ Global
 		{3E4A81C1-628B-DD5E-715E-413A85239D03}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E4A81C1-628B-DD5E-715E-413A85239D03}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E4A81C1-628B-DD5E-715E-413A85239D03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A79879A0-7892-416B-ADB7-0A7B530B88FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A79879A0-7892-416B-ADB7-0A7B530B88FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A79879A0-7892-416B-ADB7-0A7B530B88FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A79879A0-7892-416B-ADB7-0A7B530B88FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
