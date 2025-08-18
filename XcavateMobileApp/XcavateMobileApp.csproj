@@ -2,8 +2,6 @@
 
 	<PropertyGroup>
     <TargetFrameworks>net9.0-ios;net9.0-android35.0</TargetFrameworks>
-	<RuntimeIdentifiers>ios-arm64;android-arm64</RuntimeIdentifiers>
-	
     <!--<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>-->
     <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
     <!-- <TargetFrameworks>$(TargetFrameworks);net6.0-tizen</TargetFrameworks> -->
@@ -48,18 +46,29 @@
 
   </PropertyGroup>
 
+    <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
+      <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
+    </PropertyGroup>
+
 	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
 	  <CodesignKey>Apple Development: Created via API (3XMFUNSZ92)</CodesignKey>
 	  <CodesignProvision>VS: com.xcavate.realxmarket Development</CodesignProvision>
 	</PropertyGroup>
 
-	<ItemGroup>
-		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.png">
-		  <Color>#3B4F74</Color>
-		  <ForegroundScale Condition="'$(TargetFramework)'=='net9.0-android35'">0.65</ForegroundScale>
-		</MauiIcon>
+  <ItemGroup Condition="'$(TargetFramework)'=='net9.0-android35'">
+    <!-- App Icon -->
+    <MauiIcon Include="Resources\AppIcon\appicon.png"
+              Color="#3B4F74"
+              ForegroundScale="0.65" />
+  </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)'!='net9.0-android35'">
+    <!-- App Icon -->
+    <MauiIcon Include="Resources\AppIcon\appicon.png" Color="#3B4F74" />
+  </ItemGroup>
+
+
+	<ItemGroup>
     <!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\realxmarketsplash.png">
 		  <Color>#FFFFFF</Color>

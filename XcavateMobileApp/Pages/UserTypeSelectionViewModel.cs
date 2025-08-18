@@ -38,20 +38,31 @@ namespace XcavateMobileApp.Pages
 
             await XcavateUserDatabase.SaveUserInformationAsync(newUserInfo);
 
-            var questions = QuestionaireModel.GetXcavateQuestions();
+
+            string address = Preferences.Get(PreferencesModel.PUBLIC_KEY, "None");
+            string didAddress = Preferences.Get($"{PreferencesModel.PUBLIC_KEY}kilt1", "None");
+
+            var questions = await QuestionaireModel.GetXcavateQuestionsAsync();
             var questionaireInfo = new QuestionaireInfo
             {
                 QuestionId = 0,
                 Questions = questions,
-                Navigation = () => SumsubVerificationAsync(email, phoneNumber)
+                Navigation = () => SumsubVerificationAsync(email, phoneNumber, address, didAddress)
             };
+
+            if (questions.Count == 0)
+            {
+                return;
+            }
 
             await Shell.Current.Navigation.PushAsync(new QuestionairePage(questionaireInfo));
         }
 
         public async Task SumsubVerificationAsync(
             string email,
-            string phoneNumber
+            string phoneNumber,
+            string address,
+            string didAddress
         )
         {
             var token = CancellationToken.None;
@@ -67,14 +78,14 @@ namespace XcavateMobileApp.Pages
                 },
                 totalInSeconds = 600,
                 UserId = $"USER_{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}",
-                LevelName = "csharp-verification-test"
+                LevelName = userRole.ToSumsubVerificationLevel()
             };
 
             try
             {
                 var accessToken = await SumsubModel.GenerateWebSDKAccessTokenAsync(applicant, token);
 
-                await Application.Current.MainPage.Navigation.PushAsync(new SumsubWebSDKPage(
+                await Shell.Current.Navigation.PushAsync(new SumsubWebSDKPage(
                     accessToken ?? "",
                     applicant,
                     navigation: () =>
@@ -93,7 +104,7 @@ namespace XcavateMobileApp.Pages
 
                 // Most likely bad internet connection
 
-                await Application.Current.MainPage.Navigation.PushAsync(new BadInternetConnectionPage());
+                await Shell.Current.Navigation.PushAsync(new BadInternetConnectionPage());
             }
         }
 
@@ -101,6 +112,36 @@ namespace XcavateMobileApp.Pages
         public void SelectDeveloper()
         {
             userRole = UserRoleEnum.Developer;
+
+            var modifyUserProfileViewModel = DependencyService.Get<ModifyUserProfilePopupViewModel>();
+            modifyUserProfileViewModel.IsVisible = true;
+            modifyUserProfileViewModel.ContinueFunction = ContinueAsync;
+        }
+
+        [RelayCommand]
+        public void SelectInvestor()
+        {
+            userRole = UserRoleEnum.Investor;
+
+            var modifyUserProfileViewModel = DependencyService.Get<ModifyUserProfilePopupViewModel>();
+            modifyUserProfileViewModel.IsVisible = true;
+            modifyUserProfileViewModel.ContinueFunction = ContinueAsync;
+        }
+
+        [RelayCommand]
+        public void SelectLettingAgend()
+        {
+            userRole = UserRoleEnum.LettingAgent;
+
+            var modifyUserProfileViewModel = DependencyService.Get<ModifyUserProfilePopupViewModel>();
+            modifyUserProfileViewModel.IsVisible = true;
+            modifyUserProfileViewModel.ContinueFunction = ContinueAsync;
+        }
+
+        [RelayCommand]
+        public void SelectLawyer()
+        {
+            userRole = UserRoleEnum.Lawyer;
 
             var modifyUserProfileViewModel = DependencyService.Get<ModifyUserProfilePopupViewModel>();
             modifyUserProfileViewModel.IsVisible = true;

@@ -118,6 +118,10 @@
                     </AbsoluteLayout>
 
                 </card:ClickableCard.View>
+
+                <card:ClickableCard.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectInvestorCommand}" />
+                </card:ClickableCard.GestureRecognizers>
             </card:ClickableCard>
             <card:ClickableCard Grid.Column="0"
                     Grid.Row="1">
@@ -147,6 +151,10 @@
                     </AbsoluteLayout>
 
                 </card:ClickableCard.View>
+
+                <card:ClickableCard.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectLettingAgentCommand}" />
+                </card:ClickableCard.GestureRecognizers>
             </card:ClickableCard>
 
             <card:ClickableCard Grid.Column="1"
@@ -175,6 +183,10 @@
                     </AbsoluteLayout>
 
                 </card:ClickableCard.View>
+
+                <card:ClickableCard.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding SelectLawyerCommand}" />
+                </card:ClickableCard.GestureRecognizers>
             </card:ClickableCard>
 
             <card:TextCard Grid.Row="2"
