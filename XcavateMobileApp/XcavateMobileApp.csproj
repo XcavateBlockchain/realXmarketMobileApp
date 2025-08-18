@@ -46,9 +46,10 @@
 
   </PropertyGroup>
 
-    <PropertyGroup Condition="'$(TargetFramework)'=='net8.0-ios'">
+    <PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
       <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
     </PropertyGroup>
+
 
 	<PropertyGroup Condition="'$(TargetFramework)'=='net9.0-ios'">
 	  <CodesignKey>Apple Development: Created via API (3XMFUNSZ92)</CodesignKey>
