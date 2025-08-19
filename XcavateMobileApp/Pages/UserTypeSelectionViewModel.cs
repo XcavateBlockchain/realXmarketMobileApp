@@ -139,7 +139,7 @@ namespace XcavateMobileApp.Pages
         }
 
         [RelayCommand]
-        public void SelectLettingAgend()
+        public void SelectLettingAgent()
         {
             userRole = UserRoleEnum.LettingAgent;
 

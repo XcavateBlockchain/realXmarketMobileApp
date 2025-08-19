@@ -24,13 +24,15 @@
             </settings:GenericButton.GestureRecognizers>
         </settings:GenericButton>
 
-        <settings:GenericButton Title="Developer settings">
+        <settings:GenericButton Title="Developer settings"
+                                IsVisible="False">
             <settings:GenericButton.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnDeveloperSettingsClicked" />
             </settings:GenericButton.GestureRecognizers>
         </settings:GenericButton>
 
-        <settings:GenericButton Title="Credits">
+        <settings:GenericButton Title="Credits"
+                                IsVisible="False">
             <settings:GenericButton.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnCreditsClicked" />
             </settings:GenericButton.GestureRecognizers>

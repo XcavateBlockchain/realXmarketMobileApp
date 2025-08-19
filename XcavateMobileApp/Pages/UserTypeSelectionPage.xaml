@@ -17,7 +17,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="50" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
@@ -37,13 +37,6 @@
                               FontAttributes="Bold"></Span>
                 </FormattedString>
             </Label.FormattedText>
-        </Label>
-
-        <Label FontSize="20"
-                   Grid.Column="0"
-                   Grid.Row="2"
-                   Grid.ColumnSpan="2"
-                   Text="Select what fits your interest">
         </Label>
 
         <Grid Grid.ColumnSpan="2"
@@ -188,35 +181,6 @@
                     <TapGestureRecognizer Command="{Binding SelectLawyerCommand}" />
                 </card:ClickableCard.GestureRecognizers>
             </card:ClickableCard>
-
-            <card:TextCard Grid.Row="2"
-                           Grid.ColumnSpan="2"
-                           >
-                <card:TextCard.FormattedText>
-                    <FormattedString>
-                        <Span FontAttributes="Bold"
-                              Text="👷‍ Developer&#x0a;" />
-
-                        <Span Text="Launch real world projects as tokenized assets.&#x0a;&#x0a;"
-                              />
-
-                        <Span FontAttributes="Bold"
-                              Text="💰 Investor&#x0a;" />
-
-                        <Span Text="Buy’s tokenized shares of real estate projects.&#x0a;&#x0a;" />
-
-                        <Span FontAttributes="Bold"
-                              Text="⚖️ Lawyer&#x0a;" />
-
-                        <Span Text="Represent projects and token holders.&#x0a;&#x0a;" />
-
-                        <Span FontAttributes="Bold"
-                              Text="🏘 Letting Agent&#x0a;" />
-
-                        <Span Text="Claim and manage tokenized properties on behalf of investors." />
-                    </FormattedString>
-                </card:TextCard.FormattedText>
-            </card:TextCard>
         </Grid>
     </Grid>
 
