@@ -85,9 +85,10 @@ namespace XcavateMobileApp.Pages
                 {
                     Email = email,
                     Phone = phoneNumber,
+                    ExternalUserId = didAddress,
                 },
                 totalInSeconds = 600,
-                UserId = $"USER_{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}",
+                UserId = $"{address}",
                 LevelName = userRole.ToSumsubVerificationLevel()
             };
 
