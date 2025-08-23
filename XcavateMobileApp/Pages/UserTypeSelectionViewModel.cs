@@ -92,9 +92,11 @@ namespace XcavateMobileApp.Pages
                 LevelName = userRole.ToSumsubVerificationLevel()
             };
 
+            var secrets = SumsubSecretModel.GetSecrets();
+
             try
             {
-                var accessToken = await SumsubModel.GenerateWebSDKAccessTokenAsync(applicant, token);
+                var accessToken = await SumsubModel.GenerateWebSDKAccessTokenAsync(applicant, secrets.SecretKey, secrets.AppToken, token);
 
                 await Shell.Current.Navigation.PushAsync(new SumsubWebSDKPage(
                     accessToken ?? "",
