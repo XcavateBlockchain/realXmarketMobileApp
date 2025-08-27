@@ -44,8 +44,8 @@ namespace XcavateMobileApp.Pages
 
             try
             {
-                var questions = await QuestionaireModel.GetXcavateQuestionsAsync();
-                var questionaireInfo = new QuestionaireInfo
+                var questions = await QuestionnaireModel.GetXcavateQuestionsAsync();
+                var questionnaireInfo = new QuestionnaireInfo
                 {
                     QuestionId = 0,
                     Questions = questions,
@@ -57,7 +57,7 @@ namespace XcavateMobileApp.Pages
                     return;
                 }
 
-                await Shell.Current.Navigation.PushAsync(new QuestionairePage(questionaireInfo));
+                await Shell.Current.Navigation.PushAsync(new QuestionnairePage(questionnaireInfo));
             }
             catch (Exception ex)
             {
