@@ -36,12 +36,7 @@ public partial class SettingsPage : PageTemplate
             return;
         }
 
-        KeysModel.RemoveAccount();
-        KeysModel.RemoveAccount("kilt1");
-
-        SecureStorage.Default.Remove(PreferencesModel.PASSWORD);
-        Preferences.Remove(PreferencesModel.BIOMETRICS_ENABLED);
-        Preferences.Remove(PreferencesModel.SHOW_WELCOME_SCREEN);
+        ClearStateModel.Clear();
 
         await SQLiteModel.DeleteAllDatabasesAsync();
 
