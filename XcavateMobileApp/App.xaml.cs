@@ -9,10 +9,14 @@ namespace XcavateMobileApp
     {
         public App()
         {
-            var noAccountViewModel = DependencyService.Get<NoAccountPopupViewModel>();
-            noAccountViewModel.AfterCreateAccountNavigation = () => Shell.Current.Navigation.PushAsync(
-                new UserTypeSelectionPage()
-            );
+            NavigationModel.NavigateAfterAccountCreation = () =>
+            {
+                // Verify if user has KYC
+
+                return Shell.Current.Navigation.PushAsync(
+                    new UserTypeSelectionPage()
+                );
+            };
 
             NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());
 
