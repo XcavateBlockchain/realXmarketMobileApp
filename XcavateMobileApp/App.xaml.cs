@@ -1,5 +1,4 @@
-﻿using PlutoFramework.Components.Account;
-using PlutoFramework.Model;
+﻿using PlutoFramework.Model;
 using PlutoFramework.Model.SQLite;
 using XcavateMobileApp.Pages;
 
@@ -9,6 +8,10 @@ namespace XcavateMobileApp
     {
         public App()
         {
+            NavigationModel.NavigateToKYC = () => Shell.Current.Navigation.PushAsync(
+                new UserTypeSelectionPage()
+            );
+
             NavigationModel.NavigateAfterAccountCreation = () =>
             {
                 // Verify if user has KYC

@@ -39,18 +39,7 @@ namespace XcavateMobileApp.Pages
                         new EnterMnemonicsViewModel
                         {
                             Navigation = () => Application.Current.MainPage.Navigation.PushAsync(
-                                new NoDidPage(
-                                    new NoDidViewModel
-                                    {
-                                        Navigation = () =>
-                                        {
-                                            Application.Current.MainPage = new XcavateAppShell();
-                                            // #PyramidCode
-
-                                            return Task.FromResult(0);
-                                        }
-                                    }
-                                )
+                                new NoDidPage()
                             )
                         }
                     )

@@ -39,8 +39,8 @@ namespace XcavateMobileApp.Pages
             await XcavateUserDatabase.SaveUserInformationAsync(newUserInfo);
 
 
-            string address = Preferences.Get(PreferencesModel.PUBLIC_KEY, "None");
-            string didAddress = Preferences.Get($"{PreferencesModel.PUBLIC_KEY}kilt1", "None");
+            string address = KeysModel.GetSubstrateKey();
+            string didAddress = KeysModel.GetSubstrateKey(accountVariant: "kilt1");
 
             try
             {
@@ -77,25 +77,25 @@ namespace XcavateMobileApp.Pages
         {
             var token = CancellationToken.None;
 
-            await PermissionsModel.RequestCameraPermissionAsync();
-
-            var applicant = new Applicant
-            {
-                ApplicantIdentifiers = new ApplicantIdentifiers
-                {
-                    Email = email,
-                    Phone = phoneNumber,
-                    ExternalUserId = didAddress,
-                },
-                totalInSeconds = 600,
-                UserId = $"{address}",
-                LevelName = userRole.ToSumsubVerificationLevel()
-            };
-
-            var secrets = SumsubSecretModel.GetSecrets();
-
             try
             {
+                await PermissionsModel.RequestCameraPermissionAsync();
+
+                var applicant = new Applicant
+                {
+                    ApplicantIdentifiers = new ApplicantIdentifiers
+                    {
+                        Email = email,
+                        Phone = phoneNumber,
+                        ExternalUserId = didAddress,
+                    },
+                    totalInSeconds = 600,
+                    UserId = address,
+                    LevelName = userRole.ToSumsubVerificationLevel()
+                };
+
+                var secrets = SumsubSecretModel.GetSecrets();
+
                 var accessToken = await SumsubModel.GenerateWebSDKAccessTokenAsync(applicant, secrets.SecretKey, secrets.AppToken, token);
 
                 await Shell.Current.Navigation.PushAsync(new SumsubWebSDKPage(

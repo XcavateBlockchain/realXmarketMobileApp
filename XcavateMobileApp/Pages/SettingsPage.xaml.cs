@@ -112,7 +112,7 @@ public partial class SettingsPage : PageTemplate
     {
         if (!Preferences.ContainsKey(PreferencesModel.PUBLIC_KEY + "kilt1"))
         {
-            await Navigation.PushAsync(new NoDidPage(new NoDidViewModel()));
+            await Navigation.PushAsync(new NoDidPage());
 
             return;
         }

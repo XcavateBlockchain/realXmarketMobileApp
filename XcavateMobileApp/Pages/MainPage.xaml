@@ -73,21 +73,9 @@
 
         <dappconnection:DAppConnectionRequestView />
 
-        <account:NoAccountPopup />
-
-        <kilt:NoDidPopupView />
-
-        <sumsub:NoKYCPopupView />
-
         <assetselect:AssetSelectView />
 
         <networkselect:NetworkSelectPopup />
-
-        <txanalyzer:TransactionAnalyzerConfirmationView />
-
-        <password:EnterPasswordPopupView />
-
-        <loading:FullPageLoadingView />
 
         <card:BottomPillBackgroundView />
 
