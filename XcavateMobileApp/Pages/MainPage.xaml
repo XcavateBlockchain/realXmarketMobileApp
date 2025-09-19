@@ -34,8 +34,8 @@
 
         <RefreshView AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1" AbsoluteLayout.LayoutFlags="All"
                      Margin="0,65,0,65"
-                        Command="{Binding RefreshCommand}" 
-                        IsRefreshing="{Binding IsRefreshing}">
+                     Command="{Binding RefreshCommand}" 
+                     IsRefreshing="{Binding IsRefreshing}">
             <ScrollView
                     AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1" AbsoluteLayout.LayoutFlags="All"
                     
@@ -69,9 +69,11 @@
 
         <transferview:TransferView />
 
+        <dappconnection:DAppConnectionRequestView />
+
         <transactionrequest:MessageSignRequestView />
 
-        <dappconnection:DAppConnectionRequestView />
+        <txanalyzer:TransactionAnalyzerConfirmationView />
 
         <assetselect:AssetSelectView />
 
