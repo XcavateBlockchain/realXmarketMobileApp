@@ -1,5 +1,8 @@
-﻿using PlutoFramework.Model;
+﻿using Helpers;
+using PlutoFramework.Model;
 using PlutoFramework.Model.SQLite;
+using PlutoFramework.Model.Sumsub;
+using PlutoFrameworkCore;
 using XcavateMobileApp.Pages;
 
 namespace XcavateMobileApp
@@ -24,6 +27,10 @@ namespace XcavateMobileApp
             NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());
 
             NavigationModel.NavigateToUserPageAsync = NavigateToUserPageAsync;
+
+            PlutoConfigurationModel.GenerateNewAccountAsync = GenerateNewAccountAsync;
+
+            PlutoConfigurationModel.AfterAccountImportAsync = AfterAccountImportAsync;
 
             InitializeComponent();
 
@@ -81,6 +88,20 @@ namespace XcavateMobileApp
             }
 
             await Shell.Current.Navigation.PushAsync(new UserProfilePage(viewModel));
+        }
+
+        public static Task GenerateNewAccountAsync()
+        {
+            return Task.WhenAll(
+                KeysModel.GenerateNewAccountAsync(),
+                KeysModel.GenerateNewDidAsync(),
+                KeysModel.GenerateNewEncryptionX25519KeyAsync()
+            );
+        }
+
+        public static Task AfterAccountImportAsync()
+        {
+            return SumsubUserModel.LoadAndSaveUserInfoAsync(CancellationToken.None);
         }
     }
 }

@@ -69,10 +69,10 @@
 
 	<ItemGroup>
     <!-- Splash Screen -->
-		<MauiSplashScreen Include="Resources\Splash\realxmarketsplash.png">
-		  <Color>#3B4F74</Color>
-		  <BaseSize>128,128</BaseSize>
-		</MauiSplashScreen>
+    <MauiSplashScreen Include="Resources\Splash\realxmarkettransparentsplash.png">
+      <Color>#3B4F74</Color>
+      <BaseSize>128,128</BaseSize>
+    </MauiSplashScreen>
 
 		<!-- Custom Fonts -->
 		<MauiFont Include="Resources\Fonts\*" />

@@ -32,6 +32,8 @@ public partial class MainPage : ContentPage, IPlutoFrameworkMainPage
         MainPageLayoutUpdater.MainPage = this;
 
         SetupLayout();
+
+        _ = KeysModel.TempConvertMainKeysIntoDbAsync();
     }
 
     public static void SetupLayout()

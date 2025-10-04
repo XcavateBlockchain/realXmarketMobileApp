@@ -17,9 +17,9 @@
         </xcavate:PageBottomBarView.ColumnDefinitions>
 
         <Image HeightRequest="45"
-            Grid.Column="0"
+               Grid.Column="0"
                Source="realxmarket.png"
-                
+               
             />
 
 

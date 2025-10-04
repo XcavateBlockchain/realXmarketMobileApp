@@ -4,8 +4,9 @@ using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.Kilt;
 using PlutoFramework.Components.Mnemonics;
 using PlutoFramework.Components.Password;
-using System.Collections.ObjectModel;
 using PlutoFramework.Model;
+using PlutoFrameworkCore;
+using System.Collections.ObjectModel;
 
 namespace XcavateMobileApp.Pages
 {
@@ -48,18 +49,16 @@ namespace XcavateMobileApp.Pages
         );
 
         [RelayCommand]
-        public Task CreateAccountAsync() => Application.Current.MainPage.Navigation.PushAsync(
+        public Task CreateAccountAsync() => Shell.Current.Navigation.PushAsync(
             new SetupPasswordPage() {
                 Navigation = CreateAccountNavigationAsync
             }
         );
         public async Task CreateAccountNavigationAsync()
         {
-            await KeysModel.GenerateNewAccountAsync(accountVariant: "");
+            await PlutoConfigurationModel.GenerateNewAccountAsync();
 
-            await KeysModel.GenerateNewAccountAsync(accountVariant: "kilt1");
-
-            await Application.Current.MainPage.Navigation.PushAsync(
+            await Shell.Current.Navigation.PushAsync(
                 new UserTypeSelectionPage()
             );
         }
