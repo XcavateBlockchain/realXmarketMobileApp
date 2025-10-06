@@ -1,6 +1,7 @@
 ﻿
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PlutoFramework.Components.Keys;
 using PlutoFramework.Components.Kilt;
 using PlutoFramework.Components.Mnemonics;
 using PlutoFramework.Components.Password;
@@ -12,8 +13,8 @@ namespace XcavateMobileApp.Pages
 {
     public class WelcomeSplash
     {
-        public string Image { get; set; }
-        public string Description { get; set; }
+        public required string Image { get; set; }
+        public required string Description { get; set; }
     }
 
     public partial class WelcomePageViewModel : ObservableObject
@@ -31,16 +32,29 @@ namespace XcavateMobileApp.Pages
             Application.Current.MainPage = new XcavateAppShell();
         }
 
+        // Lets go pyramid code
         [RelayCommand]
-        public Task ImportAccountAsync() => Application.Current.MainPage.Navigation.PushAsync(
+        public Task ImportAccountAsync() => Shell.Current.Navigation.PushAsync(
             new SetupPasswordPage()
             {
-                Navigation = () => Application.Current.MainPage.Navigation.PushAsync(
+                Navigation = () => Shell.Current.Navigation.PushAsync(
                     new EnterMnemonicsPage(
                         new EnterMnemonicsViewModel
                         {
-                            Navigation = () => Application.Current.MainPage.Navigation.PushAsync(
-                                new NoDidPage()
+                            Navigation = () => Shell.Current.Navigation.PushAsync(
+                                new ImportDidPage(
+                                    new ImportDidViewModel
+                                    {
+                                        Navigation = () => Shell.Current.Navigation.PushAsync(
+                                            new ImportEncryptionX25519KeyPage(
+                                                new ImportEncryptionX25519KeyPageViewModel
+                                                {
+                                                    Navigation = NavigationModel.NavigateAfterAccountCreation
+                                                }
+                                            )
+                                        )
+                                    }
+                                )
                             )
                         }
                     )
@@ -50,7 +64,8 @@ namespace XcavateMobileApp.Pages
 
         [RelayCommand]
         public Task CreateAccountAsync() => Shell.Current.Navigation.PushAsync(
-            new SetupPasswordPage() {
+            new SetupPasswordPage()
+            {
                 Navigation = CreateAccountNavigationAsync
             }
         );
