@@ -9,7 +9,18 @@
 
 	<!--
 	ONLY FOR MAC. Used to read files and images
+	Source: https://learn.microsoft.com/en-us/dotnet/maui/platform-integration/storage/file-picker?view=net-maui-9.0&tabs=macios
+	<key>com.apple.security.assets.movies.read-only</key>
+	<true/>
+	<key>com.apple.security.assets.music.read-only</key>
+	<true/>
+	<key>com.apple.security.assets.pictures.read-only</key>
+	<true/>
+	<key>com.apple.security.files.downloads.read-only</key>
+	<true/>
 	<key>com.apple.security.files.user-selected.read-only</key>
+	<true/>
+	<key>com.apple.security.personal-information.photos-library</key>
 	<true/>
 	-->
 </dict>
