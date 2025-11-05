@@ -38,5 +38,7 @@
   <string>com.xcavate.realxmarket</string>
   <key>NSLocationWhenInUseUsageDescription</key>
   <string>Some features may require location access due to third-party services used by the app.</string>
+  <key>ITSAppUsesNonExemptEncryption</key>
+  <false/>
 </dict>
 </plist>
