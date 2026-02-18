@@ -1,14 +1,13 @@
-using PlutoFramework.Components.Account;
 using PlutoFramework.Components.Credits;
 using PlutoFramework.Components.CustomLayouts;
 using PlutoFramework.Components.Kilt;
+using PlutoFramework.Components.Settings;
 using PlutoFramework.Components.Xcavate;
 using PlutoFramework.Model;
 using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Xcavate;
 using PlutoFramework.Templates.PageTemplate;
-using PlutoFramework.Components.Mnemonics;
-using PlutoFramework.Components.Settings;
+using PlutoFrameworkCore.Keys;
 
 namespace XcavateMobileApp.Pages;
 
@@ -110,7 +109,8 @@ public partial class SettingsPage : PageTemplate
 
     async void OnManageKiltDidClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
-        if (!Preferences.ContainsKey(PreferencesModel.PUBLIC_KEY + "kilt1"))
+        var didLockedKey = await KeysModel.GetKeyOfTypeAsync(KeyTypeEnum.Did);
+        if (didLockedKey is null)
         {
             await Navigation.PushAsync(new NoDidPage());
 
@@ -118,9 +118,9 @@ public partial class SettingsPage : PageTemplate
         }
         try
         {
-            var secret = await KeysModel.GetMnemonicsOrPrivateKeyAsync(accountVariant: "kilt1");
+            var didUnlockedKey = await didLockedKey.ToDidKeyAsync();
 
-            await Navigation.PushAsync(new DidManagementPage(secret));
+            await Navigation.PushAsync(new DidManagementPage(didUnlockedKey.Mnemonics));
         }
         catch
         {

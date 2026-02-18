@@ -9,7 +9,7 @@
              xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
              xmlns:pages="clr-namespace:XcavateMobileApp.Pages"
              xmlns:page="clr-namespace:PlutoFramework.Templates.PageTemplate;assembly=PlutoFramework"
-             IsNavbarVisible="false">
+             NavigationBarIsVisible="false">
     <Grid AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1" AbsoluteLayout.LayoutFlags="All"
               Padding="20"
               ColumnSpacing="15"

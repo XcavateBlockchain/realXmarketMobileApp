@@ -3,13 +3,15 @@ using Android.Content;
 using Android.Content.PM;
 using Android.OS;
 using Plugin.Fingerprint;
-using Plutonication;
 using PlutoFramework.Model;
-using PlutoFramework.Platforms.Android;
+using Plutonication;
 
 namespace XcavateMobileApp.Platforms.Android;
 
-[Activity(Theme = "@style/Maui.SplashTheme", MainLauncher = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
+[Activity(Theme = "@style/Maui.SplashTheme",
+    MainLauncher = true,
+    EnableOnBackInvokedCallback = false,
+    ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 [IntentFilter(new[] { Intent.ActionView },
     DataScheme = "plutonication",
     AutoVerify = true,

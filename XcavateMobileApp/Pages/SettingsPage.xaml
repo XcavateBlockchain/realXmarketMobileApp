@@ -7,46 +7,49 @@
                        xmlns:accounts="clr-namespace:PlutoFramework.Components.Account;assembly=PlutoFramework"
                        x:Class="XcavateMobileApp.Pages.SettingsPage"
                        Title="Settings">
-    <VerticalStackLayout HorizontalOptions="Center"
+    <ScrollView AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+                AbsoluteLayout.LayoutFlags="All">
+        <VerticalStackLayout HorizontalOptions="Center"
                          Padding="20, 10, 20, 100"
                          Spacing="15">
-        <settings:GenericButton Title="Show mnemonics"
+            <settings:GenericButton Title="Show mnemonics"
                                  IsVisible="{Binding HasAccount}">
-            <settings:GenericButton.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnShowMnemonicsClicked" />
-            </settings:GenericButton.GestureRecognizers>
-        </settings:GenericButton>
+                <settings:GenericButton.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnShowMnemonicsClicked" />
+                </settings:GenericButton.GestureRecognizers>
+            </settings:GenericButton>
 
-        <settings:GenericButton Title="Manage Kilt DID"
+            <settings:GenericButton Title="Manage Kilt DID"
                                  IsVisible="{Binding HasAccount}">
-            <settings:GenericButton.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnManageKiltDidClicked" />
-            </settings:GenericButton.GestureRecognizers>
-        </settings:GenericButton>
+                <settings:GenericButton.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnManageKiltDidClicked" />
+                </settings:GenericButton.GestureRecognizers>
+            </settings:GenericButton>
 
-        <settings:GenericButton Title="Developer settings"
+            <settings:GenericButton Title="Developer settings"
                                 IsVisible="False">
-            <settings:GenericButton.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnDeveloperSettingsClicked" />
-            </settings:GenericButton.GestureRecognizers>
-        </settings:GenericButton>
+                <settings:GenericButton.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnDeveloperSettingsClicked" />
+                </settings:GenericButton.GestureRecognizers>
+            </settings:GenericButton>
 
-        <settings:GenericButton Title="Credits"
+            <settings:GenericButton Title="Credits"
                                 IsVisible="False">
-            <settings:GenericButton.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnCreditsClicked" />
-            </settings:GenericButton.GestureRecognizers>
-        </settings:GenericButton>
+                <settings:GenericButton.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCreditsClicked" />
+                </settings:GenericButton.GestureRecognizers>
+            </settings:GenericButton>
 
-        <settings:GenericButton Title="Log out (Delete private key)"
+            <settings:GenericButton Title="Log out (Delete private key)"
                                  IsVisible="{Binding HasAccount}">
-            <settings:GenericButton.GestureRecognizers>
-                <TapGestureRecognizer Tapped="OnLogOutClicked" />
-            </settings:GenericButton.GestureRecognizers>
-        </settings:GenericButton>
+                <settings:GenericButton.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnLogOutClicked" />
+                </settings:GenericButton.GestureRecognizers>
+            </settings:GenericButton>
 
-        <xcavate:AboutUsView />
-    </VerticalStackLayout>
+            <xcavate:AboutUsView />
+        </VerticalStackLayout>
+    </ScrollView>
 
     <template:PageTemplate.PopupContent>
         <accounts:NoAccountPopup />
