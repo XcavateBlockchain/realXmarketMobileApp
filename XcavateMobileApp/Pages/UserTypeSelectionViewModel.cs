@@ -40,7 +40,8 @@ namespace XcavateMobileApp.Pages
 
 
             string address = KeysModel.GetSubstrateKey();
-            string didAddress = KeysModel.GetSubstrateKey(accountVariant: "kilt1");
+
+            string didAddress = await KeysModel.GetDidAddressAsync(CancellationToken.None);
 
             try
             {

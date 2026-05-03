@@ -1,13 +1,11 @@
 using PlutoFramework.Components.Credits;
 using PlutoFramework.Components.CustomLayouts;
-using PlutoFramework.Components.Kilt;
 using PlutoFramework.Components.Settings;
 using PlutoFramework.Components.Xcavate;
 using PlutoFramework.Model;
 using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Xcavate;
 using PlutoFramework.Templates.PageTemplate;
-using PlutoFrameworkCore.Keys;
 
 namespace XcavateMobileApp.Pages;
 
@@ -100,32 +98,6 @@ public partial class SettingsPage : PageTemplate
             ]
         };
         await Navigation.PushAsync(new PropertyDetailPage(viewModel));*/
-    }
-
-    async void OnShowMnemonicsClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
-    {
-        await NavigationModel.NavigateToMnemonicsPageAsync();
-    }
-
-    async void OnManageKiltDidClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
-    {
-        var didLockedKey = await KeysModel.GetKeyOfTypeAsync(KeyTypeEnum.Did);
-        if (didLockedKey is null)
-        {
-            await Navigation.PushAsync(new NoDidPage());
-
-            return;
-        }
-        try
-        {
-            var didUnlockedKey = await didLockedKey.ToDidKeyAsync();
-
-            await Navigation.PushAsync(new DidManagementPage(didUnlockedKey.Mnemonics));
-        }
-        catch
-        {
-            // Failed to authenticate
-        }
     }
 
     private async void OnCreateNewPropertyClicked(object sender, TappedEventArgs e)

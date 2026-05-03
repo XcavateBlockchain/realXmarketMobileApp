@@ -1,5 +1,4 @@
-﻿using Helpers;
-using PlutoFramework.Model;
+﻿using PlutoFramework.Model;
 using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Sumsub;
 using PlutoFrameworkCore;
@@ -32,27 +31,24 @@ namespace XcavateMobileApp
 
             PlutoConfigurationModel.AfterAccountImportAsync = AfterAccountImportAsync;
 
+            NavigationModel.SetWelcomeShell = () =>
+            {
+                Application.Current.MainPage = new OnboardingShell();
+            };
+
             InitializeComponent();
 
             DependencyService.Register<ModifyUserProfilePopupViewModel>();
 
             DependencyService.Register<MainPageViewModel>();
 
-            if (Preferences.Get(PreferencesModel.SHOW_WELCOME_SCREEN, true))
+            if (Preferences.Get(PreferencesModel.SHOW_WELCOME_SCREEN, true) || !KeysModel.HasSubstrateKey())
             {
+                Preferences.Set(PreferencesModel.SHOW_WELCOME_SCREEN, true);
                 MainPage = new OnboardingShell();
             }
             else
             {
-                // Set Account type if it did not exist
-                if (!Preferences.ContainsKey(PreferencesModel.ACCOUNT_TYPE))
-                {
-                    Preferences.Set(
-                        PreferencesModel.ACCOUNT_TYPE,
-                        (Preferences.Get(PreferencesModel.USE_PRIVATE_KEY, false) ? AccountType.PrivateKey : AccountType.Mnemonic).ToString()
-                    );
-                }
-
                 MainPage = new XcavateAppShell();
             }
         }
