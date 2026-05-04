@@ -35,6 +35,7 @@
                       Grid.Row="2"
                       PeekAreaInsets="0"
                           HorizontalScrollBarVisibility="Never"
+                         Loop="False"
                       IsBounceEnabled="True">
                 <CarouselView.ItemTemplate>
                     <DataTemplate>

@@ -8,8 +8,47 @@ namespace XcavateMobileApp
 {
     public partial class App : Application
     {
+        private bool _isInitialized;
+
         public App()
         {
+            Console.WriteLine("App constructor called");
+            InitializeComponent();
+
+            // Show a lightweight page first to satisfy iOS's startup watchdog.
+            MainPage = new ContentPage
+            {
+                Content = new Grid
+                {
+                    Children =
+                    {
+                        new ActivityIndicator
+                        {
+                            IsRunning = true,
+                            HorizontalOptions = LayoutOptions.Center,
+                            VerticalOptions = LayoutOptions.Center,
+                        },
+                    },
+                },
+            };
+
+            Dispatcher.Dispatch(async () => await InitializeAsync());
+        }
+
+        private async Task InitializeAsync()
+        {
+            if (_isInitialized)
+            {
+                return;
+            }
+
+            _isInitialized = true;
+
+            // Let the first frame render before doing heavier setup.
+            await Task.Yield();
+
+            _ = Task.Run(PlutoFramework.MauiAppBuilderExtensions.InitializePlutoFrameworkFull);
+
             NavigationModel.NavigateToKYC = () => Shell.Current.Navigation.PushAsync(
                 new UserTypeSelectionPage()
             );
@@ -35,8 +74,6 @@ namespace XcavateMobileApp
             {
                 Application.Current.MainPage = new OnboardingShell();
             };
-
-            InitializeComponent();
 
             DependencyService.Register<ModifyUserProfilePopupViewModel>();
 

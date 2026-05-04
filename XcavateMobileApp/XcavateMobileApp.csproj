@@ -14,9 +14,9 @@
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <Nullable>enable</Nullable>
     <!-- https://github.com/CommunityToolkit/Maui/issues/2205 -->
-    <NoWarn>XC0103</NoWarn>
+    <NoWarn>XC0103;NU1605</NoWarn>
     <MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
-    <UseMauiEssentials>false</UseMauiEssentials>
+    <UseMauiEssentials>true</UseMauiEssentials>
 
     <!-- Display name -->
     <ApplicationTitle>realXmarket</ApplicationTitle>
@@ -30,8 +30,6 @@
     <PackageVersion>0.12</PackageVersion>
     <ApplicationVersion>31</ApplicationVersion>
 
-    <!-- Increases performance, but disables hot-reload -->
-    <UseInterpreter>false</UseInterpreter>
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
 
     <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
@@ -46,8 +44,22 @@
 
   </PropertyGroup>
 
+  <PropertyGroup>
+    <MtouchLink>None</MtouchLink>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net10.0-ios' and '$(Configuration)'=='Debug'">
+    <MtouchExtraArgs>--setenv=DOTNET_EnableDiagnostics=0</MtouchExtraArgs>
+    <MauiHotReloadEnabled>false</MauiHotReloadEnabled>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(TargetFramework)'=='net10.0-ios'">
     <RuntimeIdentifiers>ios-arm64</RuntimeIdentifiers>
+    <MtouchInfoPlist>Platforms\iOS\Info.plist</MtouchInfoPlist>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)'=='net10.0-ios' and '$(Configuration)'=='Debug'">
+    <UseInterpreter>true</UseInterpreter>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)'=='net10.0-ios'">

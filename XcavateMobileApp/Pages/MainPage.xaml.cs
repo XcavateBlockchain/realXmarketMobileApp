@@ -14,12 +14,14 @@ public partial class MainPage : ContentPage, IPlutoFrameworkMainPage
     public IList<IView> Views => StackLayout?.Children ?? [];
     public static VerticalStackLayout? StackLayout { get; set; }
     public static MultiNetworkSelectView? NetworksView { get; set; }
+    private bool _isInitialized;
     public MainPage()
     {
         NavigationPage.SetHasNavigationBar(this, false);
         Shell.SetNavBarIsVisible(this, false);
 
         InitializeComponent();
+        Loaded += OnLoaded;
 
         var viewModel = DependencyService.Get<MainPageViewModel>();
         BindingContext = viewModel;
@@ -30,10 +32,21 @@ public partial class MainPage : ContentPage, IPlutoFrameworkMainPage
         StackLayout = stackLayout;
 
         MainPageLayoutUpdater.MainPage = this;
+    }
+
+    private async void OnLoaded(object? sender, EventArgs e)
+    {
+        if (_isInitialized)
+        {
+            return;
+        }
+
+        _isInitialized = true;
+
+        // Let the first frame render before doing heavy work.
+        await Task.Yield();
 
         SetupLayout();
-
-        _ = KeysModel.TempConvertMainKeysIntoDbAsync();
     }
 
     public static void SetupLayout()

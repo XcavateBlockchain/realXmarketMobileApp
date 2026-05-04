@@ -31,7 +31,7 @@ public static class MauiProgram
         builder
             .UseMauiApp<App>()
             .UseMauiCommunityToolkit()
-            .UsePlutoFramework()
+            .UsePlutoFrameworkMinimal()
             .AddAppSettings();
 
         var app = builder.Build();
