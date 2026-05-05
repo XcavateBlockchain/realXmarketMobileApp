@@ -12,10 +12,8 @@ namespace XcavateMobileApp
 
         public App()
         {
-            Console.WriteLine("App constructor called");
             InitializeComponent();
 
-            // Show a lightweight page first to satisfy iOS's startup watchdog.
             MainPage = new ContentPage
             {
                 Content = new Grid
@@ -55,7 +53,7 @@ namespace XcavateMobileApp
 
             NavigationModel.NavigateAfterAccountCreation = () =>
             {
-                // Verify if user has KYC
+                // TODO: Verify if user has KYC
 
                 return Shell.Current.Navigation.PushAsync(
                     new UserTypeSelectionPage()
@@ -123,9 +121,12 @@ namespace XcavateMobileApp
             await Shell.Current.Navigation.PushAsync(new UserProfilePage(viewModel));
         }
 
-        public static Task GenerateNewAccountAsync()
+        public static async Task GenerateNewAccountAsync()
         {
-            return Task.WhenAll(
+            Preferences.Clear(PreferencesModel.PUBLIC_KEY);
+            await KeysDatabase.DeleteAllAsync();
+
+            await Task.WhenAll(
                 KeysModel.GenerateNewAccountAsync(),
                 KeysModel.GenerateNewDidAsync(),
                 KeysModel.GenerateNewEncryptionX25519KeyAsync()

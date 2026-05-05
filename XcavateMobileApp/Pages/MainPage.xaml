@@ -78,9 +78,5 @@
         <assetselect:AssetSelectView />
 
         <networkselect:NetworkSelectPopup />
-
-        <card:BottomPillBackgroundView />
-
-        <card:TopPillBackgroundView />
     </AbsoluteLayout>
 </ContentPage>

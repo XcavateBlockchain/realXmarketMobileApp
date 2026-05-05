@@ -21,20 +21,16 @@
                      >
 
                     <form:FormInputView Placeholder="First name"
-                        CardWidth="{Binding Source={x:Reference verticalStackLayout}, Path=Width}"
                         Text="{Binding FirstName}" />
 
                     <form:FormInputView Placeholder="Last name"
-                        CardWidth="{Binding Source={x:Reference verticalStackLayout}, Path=Width}"
                         Text="{Binding LastName}" />
 
                     <form:FormInputView Placeholder="Email"
-                        CardWidth="{Binding Source={x:Reference verticalStackLayout}, Path=Width}"
                         ValidateEmail="True"
                         Text="{Binding Email}" />
 
                     <form:FormInputView Placeholder="Phone Number"
-                        CardWidth="{Binding Source={x:Reference verticalStackLayout}, Path=Width}"
                         Text="{Binding PhoneNumber}"/>
                 </VerticalStackLayout>
                 

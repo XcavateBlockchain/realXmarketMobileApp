@@ -23,28 +23,29 @@ namespace XcavateMobileApp.Pages
         {
             //MoveImages();
 
-            var newUserInfo = new XcavateUser
-            {
-                FirstName = firstName,
-                LastName = lastName,
-                Email = email,
-                PhoneNumber = phoneNumber,
-                Role = userRole,
-                DeveloperStats = null,
-                AccountCreatedAt = DateTime.Now,
-                ProfilePicture = XcavateFileModel.GetSavedProfilePicture(),
-                ProfileBackground = XcavateFileModel.GetSavedProfileBackground(),
-            };
-
-            await XcavateUserDatabase.SaveUserInformationAsync(newUserInfo);
-
-
-            string address = KeysModel.GetSubstrateKey();
-
-            string didAddress = await KeysModel.GetDidAddressAsync(CancellationToken.None);
-
             try
             {
+                var newUserInfo = new XcavateUser
+                {
+                    FirstName = firstName,
+                    LastName = lastName,
+                    Email = email,
+                    PhoneNumber = phoneNumber,
+                    Role = userRole,
+                    DeveloperStats = null,
+                    AccountCreatedAt = DateTime.Now,
+                    ProfilePicture = XcavateFileModel.GetSavedProfilePicture(),
+                    ProfileBackground = XcavateFileModel.GetSavedProfileBackground(),
+                };
+
+                await XcavateUserDatabase.SaveUserInformationAsync(newUserInfo);
+
+
+                string address = KeysModel.GetSubstrateKey();
+
+                string didAddress = await KeysModel.GetDidAddressAsync(CancellationToken.None);
+
+
                 var questions = await QuestionnaireModel.GetXcavateQuestionsAsync();
                 var questionnaireInfo = new QuestionnaireInfo
                 {
