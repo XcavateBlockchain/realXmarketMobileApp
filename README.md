@@ -28,11 +28,11 @@ Built using [PlutoFramework](https://plutolabs.gitbook.io/plutoframework) by Plu
 - [✅] Browse real-estate properties in the marketplace tab
 - [▶️] Filter the properties by location, price ...
 - [✅] View the detailed page of the real-estate property
-- [✅] Buy listed property tokens
-- [✅] View all owned/bought property tokens
-- [🟩] Relist tokens
-- [▶️] View relisted tokens
-- [▶️] Buy relisted tokens
+- [✅] Buy listed property shares
+- [✅] View all owned/bought property shares
+- [🟩] Relist shares
+- [▶️] View relisted shares
+- [▶️] Buy relisted shares
 - [▶️] Messaging system powered by Kilt
 - [🟩] Connect to a web version of realXmarket via Plutonication
 - [✅] View information about Xcavate

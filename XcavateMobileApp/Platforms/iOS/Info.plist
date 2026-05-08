@@ -4,8 +4,14 @@
 <dict>
 	<key>NSCameraUsageDescription</key>
 	<string>This app uses camera for QR code scanning and for KYC verification</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>This app uses location access to support features that depend on nearby services and secure account workflows.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>This app uses Bluetooth to support nearby device and external SDK features when enabled.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>This app uses contacts to support user-driven sharing and account-related features when needed.</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>arm64</string>
@@ -25,6 +31,14 @@
 	<string>Assets.xcassets/appicon.appiconset</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Biometric verification is required to further secure your account.</string>
+	<key>NSSiriUsageDescription</key>
+	<string>This app uses Siri integration to support voice-driven actions when available.</string>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>This app uses Apple Music access only if a music-related feature or SDK requires it.</string>
+	<key>NSCalendarsUsageDescription</key>
+	<string>This app uses calendars to let you add or manage app-related reminders and scheduled events.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app uses microphone access for audio capture and voice-related features when enabled.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
