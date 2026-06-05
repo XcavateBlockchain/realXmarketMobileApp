@@ -36,7 +36,7 @@
             </Border.StrokeShape>
             <Image HeightRequest="25"
                WidthRequest="25"
-                   Source="xcavateemail.png"/>
+                   Source="xcavatebell.png"/>
 
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding OpenMessagingCommand}"/>
@@ -57,7 +57,7 @@
             <Image HeightRequest="25"
                WidthRequest="25"
                    Margin="0, 0, 2, 0"
-               Source="xcavateqr.png"
+               Source="xcavateqrscanner.png"
                />
 
             <Border.GestureRecognizers>
