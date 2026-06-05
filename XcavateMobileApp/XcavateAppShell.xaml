@@ -14,4 +14,7 @@
     <ShellContent ContentTemplate="{DataTemplate xcavateproperty:XcavateIndexedPropertyMarketplacePage}" 
                   Route="Marketplace">
     </ShellContent>
+    <ShellContent ContentTemplate="{DataTemplate xcavateproperty:XcavateIndexedPropertyNoticeboardPage}"
+                  Route="Noticeboard">
+    </ShellContent>
 </Shell>
