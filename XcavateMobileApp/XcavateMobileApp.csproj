@@ -87,6 +87,7 @@
 
     <!-- Custom Fonts -->
     <MauiFont Include="Resources\Fonts\*" />
+    <MauiFont Include="Resources\Fonts\xcavatefont.ttf" Alias="XcavateFont" />
 
     <!-- Raw Assets (also remove the "Resources\Raw" prefix) -->
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
@@ -142,7 +143,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Resources\Fonts\" />
     <Folder Include="Resources\Images\" />
   </ItemGroup>
 

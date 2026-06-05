@@ -34,6 +34,11 @@ public static class MauiProgram
             .UsePlutoFrameworkMinimal()
             .AddAppSettings();
 
+        builder.ConfigureFonts(fonts =>
+        {
+            fonts.AddFont("xcavatefont.ttf", "XcavateFont");
+        });
+
         var app = builder.Build();
 
         MauiAppBuilderExtensions.Services = app.Services;
