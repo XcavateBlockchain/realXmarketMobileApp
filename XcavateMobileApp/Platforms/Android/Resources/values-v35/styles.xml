@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!--
+    Android 15+ enables edge-to-edge by default for targetSdk 35.
+    This opt-out keeps legacy safe-area behavior for MAUI pages.
+  -->
+  <style name="Maui.MainTheme" parent="Maui.MainTheme">
+    <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+  </style>
+
+  <style name="Maui.SplashTheme" parent="Maui.SplashTheme">
+    <item name="android:windowOptOutEdgeToEdgeEnforcement">true</item>
+  </style>
+</resources>

@@ -2,6 +2,8 @@
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Android.Views;
+using AndroidX.Core.View;
 using Plugin.Fingerprint;
 using PlutoFramework.Model;
 using Plutonication;
@@ -24,6 +26,20 @@ public class MainActivity : MauiAppCompatActivity
     protected override void OnCreate(Bundle savedInstanceState)
     {
         base.OnCreate(savedInstanceState);
+
+        // Android 15 (targetSdk 35) enforces edge-to-edge by default.
+        // Ask the window/content view to fit system bars and cutouts.
+        if (Window is not null)
+        {
+            Window.SetDecorFitsSystemWindows(true);
+        }
+
+        var rootContent = FindViewById<ViewGroup>(Android.Resource.Id.Content);
+        if (rootContent is not null)
+        {
+            rootContent.FitsSystemWindows = true;
+            ViewCompat.RequestApplyInsets(rootContent);
+        }
 
         CrossFingerprint.SetCurrentActivityResolver(() => this);
 
