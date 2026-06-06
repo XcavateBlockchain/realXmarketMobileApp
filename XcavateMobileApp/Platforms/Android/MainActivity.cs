@@ -23,10 +23,13 @@ namespace XcavateMobileApp.Platforms.Android;
 })]
 public class MainActivity : MauiAppCompatActivity
 {
+    private sealed class InsetsListener(Func<global::Android.Views.View?, WindowInsetsCompat?, WindowInsetsCompat?> applyInsets) : Java.Lang.Object, IOnApplyWindowInsetsListener
+    {
+        public WindowInsetsCompat? OnApplyWindowInsets(global::Android.Views.View? v, WindowInsetsCompat? insets) => applyInsets(v, insets);
+    }
+
     protected override void OnCreate(Bundle savedInstanceState)
     {
-        base.OnCreate(savedInstanceState);
-
         // Android 15 (targetSdk 35) enforces edge-to-edge by default.
         // Ask the window/content view to fit system bars and cutouts.
         if (Window is not null)
@@ -34,10 +37,23 @@ public class MainActivity : MauiAppCompatActivity
             Window.SetDecorFitsSystemWindows(true);
         }
 
-        var rootContent = FindViewById<ViewGroup>(Android.Resource.Id.Content);
+        base.OnCreate(savedInstanceState);
+
+        var rootContent = FindViewById<ViewGroup>(global::Android.Resource.Id.Content);
         if (rootContent is not null)
         {
-            rootContent.FitsSystemWindows = true;
+            ViewCompat.SetOnApplyWindowInsetsListener(rootContent, new InsetsListener((view, insets) =>
+            {
+                if (view is null || insets is null)
+                {
+                    return insets ?? WindowInsetsCompat.Consumed;
+                }
+
+                var systemInsets = insets.GetInsets(WindowInsetsCompat.Type.SystemBars() | WindowInsetsCompat.Type.DisplayCutout());
+                view.SetPadding(systemInsets.Left, systemInsets.Top, systemInsets.Right, systemInsets.Bottom);
+                return insets;
+            }));
+
             ViewCompat.RequestApplyInsets(rootContent);
         }
 

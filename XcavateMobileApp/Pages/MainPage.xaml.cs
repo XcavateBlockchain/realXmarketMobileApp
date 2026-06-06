@@ -43,8 +43,8 @@ public partial class MainPage : ContentPage, IPlutoFrameworkMainPage
 
         _isInitialized = true;
 
-        // Let the first frame render before doing heavy work.
-        await Task.Yield();
+        // Allow the page to finish first layout before overlay/popup state changes.
+        await Task.Delay(100);
 
         SetupLayout();
     }
