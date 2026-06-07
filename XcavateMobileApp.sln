@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197
+# Visual Studio Version 18
+VisualStudioVersion = 18.6.11822.322 stable
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlutoFramework", "realXmarketPlutoFramework\PlutoFramework\PlutoFramework.csproj", "{9FDC953E-9BAB-F54E-E986-128C15FAE91D}"
 EndProject
@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BifrostPolkadot.NetApi", "r
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlutoFrameworkCore", "realXmarketPlutoFramework\PlutoFrameworkCore\PlutoFrameworkCore.csproj", "{A79879A0-7892-416B-ADB7-0A7B530B88FA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XcavateIndexer", "realXmarketPlutoFramework\Indexers\XcavateIndexer\XcavateIndexer.csproj", "{EB096AF4-3061-41C2-76B3-119DABD89FD8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,7 @@ Global
 		{6FF3A1AC-FD6B-07B1-2B06-9E36E89C68F9}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{6FF3A1AC-FD6B-07B1-2B06-9E36E89C68F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6FF3A1AC-FD6B-07B1-2B06-9E36E89C68F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FF3A1AC-FD6B-07B1-2B06-9E36E89C68F9}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{56AB7B1C-AC9E-8BE8-DF94-9E4BAE363618}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{56AB7B1C-AC9E-8BE8-DF94-9E4BAE363618}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56AB7B1C-AC9E-8BE8-DF94-9E4BAE363618}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -158,6 +161,10 @@ Global
 		{A79879A0-7892-416B-ADB7-0A7B530B88FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A79879A0-7892-416B-ADB7-0A7B530B88FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A79879A0-7892-416B-ADB7-0A7B530B88FA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB096AF4-3061-41C2-76B3-119DABD89FD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB096AF4-3061-41C2-76B3-119DABD89FD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB096AF4-3061-41C2-76B3-119DABD89FD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB096AF4-3061-41C2-76B3-119DABD89FD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -181,6 +188,7 @@ Global
 		{4F31B65D-47CF-49F7-B227-2E8B888D023B} = {B3A9988C-133C-4860-B916-49DA10922F6D}
 		{E933DFBE-2865-3C58-2184-03140A51A5FE} = {B3A9988C-133C-4860-B916-49DA10922F6D}
 		{3E4A81C1-628B-DD5E-715E-413A85239D03} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{EB096AF4-3061-41C2-76B3-119DABD89FD8} = {B3A9988C-133C-4860-B916-49DA10922F6D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AFD9E78C-6D1C-46C6-805A-5246AEDD1F51}

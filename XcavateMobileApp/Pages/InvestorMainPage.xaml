@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="XcavateMobileApp.Pages.InvestorMainPage"
+             xmlns:txanalyzer="clr-namespace:PlutoFramework.Components.TransactionAnalyzer;assembly=PlutoFramework"
+             xmlns:networkselect="clr-namespace:PlutoFramework.Components.NetworkSelect;assembly=PlutoFramework"
+             xmlns:transferview="clr-namespace:PlutoFramework.Components.TransferView;assembly=PlutoFramework"
+             xmlns:dappconnection="clr-namespace:PlutoFramework.Components.DAppConnection;assembly=PlutoFramework"
+             xmlns:messagepopup="clr-namespace:PlutoFramework.Components.MessagePopup;assembly=PlutoFramework"
+             xmlns:transactionrequest="clr-namespace:PlutoFramework.Components.TransactionRequest;assembly=PlutoFramework"
+             xmlns:addressview="clr-namespace:PlutoFramework.Components.AddressView;assembly=PlutoFramework"
+             xmlns:staking="clr-namespace:PlutoFramework.Components.Staking;assembly=PlutoFramework"
+             xmlns:vault="clr-namespace:PlutoFramework.Components.Vault;assembly=PlutoFramework"
+             xmlns:extrinsic="clr-namespace:PlutoFramework.Components.Extrinsic;assembly=PlutoFramework"
+             xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
+             xmlns:faucet="clr-namespace:PlutoFramework.Components.Faucet;assembly=PlutoFramework"
+             xmlns:table="clr-namespace:PlutoFramework.Components.Table;assembly=PlutoFramework"
+             xmlns:xcavatecells="clr-namespace:PlutoFramework.Components.XcavateProperty.Cells;assembly=PlutoFramework"
+             xmlns:xcavateproperty="clr-namespace:PlutoFramework.Components.XcavateProperty;assembly=PlutoFramework"
+             xmlns:customlayouts="clr-namespace:PlutoFramework.Components.CustomLayouts;assembly=PlutoFramework"
+             xmlns:buttons="clr-namespace:PlutoFramework.Components.Buttons;assembly=PlutoFramework"
+             xmlns:constants="clr-namespace:PlutoFramework.Constants;assembly=PlutoFramework"
+             xmlns:components="clr-namespace:XcavateMobileApp.Components"
+             BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}"
+             Shell.PresentationMode="NotAnimated"
+             HideSoftInputOnTapped="True">
+
+    <AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+                    AbsoluteLayout.LayoutFlags="All">
+        <Image AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+               AbsoluteLayout.LayoutFlags="All"
+               Source="{AppThemeBinding Light=whitebackground.png, Dark=darkbackground.png}"
+               Opacity="{AppThemeBinding Light=0.96}"
+               Aspect="AspectFill" />
+
+        <RefreshView AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+                     AbsoluteLayout.LayoutFlags="All"
+                     Margin="0,65,0,65"
+                     Command="{Binding RefreshCommand}"
+                     IsRefreshing="{Binding IsRefreshing}">
+            <ScrollView x:Name="mainScrollView"
+                        AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+                        AbsoluteLayout.LayoutFlags="All"
+                        Scrolled="OnMainScrollViewScrolled">
+                <VerticalStackLayout x:Name="stackLayout"
+                                     Spacing="15"
+                                     Padding="20, 15, 20, 100">
+                    <xcavate:RiskWarningView HeightRequest="90" />
+
+                    <dappconnection:DAppConnectionView />
+
+                    <VerticalStackLayout Spacing="5">
+                        <HorizontalStackLayout Spacing="10"
+                                               Margin="0,0,0,5">
+                            <buttons:BasicGrayButton Text="All"
+                                                     IsEnabled="False"
+                                                     HorizontalOptions="FillAndExpand" />
+                            <buttons:BasicGrayButton Text="Owned"
+                                                     IsEnabled="False"
+                                                     HorizontalOptions="FillAndExpand" />
+                            <buttons:BasicGrayButton Text="Bought"
+                                                     IsEnabled="False"
+                                                     HorizontalOptions="FillAndExpand" />
+                        </HorizontalStackLayout>
+
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding OwnedProperties}"
+                                             Spacing="15">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate>
+                                    <xcavateproperty:PropertyThumbnailView XcavateNftWrapper="{Binding .}" />
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </VerticalStackLayout>
+
+                        <customlayouts:LoadingItemView HeightRequest="80"
+                                                       IsVisible="{Binding OwnedPropertiesLoading}" />
+
+                        <customlayouts:TransparentItemView Text="No Properties"
+                                                           HeightRequest="80"
+                                                           IsVisible="{Binding NoOwnedProperties}" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
+        </RefreshView>
+
+        <components:XcavateMainPageTopNavigationBarView />
+
+        <extrinsic:ExtrinsicStatusStackLayout />
+
+        <vault:VaultSignView />
+
+        <staking:StakingRegistrationRequestView />
+
+        <messagepopup:MessagePopupView />
+
+        <xcavate:XcavateNavigationBarView />
+
+        <networkselect:MultiNetworkSelectView x:Name="networksView" />
+
+        <addressview:AddressQrCodeView />
+
+        <transferview:TransferView />
+
+        <dappconnection:DAppConnectionRequestView />
+
+        <transactionrequest:MessageSignRequestView />
+
+        <txanalyzer:TransactionAnalyzerConfirmationView />
+
+        <networkselect:NetworkSelectPopup />
+    </AbsoluteLayout>
+</ContentPage>

@@ -100,7 +100,7 @@
     <MauiXaml Update="OnboardingShell.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
-    <MauiXaml Update="Pages\MainPage.xaml">
+    <MauiXaml Update="Pages\InverstorMainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Pages\ModifyUserProfilePage.xaml">

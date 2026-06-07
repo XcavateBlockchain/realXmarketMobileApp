@@ -75,7 +75,7 @@ namespace XcavateMobileApp
 
             DependencyService.Register<ModifyUserProfilePopupViewModel>();
 
-            DependencyService.Register<MainPageViewModel>();
+            DependencyService.Register<InverstorMainPageViewModel>();
 
             if (Preferences.Get(PreferencesModel.SHOW_WELCOME_SCREEN, true) || !KeysModel.HasSubstrateKey())
             {

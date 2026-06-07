@@ -33,7 +33,7 @@
                    Grid.ColumnSpan="2">
             <Label.FormattedText>
                 <FormattedString>
-                    <Span Text="Select account type"
+                    <Span Text="Select user role"
                               FontAttributes="Bold"></Span>
                 </FormattedString>
             </Label.FormattedText>
@@ -104,7 +104,7 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Text="Buy &amp; sell tokenized real estate"
+                            <Label Text="Buy &amp; sell digital shares in real assets"
                                        HeightRequest="70"
                                        HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>

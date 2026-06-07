@@ -30,7 +30,7 @@ namespace XcavateMobileApp.Pages
 
             Splashes.Add(new WelcomeSplash { Image = "xcavatelaunchbg1.jpg", Description = "Fractional real estate investment made simple and secure" });
             Splashes.Add(new WelcomeSplash { Image = "xcavatelaunchbg2.png", Description = "Browse the marketplace to find your ideal property investment" });
-            Splashes.Add(new WelcomeSplash { Image = "xcavatelaunchbg3.png", Description = "Unlock the future of real estate with secure, tokenized ownership" });
+            Splashes.Add(new WelcomeSplash { Image = "xcavatelaunchbg3.png", Description = "Unlock the future of real assets with secure, shared ownership" });
         }
 
         [RelayCommand]

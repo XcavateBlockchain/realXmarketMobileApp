@@ -5,7 +5,7 @@
              xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
             xmlns:pages="clr-namespace:XcavateMobileApp.Pages"
              x:Class="XcavateMobileApp.XcavateAppShell">
-    <ShellContent ContentTemplate="{DataTemplate pages:MainPage}"
+    <ShellContent ContentTemplate="{DataTemplate pages:InverstorMainPage}"
                   Route="Account" >
     </ShellContent>
     <ShellContent ContentTemplate="{DataTemplate xcavate:HelpPage}"
