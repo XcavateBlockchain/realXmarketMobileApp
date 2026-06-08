@@ -19,8 +19,10 @@
              xmlns:xcavateproperty="clr-namespace:PlutoFramework.Components.XcavateProperty;assembly=PlutoFramework"
              xmlns:customlayouts="clr-namespace:PlutoFramework.Components.CustomLayouts;assembly=PlutoFramework"
              xmlns:buttons="clr-namespace:PlutoFramework.Components.Buttons;assembly=PlutoFramework"
-             xmlns:constants="clr-namespace:PlutoFramework.Constants;assembly=PlutoFramework"
              xmlns:components="clr-namespace:XcavateMobileApp.Components"
+             xmlns:account="clr-namespace:PlutoFramework.Components.Account;assembly=PlutoFramework"
+             xmlns:password="clr-namespace:PlutoFramework.Components.Password;assembly=PlutoFramework"
+             xmlns:kilt="clr-namespace:PlutoFramework.Components.Kilt;assembly=PlutoFramework"
              BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}"
              Shell.PresentationMode="NotAnimated"
              HideSoftInputOnTapped="True">
@@ -50,18 +52,34 @@
                     <dappconnection:DAppConnectionView />
 
                     <VerticalStackLayout Spacing="5">
-                        <HorizontalStackLayout Spacing="10"
-                                               Margin="0,0,0,5">
-                            <buttons:BasicGrayButton Text="All"
-                                                     IsEnabled="False"
-                                                     HorizontalOptions="FillAndExpand" />
-                            <buttons:BasicGrayButton Text="Owned"
-                                                     IsEnabled="False"
-                                                     HorizontalOptions="FillAndExpand" />
-                            <buttons:BasicGrayButton Text="Bought"
-                                                     IsEnabled="False"
-                                                     HorizontalOptions="FillAndExpand" />
-                        </HorizontalStackLayout>
+                        <Grid Margin="0,0,0,5" ColumnDefinitions="Auto,Auto,*,62" ColumnSpacing="10">
+                            <buttons:ElevatedButton Grid.Column="0"
+                                                     Text="Owned"
+                                                     HorizontalOptions="Start"
+                                                     Command="{Binding ToggleOwnedCommand}"
+                                                     ButtonState="{Binding OwnedButtonState}" />
+                            <buttons:ElevatedButton Grid.Column="1"
+                                                     Text="Bought"
+                                                     HorizontalOptions="Start"
+                                                     Command="{Binding ToggleBoughtCommand}"
+                                                     ButtonState="{Binding BoughtButtonState}" />
+
+                            <Border Grid.Column="3"
+                                    BackgroundColor="#E8E9ED"
+                                    HeightRequest="56"
+                                    WidthRequest="56"
+                                    HorizontalOptions="End"
+                                    VerticalOptions="Center"
+                                    StrokeThickness="0"
+                                    StrokeShape="RoundRectangle 28">
+                                <ImageButton Source="xcavatesettings.svg"
+                                             Command="{Binding OpenFilterCommand}"
+                                             BackgroundColor="Transparent"
+                                             HeightRequest="56"
+                                             WidthRequest="56"
+                                             Padding="14" />
+                            </Border>
+                        </Grid>
 
                         <VerticalStackLayout BindableLayout.ItemsSource="{Binding OwnedProperties}"
                                              Spacing="15">
@@ -74,10 +92,12 @@
 
                         <customlayouts:LoadingItemView HeightRequest="80"
                                                        IsVisible="{Binding OwnedPropertiesLoading}" />
-
-                        <customlayouts:TransparentItemView Text="No Properties"
-                                                           HeightRequest="80"
-                                                           IsVisible="{Binding NoOwnedProperties}" />
+                        <Label Text="Your purchased properties will appear here once your transactions are completed."
+                               TextColor="#A6A6A6"
+                               HorizontalOptions="Center"
+                               Margin="20, 40, 20, 40"
+                               IsVisible="{Binding NoOwnedProperties}"
+                               HorizontalTextAlignment="Center"/>
                     </VerticalStackLayout>
                 </VerticalStackLayout>
             </ScrollView>
@@ -95,8 +115,22 @@
 
         <xcavate:XcavateNavigationBarView />
 
+        <xcavateproperty:PropertyMarketplaceFilterPopupView />
+
+        <xcavateproperty:PropertyMarketplaceSelectionPopupView />
+
         <networkselect:MultiNetworkSelectView x:Name="networksView" />
 
+        <account:NoAccountPopup ZIndex="10" />
+
+        <kilt:NoDidPopupView ZIndex="10" />
+
+        <xcavate:UserProfileNotCreatedPopupView ZIndex="10" />
+
+        <xcavate:NotWhitelistedPopupView ZIndex="10" />
+
+        <password:EnterPasswordPopupView ZIndex="10"/>
+        
         <addressview:AddressQrCodeView />
 
         <transferview:TransferView />

@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PlutoFramework.Components.XcavateProperty;
 using PlutoFramework.Constants;
 using PlutoFramework.Model;
 using PlutoFrameworkCore.Xcavate;
@@ -20,6 +21,105 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private string ownerAddress = string.Empty;
     private int offset;
     private bool hasMore = true;
+    private readonly PropertyMarketplaceFilterPopupViewModel filterPopupViewModel;
+    private string includesTownCity = string.Empty;
+    private string includesPropertyType = string.Empty;
+    private string includesPropertyName = string.Empty;
+    private bool filterActive = false;
+
+    public InvestorMainPageViewModel()
+    {
+        filterPopupViewModel = DependencyService.Get<PropertyMarketplaceFilterPopupViewModel>();
+        filterPopupViewModel.ApplyRequested = ApplyFiltersAsync;
+    }
+
+    partial void OnOwnedActiveChanged(bool value)
+    {
+        OwnedButtonState = value ? PlutoFramework.Components.Buttons.ButtonStateEnum.Enabled : PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+        if (value)
+        {
+            filterActive = false;
+            filterPopupViewModel.SetToDefault();
+            BoughtActive = false;
+            BoughtButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+            _ = RefreshOwnedPropertiesAsync();
+        }
+    }
+
+    partial void OnBoughtActiveChanged(bool value)
+    {
+        BoughtButtonState = value ? PlutoFramework.Components.Buttons.ButtonStateEnum.Enabled : PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+        if (value)
+        {
+            filterActive = false;
+            filterPopupViewModel.SetToDefault();
+            OwnedActive = false;
+            OwnedButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+            _ = RefreshOwnedPropertiesAsync();
+        }
+    }
+
+    [RelayCommand]
+    private void ToggleOwned()
+    {
+        OwnedActive = !OwnedActive;
+    }
+
+    [RelayCommand]
+    private void ToggleBought()
+    {
+        BoughtActive = !BoughtActive;
+    }
+
+    [RelayCommand]
+    private void OpenFilter()
+    {
+        OwnedActive = false;
+        BoughtActive = false;
+        OwnedButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+        BoughtButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+
+        filterPopupViewModel.IsVisible = true;
+    }
+
+    private async Task ApplyFiltersAsync()
+    {
+        includesTownCity = NormalizeFilterValue(filterPopupViewModel.SelectedTownCity);
+        includesPropertyType = NormalizeFilterValue(filterPopupViewModel.SelectedPropertyType);
+        includesPropertyName = filterPopupViewModel.SearchText?.Trim() ?? string.Empty;
+
+        OwnedActive = false;
+        BoughtActive = false;
+        OwnedButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+        BoughtButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+
+        filterActive = true;
+
+        await RefreshOwnedPropertiesAsync().ConfigureAwait(false);
+
+        filterPopupViewModel.IsVisible = false;
+    }
+
+    private Task RefreshOwnedPropertiesAsync()
+    {
+        return Task.Run(async () =>
+        {
+            try
+            {
+                ResetOwnedProperties();
+                await LoadMoreOwnedPropertiesAsync(CancellationToken.None).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        });
+    }
+
+    private static string NormalizeFilterValue(string value)
+    {
+        return string.Equals(value, "All", StringComparison.OrdinalIgnoreCase) ? string.Empty : value;
+    }
 
     [ObservableProperty]
     private bool isRefreshing;
@@ -33,6 +133,18 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private bool ownedPropertiesLoading;
 
     public bool NoOwnedProperties => !OwnedPropertiesLoading && OwnedProperties.Count == 0;
+
+    [ObservableProperty]
+    private bool ownedActive = false;
+
+    [ObservableProperty]
+    private bool boughtActive = false;
+
+    [ObservableProperty]
+    private PlutoFramework.Components.Buttons.ButtonStateEnum ownedButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+
+    [ObservableProperty]
+    private PlutoFramework.Components.Buttons.ButtonStateEnum boughtButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
 
     [RelayCommand]
     public async Task RefreshAsync()
@@ -118,12 +230,24 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
         try
         {
-            var page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesAsync(
-                    substrateClient,
-                    first: PageSize,
-                    offset: offset,
-                    tokenOwner: ownerAddress)
-                .ConfigureAwait(false);
+            IReadOnlyList<XcavatePaseoNftsPalletNft> page;
+
+            if (OwnedActive)
+            {
+                page = await XcavateIndexerModel.GetOwnedPropertiesAsync(substrateClient, first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
+            }
+            else if (BoughtActive)
+            {
+                page = await XcavateIndexerModel.GetBoughtPropertiesAsync(substrateClient, first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
+            }
+            else if (filterActive)
+            {
+                page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesWithFilterAsync(substrateClient, first: PageSize, offset: offset, tokenOwner: ownerAddress, includesTownCity: includesTownCity, includesPropertyType: includesPropertyType, includesPropertyName: includesPropertyName).ConfigureAwait(false);
+            }
+            else
+            {
+                page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesAsync(substrateClient, first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
+            }
 
             if (page.Count == 0)
             {
