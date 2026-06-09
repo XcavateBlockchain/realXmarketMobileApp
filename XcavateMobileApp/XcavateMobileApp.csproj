@@ -158,4 +158,13 @@
     <PackageReference Include="Plugin.Fingerprint" Version="3.0.0-beta.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="NoAccountShell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+    <None Update="Pages\NoAccountMainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </None>
+  </ItemGroup>
+
 </Project>

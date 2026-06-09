@@ -1,4 +1,5 @@
 using PlutoFramework.Components.Onboarding;
+using PlutoFramework.Model.Xcavate;
 
 namespace XcavateMobileApp.Pages;
 
@@ -18,9 +19,12 @@ public partial class WelcomePage : ContentPage
 
         Loaded += OnLoaded;
 
-        var onboardingInProgressPopupViewModel = DependencyService.Get<OnboardingInProgressPopupViewModel>();
+        if (OnboardingModel.IsOnboardingInProgress())
+        {
+            var onboardingInProgressPopupViewModel = DependencyService.Get<OnboardingInProgressPopupViewModel>();
 
-        onboardingInProgressPopupViewModel.IsVisible = true;
+            onboardingInProgressPopupViewModel.IsVisible = true;
+        }
     }
 
     private async void OnLoaded(object? sender, EventArgs e)

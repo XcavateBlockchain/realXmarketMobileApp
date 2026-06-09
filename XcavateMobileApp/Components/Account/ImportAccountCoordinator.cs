@@ -5,7 +5,6 @@ using PlutoFramework.Components.Password;
 using PlutoFramework.Model;
 using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Xcavate;
-using PlutoFrameworkCore;
 using PlutoFrameworkCore.Keys;
 using XcavateMobileApp.Pages;
 
@@ -53,7 +52,12 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
     {
         return _navigationService.NavigateToAsync(new SetupPasswordPage
         {
-            Navigation = OnPasswordSetAsync,
+            Navigation = () =>
+            {
+                var mnemonics = MnemonicsModel.GenerateMnemonics();
+
+                return OnPasswordSetAsync(mnemonics);
+            },
         });
     }
 
@@ -63,16 +67,16 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
 
         OnboardingModel.SetOnboardingStage(OnboardingStage.SetupPassword);
 
-        if (flowMode == ImportAccountFlowMode.Create)
-        {
-            await PlutoConfigurationModel.GenerateNewAccountAsync();
-        }
-
         var nextNavigation = flowMode switch
         {
             ImportAccountFlowMode.Create => _navigationService.NavigateToAsync(new SetupPasswordPage
             {
-                Navigation = OnPasswordSetAsync,
+                Navigation = () =>
+                {
+                    var mnemonics = MnemonicsModel.GenerateMnemonics();
+
+                    return OnPasswordSetAsync(mnemonics);
+                },
             }),
             ImportAccountFlowMode.Import => _navigationService.NavigateToAsync(new EnterMnemonicsPage(
                 new EnterMnemonicsViewModel
@@ -85,10 +89,8 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
         await nextNavigation;
     }
 
-    private async Task OnMnemonicsEnteredAsync()
+    private async Task OnMnemonicsEnteredAsync(string mnemonics)
     {
-        OnboardingModel.SetOnboardingStage(OnboardingStage.SetupPassword);
-
         var accountLocked = await KeysDatabase.GetAllKeysOfTypeAsync(KeyTypeEnum.PolkadotJson);
 
         var importWarningPopupViewModel = DependencyService.Get<ImportWarningPopupViewModel>();
@@ -98,7 +100,7 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
             importWarningPopupViewModel.WarningText = "JSON importing unfortunately does not support importing of DID and X25519 Encryption key that are derived from the account. New DID and Encryption key were created. If you wish it import your existing keys, you can do so later in the setting of the app.";
             importWarningPopupViewModel.IsVisible = true;
 
-            await OnPasswordSetAsync();
+            await OnJsonImportedAsync(mnemonics);
 
             return;
         }
@@ -108,12 +110,35 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
 
         await _navigationService.NavigateToAsync(new SetupPasswordPage
         {
-            Navigation = OnPasswordSetAsync,
+            Navigation = () => OnPasswordSetAsync(mnemonics),
         });
+
+
     }
 
-    private async Task OnPasswordSetAsync()
+    private async Task OnJsonImportedAsync(string mnemonics)
     {
+
+        string didMnemonics = $"{mnemonics}//did";
+        string x25519Mnemonics = $"{mnemonics}//x25519";
+        await KeysModel.SaveDidKeyAsync(didMnemonics);
+        await KeysModel.SaveEncryptionX25519KeyAsync(x25519Mnemonics);
+
+        OnboardingModel.SetOnboardingStage(OnboardingStage.SelectRole);
+
+        await NavigationModel.NavigateAfterAccountCreation.Invoke();
+    }
+
+    private async Task OnPasswordSetAsync(string mnemonics)
+    {
+        string didMnemonics = $"{mnemonics}//did";
+        string x25519Mnemonics = $"{mnemonics}//x25519";
+
+        await KeysModel.SaveSr25519KeyAsync(mnemonics);
+        await KeysModel.SaveDidKeyAsync(didMnemonics);
+        await KeysModel.SaveEncryptionX25519KeyAsync(x25519Mnemonics);
+
+
         OnboardingModel.SetOnboardingStage(OnboardingStage.SelectRole);
 
         await NavigationModel.NavigateAfterAccountCreation.Invoke();

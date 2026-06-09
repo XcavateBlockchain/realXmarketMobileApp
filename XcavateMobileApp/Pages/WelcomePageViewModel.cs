@@ -45,9 +45,16 @@ namespace XcavateMobileApp.Pages
         }
 
         [RelayCommand]
-        public Task CreateAccountAsync()
+        public async Task CreateAccountAsync()
         {
-            return NavigationModel.StartImportAccount(ImportAccountFlowMode.Create);
+            try
+            {
+                await NavigationModel.StartImportAccount(ImportAccountFlowMode.Create);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
     }
