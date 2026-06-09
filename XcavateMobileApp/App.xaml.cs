@@ -1,7 +1,9 @@
-﻿using PlutoFramework.Model;
+﻿using PlutoFramework.Components.Onboarding;
+using PlutoFramework.Model;
 using PlutoFramework.Model.SQLite;
-using PlutoFramework.Model.Sumsub;
+using PlutoFramework.Model.Xcavate;
 using PlutoFrameworkCore;
+using XcavateMobileApp.Components.Account;
 using XcavateMobileApp.Pages;
 
 namespace XcavateMobileApp
@@ -45,19 +47,23 @@ namespace XcavateMobileApp
             // Let the first frame render before doing heavier setup.
             await Task.Yield();
 
-            _ = Task.Run(PlutoFramework.MauiAppBuilderExtensions.InitializePlutoFrameworkFull);
+            // Run full framework initialization on a background thread and await it
+            // so registrations are available before we access them below.
+            await Task.Run(() => PlutoFramework.MauiAppBuilderExtensions.InitializePlutoFrameworkFull());
 
-            NavigationModel.NavigateToKYC = () => Shell.Current.Navigation.PushAsync(
-                new UserTypeSelectionPage()
-            );
+            NavigationModel.NavigateToKYC = UserTypeSelectionViewModel.ResumeKycFromSavedProfileAsync;
 
             NavigationModel.NavigateAfterAccountCreation = () =>
             {
                 // TODO: Verify if user has KYC
+                return UserTypeSelectionViewModel.NavigateToUserDetailsAsync();
+            };
 
-                return Shell.Current.Navigation.PushAsync(
-                    new UserTypeSelectionPage()
-                );
+            // Register app-level import account coordinator as a delegate for framework components
+            NavigationModel.StartImportAccount = async (flowMode) =>
+            {
+                var coordinator = new Components.Account.ImportAccountCoordinator();
+                await coordinator.StartAsync((PlutoFramework.Components.Account.ImportAccountFlowMode)flowMode);
             };
 
             NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());
@@ -65,8 +71,6 @@ namespace XcavateMobileApp
             NavigationModel.NavigateToUserPageAsync = NavigateToUserPageAsync;
 
             PlutoConfigurationModel.GenerateNewAccountAsync = GenerateNewAccountAsync;
-
-            PlutoConfigurationModel.AfterAccountImportAsync = AfterAccountImportAsync;
 
             NavigationModel.SetWelcomeShell = () =>
             {
@@ -77,15 +81,22 @@ namespace XcavateMobileApp
 
             DependencyService.Register<InvestorMainPageViewModel>();
 
-            if (Preferences.Get(PreferencesModel.SHOW_WELCOME_SCREEN, true) || !KeysModel.HasSubstrateKey())
+            var onboardingPopupViewModel = DependencyService.Get<OnboardingInProgressPopupViewModel>();
+            onboardingPopupViewModel.ContinueRequested = ContinueOnboardingAsync;
+
+            MainPage = OnboardingModel.IsOnboardingCompleted() switch
             {
-                Preferences.Set(PreferencesModel.SHOW_WELCOME_SCREEN, true);
-                MainPage = new OnboardingShell();
-            }
-            else
-            {
-                MainPage = new XcavateAppShell();
-            }
+                true when KeysModel.HasSubstrateKey() => new XcavateAppShell(),
+                _ => new OnboardingShell(),
+            };
+        }
+
+
+        private static Task ContinueOnboardingAsync()
+        {
+            var stage = OnboardingModel.GetOnboardingStage();
+
+            return ImportAccountCoordinator.ContinueAsync(stage);
         }
 
         public static async Task NavigateToUserPageAsync()
@@ -123,19 +134,17 @@ namespace XcavateMobileApp
 
         public static async Task GenerateNewAccountAsync()
         {
-            Preferences.Clear(PreferencesModel.PUBLIC_KEY);
-            await KeysDatabase.DeleteAllAsync();
+            await KeysModel.ClearAsync();
+
+            string mnemonics = MnemonicsModel.GenerateMnemonics();
+            string didMnemonics = $"{mnemonics}//did";
+            string x25519Mnemonics = $"{mnemonics}//x25519";
 
             await Task.WhenAll(
-                KeysModel.GenerateNewAccountAsync(),
-                KeysModel.GenerateNewDidAsync(),
+                KeysModel.SaveSr25519KeyAsync(mnemonics),
+                KeysModel.SaveDidKeyAsync(didMnemonics),
                 KeysModel.GenerateNewEncryptionX25519KeyAsync()
             );
-        }
-
-        public static Task AfterAccountImportAsync()
-        {
-            return SumsubUserModel.LoadAndSaveUserInfoAsync(CancellationToken.None);
         }
     }
 }

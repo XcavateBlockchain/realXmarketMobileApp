@@ -4,18 +4,15 @@
              xmlns:xcavateproperty="clr-namespace:PlutoFramework.Components.XcavateProperty;assembly=PlutoFramework"
              xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
             xmlns:pages="clr-namespace:XcavateMobileApp.Pages"
-             x:Class="XcavateMobileApp.XcavateAppShell">
-    <ShellContent ContentTemplate="{DataTemplate pages:InvestorMainPage}"
-                  Route="Account" >
+             x:Class="XcavateMobileApp.NoAccountShell">
+    <ShellContent ContentTemplate="{DataTemplate xcavateproperty:XcavateIndexedPropertyMarketplacePage}" 
+              Route="Marketplace">
     </ShellContent>
     <ShellContent ContentTemplate="{DataTemplate pages:NoAccountMainPage}"
-                  Route="NoAccount" >
+                  Route="Account" >
     </ShellContent>
     <ShellContent ContentTemplate="{DataTemplate xcavate:HelpPage}"
                   Route="Help" >
-    </ShellContent>
-    <ShellContent ContentTemplate="{DataTemplate xcavateproperty:XcavateIndexedPropertyMarketplacePage}" 
-                  Route="Marketplace">
     </ShellContent>
     <ShellContent ContentTemplate="{DataTemplate xcavateproperty:XcavateIndexedPropertyNoticeboardPage}"
                   Route="Noticeboard">

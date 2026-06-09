@@ -97,6 +97,9 @@
     <MauiXaml Update="Components\XcavateMainPageTopNavigationBarView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
+    <MauiXaml Update="NoAccountShell.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="OnboardingShell.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
@@ -107,6 +110,9 @@
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Pages\ModifyUserProfilePopupView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
+    <MauiXaml Update="Pages\NoAccountMainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>
     <MauiXaml Update="Pages\SettingsPage.xaml">

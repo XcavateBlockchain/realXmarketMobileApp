@@ -3,13 +3,13 @@ using static PlutoFramework.Components.Xcavate.XcavateNavigationBarViewModel;
 
 namespace XcavateMobileApp;
 
-public partial class XcavateAppShell : Shell
+public partial class NoAccountShell : Shell
 {
-    public XcavateAppShell()
+    public NoAccountShell()
     {
         InitializeComponent();
 
         var navigationViewModel = DependencyService.Get<XcavateNavigationBarViewModel>();
-        navigationViewModel.Selected = XcavateNavigationBarSelection.Account;
+        navigationViewModel.Selected = XcavateNavigationBarSelection.Marketplace;
     }
 }

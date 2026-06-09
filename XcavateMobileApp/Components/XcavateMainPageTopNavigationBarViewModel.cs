@@ -1,9 +1,11 @@
 ﻿
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PlutoFramework.Components.Account;
 using PlutoFramework.Components.Menu;
 using PlutoFramework.Components.Notifications;
 using PlutoFramework.Model;
+using PlutoFramework.Model.Xcavate;
 
 namespace XcavateMobileApp.Components
 {
@@ -12,7 +14,15 @@ namespace XcavateMobileApp.Components
         [RelayCommand]
         public async Task OpenMenuAsync()
         {
-            await Shell.Current.Navigation.PushAsync(new MainMenuPage());
+            if (OnboardingModel.IsOnboardingCompleted())
+            {
+                await Shell.Current.Navigation.PushAsync(new MainMenuPage());
+            }
+            else
+            {
+                var noAccountPopup = DependencyService.Get<NoAccountPopupViewModel>();
+                noAccountPopup.IsVisible = true;
+            }
         }
 
         [RelayCommand]

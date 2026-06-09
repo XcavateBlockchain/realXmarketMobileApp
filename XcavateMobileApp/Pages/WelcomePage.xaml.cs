@@ -1,11 +1,13 @@
+using PlutoFramework.Components.Onboarding;
+
 namespace XcavateMobileApp.Pages;
 
 public partial class WelcomePage : ContentPage
 {
     private readonly WelcomePageViewModel _viewModel;
 
-	public WelcomePage()
-	{
+    public WelcomePage()
+    {
         NavigationPage.SetHasNavigationBar(this, false);
         Shell.SetNavBarIsVisible(this, false);
 
@@ -15,6 +17,10 @@ public partial class WelcomePage : ContentPage
         BindingContext = _viewModel;
 
         Loaded += OnLoaded;
+
+        var onboardingInProgressPopupViewModel = DependencyService.Get<OnboardingInProgressPopupViewModel>();
+
+        onboardingInProgressPopupViewModel.IsVisible = true;
     }
 
     private async void OnLoaded(object? sender, EventArgs e)

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="XcavateMobileApp.Pages.NoAccountMainPage"
+             xmlns:txanalyzer="clr-namespace:PlutoFramework.Components.TransactionAnalyzer;assembly=PlutoFramework"
+             xmlns:networkselect="clr-namespace:PlutoFramework.Components.NetworkSelect;assembly=PlutoFramework"
+             xmlns:transferview="clr-namespace:PlutoFramework.Components.TransferView;assembly=PlutoFramework"
+             xmlns:dappconnection="clr-namespace:PlutoFramework.Components.DAppConnection;assembly=PlutoFramework"
+             xmlns:messagepopup="clr-namespace:PlutoFramework.Components.MessagePopup;assembly=PlutoFramework"
+             xmlns:transactionrequest="clr-namespace:PlutoFramework.Components.TransactionRequest;assembly=PlutoFramework"
+             xmlns:addressview="clr-namespace:PlutoFramework.Components.AddressView;assembly=PlutoFramework"
+             xmlns:staking="clr-namespace:PlutoFramework.Components.Staking;assembly=PlutoFramework"
+             xmlns:vault="clr-namespace:PlutoFramework.Components.Vault;assembly=PlutoFramework"
+             xmlns:extrinsic="clr-namespace:PlutoFramework.Components.Extrinsic;assembly=PlutoFramework"
+             xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
+             xmlns:faucet="clr-namespace:PlutoFramework.Components.Faucet;assembly=PlutoFramework"
+             xmlns:table="clr-namespace:PlutoFramework.Components.Table;assembly=PlutoFramework"
+             xmlns:xcavatecells="clr-namespace:PlutoFramework.Components.XcavateProperty.Cells;assembly=PlutoFramework"
+             xmlns:xcavateproperty="clr-namespace:PlutoFramework.Components.XcavateProperty;assembly=PlutoFramework"
+             xmlns:customlayouts="clr-namespace:PlutoFramework.Components.CustomLayouts;assembly=PlutoFramework"
+             xmlns:buttons="clr-namespace:PlutoFramework.Components.Buttons;assembly=PlutoFramework"
+             xmlns:components="clr-namespace:XcavateMobileApp.Components"
+             xmlns:account="clr-namespace:PlutoFramework.Components.Account;assembly=PlutoFramework"
+             xmlns:password="clr-namespace:PlutoFramework.Components.Password;assembly=PlutoFramework"
+             xmlns:kilt="clr-namespace:PlutoFramework.Components.Kilt;assembly=PlutoFramework"
+             BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}"
+             Shell.PresentationMode="NotAnimated"
+             HideSoftInputOnTapped="True">
+
+    <AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+                    AbsoluteLayout.LayoutFlags="All">
+        <Image AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+               AbsoluteLayout.LayoutFlags="All"
+               Source="{AppThemeBinding Light=whitebackground.png, Dark=darkbackground.png}"
+               Opacity="{AppThemeBinding Light=0.96}"
+               Aspect="AspectFill" />
+
+        <Label Text="You have not created your account yet."
+                TextColor="#A6A6A6"
+                HorizontalOptions="Center"
+                Margin="20, 40, 20, 40"
+                HorizontalTextAlignment="Center"
+                VerticalTextAlignment="Center"
+                AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+                AbsoluteLayout.LayoutFlags="All" />
+
+        <components:XcavateMainPageTopNavigationBarView />
+
+        <extrinsic:ExtrinsicStatusStackLayout />
+
+        <vault:VaultSignView />
+
+        <staking:StakingRegistrationRequestView />
+
+        <messagepopup:MessagePopupView />
+
+        <xcavate:XcavateNavigationBarView />
+
+        <xcavateproperty:PropertyMarketplaceFilterPopupView />
+
+        <xcavateproperty:PropertyMarketplaceSelectionPopupView />
+
+        <account:NoAccountPopup ZIndex="10" />
+
+        <kilt:NoDidPopupView ZIndex="10" />
+
+        <xcavate:UserProfileNotCreatedPopupView ZIndex="10" />
+
+        <xcavate:NotWhitelistedPopupView ZIndex="10" />
+
+        <password:EnterPasswordPopupView ZIndex="10"/>
+
+        <addressview:AddressQrCodeView />
+
+        <transferview:TransferView />
+
+        <dappconnection:DAppConnectionRequestView />
+
+        <transactionrequest:MessageSignRequestView />
+
+        <txanalyzer:TransactionAnalyzerConfirmationView />
+
+        <networkselect:NetworkSelectPopup />
+    </AbsoluteLayout>
+</ContentPage>

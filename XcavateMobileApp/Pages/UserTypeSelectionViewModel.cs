@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.Error;
+using PlutoFramework.Components.Onboarding;
 using PlutoFramework.Components.Sumsub;
 using PlutoFramework.Components.Xcavate;
 using PlutoFramework.Model;
@@ -14,6 +15,35 @@ namespace XcavateMobileApp.Pages
     {
         private UserRoleEnum userRole;
 
+        public static Task NavigateToUserDetailsAsync()
+        {
+            OnboardingModel.SetOnboardingStage(OnboardingStage.SelectRole);
+
+            return Shell.Current.Navigation.PushAsync(new UserTypeSelectionPage());
+        }
+
+        public static async Task ResumeKycFromSavedProfileAsync()
+        {
+            var userInfo = await XcavateUserDatabase.GetUserInformationAsync();
+
+            if (userInfo is null)
+            {
+                await NavigateToUserDetailsAsync();
+                return;
+            }
+
+            string address = KeysModel.GetSubstrateKey();
+            string didAddress = await KeysModel.GetDidAddressAsync(CancellationToken.None);
+
+            await NavigateToSumsubAsync(
+                userInfo.Role,
+                userInfo.Email,
+                userInfo.PhoneNumber,
+                address,
+                didAddress
+            );
+        }
+
         public async Task ContinueAsync(
             string firstName,
             string lastName,
@@ -21,43 +51,51 @@ namespace XcavateMobileApp.Pages
             string phoneNumber
         )
         {
-            //MoveImages();
+            await NavigateToQuestionnaireAsync(userRole, email, phoneNumber);
+        }
 
+        public static async Task NavigateToQuestionnaireFromSavedProfileAsync()
+        {
+            var userInfo = await XcavateUserDatabase.GetUserInformationAsync();
+
+            if (userInfo is null)
+            {
+                await NavigateToUserDetailsAsync();
+                return;
+            }
+
+            await NavigateToQuestionnaireAsync(userInfo.Role, userInfo.Email, userInfo.PhoneNumber);
+        }
+
+        private static async Task NavigateToQuestionnaireAsync(
+            UserRoleEnum role,
+            string email,
+            string phoneNumber
+        )
+        {
             try
             {
-                var newUserInfo = new XcavateUser
-                {
-                    FirstName = firstName,
-                    LastName = lastName,
-                    Email = email,
-                    PhoneNumber = phoneNumber,
-                    Role = userRole,
-                    DeveloperStats = null,
-                    AccountCreatedAt = DateTime.Now,
-                    ProfilePicture = XcavateFileModel.GetSavedProfilePicture(),
-                    ProfileBackground = XcavateFileModel.GetSavedProfileBackground(),
-                };
-
-                await XcavateUserDatabase.SaveUserInformationAsync(newUserInfo);
-
-
                 string address = KeysModel.GetSubstrateKey();
-
                 string didAddress = await KeysModel.GetDidAddressAsync(CancellationToken.None);
 
+                OnboardingModel.SetOnboardingStage(OnboardingStage.Questionaire);
 
                 var questions = await QuestionnaireModel.GetXcavateQuestionsAsync();
+
+                if (questions.Count == 0)
+                {
+                    await new OnboardingAgreementCoordinator().StartAsync(
+                        () => NavigateToSumsubAsync(role, email, phoneNumber, address, didAddress)
+                    );
+                    return;
+                }
+
                 var questionnaireInfo = new QuestionnaireInfo
                 {
                     QuestionId = 0,
                     Questions = questions,
-                    Navigation = () => SumsubVerificationAsync(email, phoneNumber, address, didAddress)
+                    Navigation = () => NavigateToSumsubAsync(role, email, phoneNumber, address, didAddress)
                 };
-
-                if (questions.Count == 0)
-                {
-                    return;
-                }
 
                 await Shell.Current.Navigation.PushAsync(new QuestionnairePage(questionnaireInfo));
             }
@@ -77,10 +115,23 @@ namespace XcavateMobileApp.Pages
             string didAddress
         )
         {
+            await NavigateToSumsubAsync(userRole, email, phoneNumber, address, didAddress);
+        }
+
+        private static async Task NavigateToSumsubAsync(
+            UserRoleEnum role,
+            string email,
+            string phoneNumber,
+            string address,
+            string didAddress
+        )
+        {
             var token = CancellationToken.None;
 
             try
             {
+                OnboardingModel.SetOnboardingStage(OnboardingStage.KYC);
+
                 await PermissionsModel.RequestCameraPermissionAsync();
 
                 var applicant = new Applicant
@@ -93,7 +144,7 @@ namespace XcavateMobileApp.Pages
                     },
                     totalInSeconds = 600,
                     UserId = address,
-                    LevelName = userRole.ToSumsubVerificationLevel()
+                    LevelName = role.ToSumsubVerificationLevel(),
                 };
 
                 var secrets = SumsubSecretModel.GetSecrets();
@@ -105,6 +156,7 @@ namespace XcavateMobileApp.Pages
                     applicant,
                     navigation: () =>
                     {
+                        OnboardingModel.SetOnboardingStage(OnboardingStage.Finished);
                         Application.Current.MainPage = new XcavateAppShell();
 
                         return Task.FromResult(0);
@@ -118,7 +170,6 @@ namespace XcavateMobileApp.Pages
                 Console.WriteLine(ex);
 
                 // Most likely bad internet connection
-
                 await Shell.Current.Navigation.PushAsync(new BadInternetConnectionPage());
             }
         }
@@ -126,39 +177,34 @@ namespace XcavateMobileApp.Pages
         [RelayCommand]
         public void SelectDeveloper()
         {
-            userRole = UserRoleEnum.Developer;
-
-            var modifyUserProfileViewModel = DependencyService.Get<ModifyUserProfilePopupViewModel>();
-            modifyUserProfileViewModel.IsVisible = true;
-            modifyUserProfileViewModel.ContinueFunction = ContinueAsync;
+            SelectRole(UserRoleEnum.Developer);
         }
 
         [RelayCommand]
         public void SelectInvestor()
         {
-            userRole = UserRoleEnum.Investor;
-
-            var modifyUserProfileViewModel = DependencyService.Get<ModifyUserProfilePopupViewModel>();
-            modifyUserProfileViewModel.IsVisible = true;
-            modifyUserProfileViewModel.ContinueFunction = ContinueAsync;
+            SelectRole(UserRoleEnum.Investor);
         }
 
         [RelayCommand]
         public void SelectLettingAgent()
         {
-            userRole = UserRoleEnum.LettingAgent;
-
-            var modifyUserProfileViewModel = DependencyService.Get<ModifyUserProfilePopupViewModel>();
-            modifyUserProfileViewModel.IsVisible = true;
-            modifyUserProfileViewModel.ContinueFunction = ContinueAsync;
+            SelectRole(UserRoleEnum.LettingAgent);
         }
 
         [RelayCommand]
         public void SelectLawyer()
         {
-            userRole = UserRoleEnum.Lawyer;
+            SelectRole(UserRoleEnum.Lawyer);
+        }
+
+        private void SelectRole(UserRoleEnum role)
+        {
+            userRole = role;
+            OnboardingModel.SetOnboardingStage(OnboardingStage.EnterUserDetails);
 
             var modifyUserProfileViewModel = DependencyService.Get<ModifyUserProfilePopupViewModel>();
+            modifyUserProfileViewModel.UserRole = role;
             modifyUserProfileViewModel.IsVisible = true;
             modifyUserProfileViewModel.ContinueFunction = ContinueAsync;
         }

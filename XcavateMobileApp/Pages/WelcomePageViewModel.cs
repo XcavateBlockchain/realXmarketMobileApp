@@ -1,12 +1,7 @@
-﻿
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using PlutoFramework.Components.Keys;
-using PlutoFramework.Components.Kilt;
-using PlutoFramework.Components.Mnemonics;
-using PlutoFramework.Components.Password;
+using PlutoFramework.Components.Account;
 using PlutoFramework.Model;
-using PlutoFrameworkCore;
 using System.Collections.ObjectModel;
 
 namespace XcavateMobileApp.Pages
@@ -19,6 +14,10 @@ namespace XcavateMobileApp.Pages
 
     public partial class WelcomePageViewModel : ObservableObject
     {
+        public WelcomePageViewModel()
+        {
+        }
+
         public ObservableCollection<WelcomeSplash> Splashes { get; } = new ObservableCollection<WelcomeSplash>();
 
         public void LoadSplashes()
@@ -36,53 +35,20 @@ namespace XcavateMobileApp.Pages
         [RelayCommand]
         public void BrowseProperties()
         {
-            Application.Current.MainPage = new XcavateAppShell();
+            Application.Current.MainPage = new NoAccountShell();
         }
 
-        // Lets go pyramid code
         [RelayCommand]
-        public Task ImportAccountAsync() => Shell.Current.Navigation.PushAsync(
-            new SetupPasswordPage()
-            {
-                Navigation = () => Shell.Current.Navigation.PushAsync(
-                    new EnterMnemonicsPage(
-                        new EnterMnemonicsViewModel
-                        {
-                            Navigation = () => Shell.Current.Navigation.PushAsync(
-                                new ImportDidPage(
-                                    new ImportDidViewModel
-                                    {
-                                        Navigation = () => Shell.Current.Navigation.PushAsync(
-                                            new ImportEncryptionX25519KeyPage(
-                                                new ImportEncryptionX25519KeyPageViewModel
-                                                {
-                                                    Navigation = NavigationModel.NavigateAfterAccountCreation
-                                                }
-                                            )
-                                        )
-                                    }
-                                )
-                            )
-                        }
-                    )
-                )
-            }
-        );
-
-        [RelayCommand]
-        public Task CreateAccountAsync() => Shell.Current.Navigation.PushAsync(
-            new SetupPasswordPage()
-            {
-                Navigation = CreateAccountNavigationAsync
-            }
-        );
-        public async Task CreateAccountNavigationAsync()
+        public Task ImportAccountAsync()
         {
-            await PlutoConfigurationModel.GenerateNewAccountAsync();
-
-            await Shell.Current.Navigation.PushAsync(
-                new UserTypeSelectionPage()
-            );
+            return NavigationModel.StartImportAccount(ImportAccountFlowMode.Import);
         }
+
+        [RelayCommand]
+        public Task CreateAccountAsync()
+        {
+            return NavigationModel.StartImportAccount(ImportAccountFlowMode.Create);
+        }
+
     }
 }
