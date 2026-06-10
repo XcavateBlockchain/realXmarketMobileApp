@@ -1,4 +1,6 @@
-﻿using PlutoFramework.Components.Onboarding;
+﻿using PlutoFramework.Components.Account;
+using PlutoFramework.Components.Onboarding;
+using PlutoFramework.Constants;
 using PlutoFramework.Model;
 using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Xcavate;
@@ -60,10 +62,10 @@ namespace XcavateMobileApp
             };
 
             // Register app-level import account coordinator as a delegate for framework components
-            NavigationModel.StartImportAccount = async (flowMode) =>
+            NavigationModel.StartImportAccount = async (ImportAccountFlowMode flowMode) =>
             {
-                var coordinator = new Components.Account.ImportAccountCoordinator();
-                await coordinator.StartAsync((PlutoFramework.Components.Account.ImportAccountFlowMode)flowMode);
+                var coordinator = new ImportAccountCoordinator();
+                await coordinator.StartAsync(flowMode);
             };
 
             NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());
@@ -71,6 +73,27 @@ namespace XcavateMobileApp
             NavigationModel.NavigateToUserPageAsync = NavigateToUserPageAsync;
 
             PlutoConfigurationModel.GenerateNewAccountAsync = GenerateNewAccountAsync;
+            PlutoConfigurationModel.WhitelistedTokens = [
+                // XCAV
+                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.Native, 0),
+                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.NativeFrozen, 0),
+                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.NativeReserved, 0),
+
+                // tGBP
+                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.Assets, 1),
+                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsFrozen, 1),
+                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsReserved, 1),
+
+                // USDC
+                //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.Assets, 1337),
+                //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsFrozen, 1337),
+                //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsReserved, 1337),
+
+                // USDT
+                //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.Assets, 1984),
+                //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsFrozen, 1984),
+                //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsReserved, 1984),
+            ];
 
             NavigationModel.SetWelcomeShell = () =>
             {
