@@ -1,19 +1,16 @@
 using PlutoFramework;
-using PlutoFramework.Components.Faucet;
 using PlutoFramework.Components.NetworkSelect;
-using PlutoFramework.Components.Table;
-using PlutoFramework.Components.XcavateProperty.Cells;
-using PlutoFramework.Constants;
 using PlutoFramework.Model;
 
 namespace XcavateMobileApp.Pages;
 
 public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
 {
-    public IList<IView> Views => stackLayout?.Children ?? [];
+    public IList<IView> Views => [balanceCellView];
     public static MultiNetworkSelectView? NetworksView { get; set; }
 
     private readonly InvestorMainPageViewModel viewModel;
+    private CancellationTokenSource? _initializationCts;
     private bool _isInitialized;
 
     public InvestorMainPage()
@@ -23,32 +20,14 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
 
         InitializeComponent();
 
-        InsertStaticHeaderWidgets();
-
         viewModel = DependencyService.Get<InvestorMainPageViewModel>();
         BindingContext = viewModel;
 
-        networksView.IsVisible = Preferences.Get(
-            PreferencesModel.SETTINGS_DISPLAY_NETWORKS,
-            (bool)Application.Current.Resources["DisplayNetworks"]);
         NetworksView = networksView;
 
         MainPageLayoutUpdater.MainPage = this;
 
         Loaded += OnLoaded;
-    }
-
-    private void InsertStaticHeaderWidgets()
-    {
-        stackLayout.Children.Insert(2, new FaucetButtonView(EndpointEnum.XcavatePaseo));
-
-        stackLayout.Children.Insert(3, new TwoCellTableView(
-            new PropertyTokensBoughtCellView(),
-            new TotalInvestedCellView()));
-
-        stackLayout.Children.Insert(4, new TwoCellTableView(
-            new ROICellView(),
-            new BalanceCellView()));
     }
 
     private async void OnLoaded(object? sender, EventArgs e)
@@ -60,26 +39,36 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
 
         _isInitialized = true;
 
+        _initializationCts?.Cancel();
+        _initializationCts?.Dispose();
+        _initializationCts = new CancellationTokenSource();
+        var cancellationToken = _initializationCts.Token;
+
         // Let the page complete the first layout pass before loading remote data.
-        await Task.Delay(100);
-
-        await SetupLayoutAsync();
-    }
-
-    private async Task SetupLayoutAsync()
-    {
         try
         {
-            await SubstrateClientModel.ChangeConnectedClientsAsync(
-                EndpointsModel.GetSelectedEndpointKeys(),
-                CancellationToken.None);
+            await Task.Delay(100, cancellationToken);
 
-            await viewModel.LoadOwnedPropertiesForSelectedEndpointAsync(CancellationToken.None);
+            await Task.WhenAll(
+                viewModel.RefreshAsync(cancellationToken),
+                SubstrateClientModel.ChangeConnectedClientsAsync(
+                    EndpointsModel.GetSelectedEndpointKeys(),
+                    cancellationToken));
         }
-        catch (Exception ex)
+        catch (OperationCanceledException)
         {
-            Console.WriteLine(ex);
+            // Page disappeared while initialization work was in flight.
         }
+    }
+
+    protected override void OnDisappearing()
+    {
+        _initializationCts?.Cancel();
+        _initializationCts?.Dispose();
+        _initializationCts = null;
+
+        viewModel.CancelOngoingLoading();
+        base.OnDisappearing();
     }
 
     private async void OnMainScrollViewScrolled(object? sender, ScrolledEventArgs e)

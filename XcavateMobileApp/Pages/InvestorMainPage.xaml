@@ -14,7 +14,6 @@
              xmlns:extrinsic="clr-namespace:PlutoFramework.Components.Extrinsic;assembly=PlutoFramework"
              xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
              xmlns:faucet="clr-namespace:PlutoFramework.Components.Faucet;assembly=PlutoFramework"
-             xmlns:table="clr-namespace:PlutoFramework.Components.Table;assembly=PlutoFramework"
              xmlns:xcavatecells="clr-namespace:PlutoFramework.Components.XcavateProperty.Cells;assembly=PlutoFramework"
              xmlns:xcavateproperty="clr-namespace:PlutoFramework.Components.XcavateProperty;assembly=PlutoFramework"
              xmlns:customlayouts="clr-namespace:PlutoFramework.Components.CustomLayouts;assembly=PlutoFramework"
@@ -50,6 +49,24 @@
                     <xcavate:RiskWarningView HeightRequest="90" />
 
                     <dappconnection:DAppConnectionView />
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <xcavate:XcavateCell Title="Property shares"
+                                             Value="{Binding TotalTokensText}"
+                                             Grid.Column="0" />
+                        <xcavate:XcavateCell Title="Total invested"
+                                             Value="{Binding TotalInvestedText}"
+                                             Grid.Column="1" />
+                    </Grid>
+
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                        <xcavate:XcavateCell Title="ROI"
+                                             Value="{Binding RoiText}"
+                                             Grid.Column="0"/>
+
+                        <xcavatecells:BalanceCellView Grid.Column="1"
+                                                      x:Name="balanceCellView"/>
+                    </Grid>
 
                     <VerticalStackLayout Spacing="5">
                         <Grid Margin="0,0,0,5" ColumnDefinitions="Auto,Auto,*,62" ColumnSpacing="10">
@@ -122,7 +139,7 @@
 
         <xcavateproperty:PropertyMarketplaceSelectionPopupView />
 
-        <networkselect:MultiNetworkSelectView x:Name="networksView" />
+        <networkselect:MultiNetworkSelectView x:Name="networksView"  IsVisible="False" />
 
         <account:NoAccountPopup ZIndex="10" />
 

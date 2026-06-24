@@ -3,8 +3,10 @@ using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.XcavateProperty;
 using PlutoFramework.Constants;
 using PlutoFramework.Model;
+using PlutoFramework.Model.Currency;
 using PlutoFrameworkCore.Xcavate;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using UniqueryPlus.Nfts;
 using XcavatePaseo.NetApi.Generated;
 using NftKey = (UniqueryPlus.NftTypeEnum, System.Numerics.BigInteger, System.Numerics.BigInteger);
@@ -17,6 +19,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private const int PageSize = 20;
 
     private readonly Dictionary<NftKey, XcavateNftWrapper> ownedPropertiesDict = [];
+    private readonly object loadingLock = new();
+    private CancellationTokenSource? loadingCts;
     private SubstrateClientExt? substrateClient;
     private string ownerAddress = string.Empty;
     private int offset;
@@ -27,6 +31,20 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private string includesPropertyName = string.Empty;
     private bool filterActive = false;
 
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalTokensText))]
+    private uint totalTokens;
+
+    public string TotalTokensText => TotalTokens.ToString();
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(TotalInvestedText))]
+    private double totalInvested;
+    public string TotalInvestedText => ((double)TotalInvested).ToCurrencyString();
+
+    [ObservableProperty]
+    private double roi;
+    public string RoiText => $"{Roi:P1}";
     public InvestorMainPageViewModel()
     {
         filterPopupViewModel = DependencyService.Get<PropertyMarketplaceFilterPopupViewModel>();
@@ -42,7 +60,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
             filterPopupViewModel.SetToDefault();
             BoughtActive = false;
             BoughtButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
-            _ = RefreshOwnedPropertiesAsync();
+            _ = RestartOwnedPropertiesLoadAsync(CancellationToken.None);
         }
     }
 
@@ -55,7 +73,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
             filterPopupViewModel.SetToDefault();
             OwnedActive = false;
             OwnedButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
-            _ = RefreshOwnedPropertiesAsync();
+            _ = RestartOwnedPropertiesLoadAsync(CancellationToken.None);
         }
     }
 
@@ -95,25 +113,26 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
         filterActive = true;
 
-        await RefreshOwnedPropertiesAsync().ConfigureAwait(false);
+        await RestartOwnedPropertiesLoadAsync(CancellationToken.None).ConfigureAwait(false);
 
         filterPopupViewModel.IsVisible = false;
     }
 
-    private Task RefreshOwnedPropertiesAsync()
+    private async Task RestartOwnedPropertiesLoadAsync(CancellationToken externalToken)
     {
-        return Task.Run(async () =>
+        try
         {
-            try
-            {
-                ResetOwnedProperties();
-                await LoadMoreOwnedPropertiesAsync(CancellationToken.None).ConfigureAwait(false);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-            }
-        });
+            var token = ReplaceLoadingToken(externalToken);
+            await LoadOwnedPropertiesForSelectedEndpointAsync(token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when user refreshes or leaves the page.
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
     }
 
     private static string NormalizeFilterValue(string value)
@@ -149,6 +168,11 @@ public partial class InvestorMainPageViewModel : ObservableObject
     [RelayCommand]
     public async Task RefreshAsync()
     {
+        await RefreshAsync(CancellationToken.None).ConfigureAwait(false);
+    }
+
+    public async Task RefreshAsync(CancellationToken externalToken)
+    {
         if (IsRefreshing)
         {
             return;
@@ -158,11 +182,13 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
         try
         {
-            await SubstrateClientModel.ChangeConnectedClientsAsync(
-                EndpointsModel.GetSelectedEndpointKeys(),
-                CancellationToken.None);
+            var token = ReplaceLoadingToken(externalToken);
 
-            await LoadOwnedPropertiesForSelectedEndpointAsync(CancellationToken.None);
+            await LoadOwnedPropertiesForSelectedEndpointAsync(token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when a newer refresh starts.
         }
         finally
         {
@@ -172,6 +198,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
     public async Task LoadOwnedPropertiesForSelectedEndpointAsync(CancellationToken token)
     {
+        token.ThrowIfCancellationRequested();
+
         if (!KeysModel.HasSubstrateKey())
         {
             ResetOwnedProperties();
@@ -179,14 +207,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
             return;
         }
 
-        if (!SubstrateClientModel.Clients.TryGetValue(EndpointEnum.XcavatePaseo, out var clientTask))
-        {
-            ResetOwnedProperties();
-            OwnedPropertiesLoading = false;
-            return;
-        }
-
-        var client = await clientTask.ConfigureAwait(false);
+        var client = await SubstrateClientModel.GetOrAddSubstrateClientAsync(EndpointEnum.XcavatePaseo, token);
 
         if (client.SubstrateClient is not SubstrateClientExt selectedClient)
         {
@@ -195,7 +216,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
             return;
         }
 
-        var selectedOwnerAddress = Substrate.NetApi.Utils.GetAddressFrom(Substrate.NetApi.Utils.GetPublicKeyFrom(KeysModel.GetSubstrateKey()), 0);
+        var selectedOwnerAddress = KeysModel.GetSubstrateKey(0);
+
         var shouldReload = substrateClient is null ||
                            !ReferenceEquals(substrateClient, selectedClient) ||
                            !string.Equals(ownerAddress, selectedOwnerAddress, StringComparison.Ordinal);
@@ -206,15 +228,50 @@ public partial class InvestorMainPageViewModel : ObservableObject
         if (shouldReload)
         {
             ResetOwnedProperties();
-            await LoadMoreOwnedPropertiesAsync(token).ConfigureAwait(false);
+            await LoadAllOwnedPropertiesAsync(token).ConfigureAwait(false);
         }
         else if (OwnedProperties.Count == 0 && hasMore)
         {
-            await LoadMoreOwnedPropertiesAsync(token).ConfigureAwait(false);
+            await LoadAllOwnedPropertiesAsync(token).ConfigureAwait(false);
         }
     }
 
     public Task TryLoadMoreOwnedPropertiesAsync(CancellationToken token) => LoadMoreOwnedPropertiesAsync(token);
+
+    public void CancelOngoingLoading()
+    {
+        lock (loadingLock)
+        {
+            loadingCts?.Cancel();
+        }
+    }
+
+    private CancellationToken ReplaceLoadingToken(CancellationToken externalToken)
+    {
+        CancellationTokenSource? previousCts;
+        CancellationTokenSource newCts;
+
+        lock (loadingLock)
+        {
+            previousCts = loadingCts;
+            newCts = CancellationTokenSource.CreateLinkedTokenSource(externalToken);
+            loadingCts = newCts;
+        }
+
+        previousCts?.Cancel();
+        previousCts?.Dispose();
+
+        return newCts.Token;
+    }
+
+    private async Task LoadAllOwnedPropertiesAsync(CancellationToken token)
+    {
+        while (hasMore)
+        {
+            token.ThrowIfCancellationRequested();
+            await LoadMoreOwnedPropertiesAsync(token).ConfigureAwait(false);
+        }
+    }
 
     private async Task LoadMoreOwnedPropertiesAsync(CancellationToken token)
     {
@@ -222,6 +279,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
         {
             return;
         }
+
+        token.ThrowIfCancellationRequested();
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
@@ -249,6 +308,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
                 page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesAsync(substrateClient, first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
             }
 
+            token.ThrowIfCancellationRequested();
+
             if (page.Count == 0)
             {
                 hasMore = false;
@@ -259,6 +320,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
             foreach (var property in page)
             {
+                token.ThrowIfCancellationRequested();
+
                 var wrappedProperty = await PropertyWrapperModel.ToXcavateNftWrapperAsync(property, token).ConfigureAwait(false);
 
                 if (ownedPropertiesDict.ContainsKey(wrappedProperty.Key))
@@ -278,6 +341,10 @@ public partial class InvestorMainPageViewModel : ObservableObject
             {
                 hasMore = false;
             }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when user refreshes or leaves the page.
         }
         catch (Exception ex)
         {
@@ -304,5 +371,19 @@ public partial class InvestorMainPageViewModel : ObservableObject
         {
             OwnedProperties.Clear();
         });
+    }
+
+    private void OnOwnedPropertiesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+    {
+        OnPropertiesAdded();
+    }
+
+    private void OnPropertiesAdded()
+    {
+        TotalTokens = (uint)OwnedProperties.Count;
+        var totalInvested = OwnedProperties.Sum(x => (long)((x.TokensBought + x.TokensOwned) * ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.PricePerToken ?? 0));
+        TotalInvested = totalInvested;
+        decimal totalIncome = OwnedProperties.Sum(x => (x.TokensBought + x.TokensOwned) * ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.EstimatedRentalIncome ?? 0);
+        Roi = totalInvested > 0 ? ((double)totalIncome / totalInvested) * 100 : 0;
     }
 }

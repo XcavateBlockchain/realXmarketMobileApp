@@ -25,7 +25,7 @@
 
     <x:String x:Key="TransactionAnalyzerPalletCallNameSubstitution">Call details</x:String>
     <x:Boolean x:Key="DisplayNetworks">false</x:Boolean>
-    <x:String x:Key="DefaultEndpoints">[XcavatePaseo, Polkadot]</x:String>
+    <x:String x:Key="DefaultEndpoints">[XcavatePaseo]</x:String>
 
     <x:String x:Key="PrimaryButtonIcon">xcavatexwhite.png</x:String>
     
