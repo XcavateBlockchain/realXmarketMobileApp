@@ -49,15 +49,34 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
         {
             await Task.Delay(100, cancellationToken);
 
-            await Task.WhenAll(
-                viewModel.RefreshAsync(cancellationToken),
-                SubstrateClientModel.ChangeConnectedClientsAsync(
-                    EndpointsModel.GetSelectedEndpointKeys(),
-                    cancellationToken));
+            // Prioritize the page's own data path so first content appears quickly.
+            await viewModel.RefreshAsync(cancellationToken);
+
+            _ = WarmupConnectedClientsAsync(cancellationToken);
         }
         catch (OperationCanceledException)
         {
             // Page disappeared while initialization work was in flight.
+        }
+    }
+
+    private static async Task WarmupConnectedClientsAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Warm up selected endpoints without forcing a full layout reload.
+            await SubstrateClientModel.ChangeConnectedClientsAsync(
+                EndpointsModel.GetSelectedEndpointKeys(),
+                cancellationToken,
+                reload: false).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Page was closed before warmup completed.
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
         }
     }
 

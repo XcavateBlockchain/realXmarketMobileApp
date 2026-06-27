@@ -20,11 +20,13 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
     private readonly Dictionary<NftKey, XcavateNftWrapper> ownedPropertiesDict = [];
     private readonly object loadingLock = new();
+    private readonly SemaphoreSlim loadMoreSemaphore = new(1, 1);
     private CancellationTokenSource? loadingCts;
     private SubstrateClientExt? substrateClient;
     private string ownerAddress = string.Empty;
     private int offset;
     private bool hasMore = true;
+    private bool isBackgroundHydrationRunning;
     private readonly PropertyMarketplaceFilterPopupViewModel filterPopupViewModel;
     private string includesTownCity = string.Empty;
     private string includesPropertyType = string.Empty;
@@ -49,6 +51,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
     {
         filterPopupViewModel = DependencyService.Get<PropertyMarketplaceFilterPopupViewModel>();
         filterPopupViewModel.ApplyRequested = ApplyFiltersAsync;
+        OwnedProperties.CollectionChanged += OnOwnedPropertiesCollectionChanged;
     }
 
     partial void OnOwnedActiveChanged(bool value)
@@ -228,11 +231,13 @@ public partial class InvestorMainPageViewModel : ObservableObject
         if (shouldReload)
         {
             ResetOwnedProperties();
-            await LoadAllOwnedPropertiesAsync(token).ConfigureAwait(false);
+            await LoadMoreOwnedPropertiesAsync(token).ConfigureAwait(false);
+            _ = HydrateRemainingOwnedPropertiesAsync(token);
         }
         else if (OwnedProperties.Count == 0 && hasMore)
         {
-            await LoadAllOwnedPropertiesAsync(token).ConfigureAwait(false);
+            await LoadMoreOwnedPropertiesAsync(token).ConfigureAwait(false);
+            _ = HydrateRemainingOwnedPropertiesAsync(token);
         }
     }
 
@@ -264,31 +269,56 @@ public partial class InvestorMainPageViewModel : ObservableObject
         return newCts.Token;
     }
 
-    private async Task LoadAllOwnedPropertiesAsync(CancellationToken token)
+    private async Task HydrateRemainingOwnedPropertiesAsync(CancellationToken token)
     {
-        while (hasMore)
+        if (isBackgroundHydrationRunning)
         {
-            token.ThrowIfCancellationRequested();
-            await LoadMoreOwnedPropertiesAsync(token).ConfigureAwait(false);
+            return;
+        }
+
+        isBackgroundHydrationRunning = true;
+
+        try
+        {
+            while (hasMore)
+            {
+                token.ThrowIfCancellationRequested();
+                await LoadMoreOwnedPropertiesAsync(token).ConfigureAwait(false);
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when refresh starts again or page disappears.
+        }
+        finally
+        {
+            isBackgroundHydrationRunning = false;
         }
     }
 
     private async Task LoadMoreOwnedPropertiesAsync(CancellationToken token)
     {
-        if (OwnedPropertiesLoading || !hasMore || substrateClient is null || string.IsNullOrWhiteSpace(ownerAddress))
+        if (!hasMore || substrateClient is null || string.IsNullOrWhiteSpace(ownerAddress))
         {
             return;
         }
 
         token.ThrowIfCancellationRequested();
 
-        MainThread.BeginInvokeOnMainThread(() =>
-        {
-            OwnedPropertiesLoading = true;
-        });
+        await loadMoreSemaphore.WaitAsync(token).ConfigureAwait(false);
 
         try
         {
+            if (OwnedPropertiesLoading || !hasMore || substrateClient is null || string.IsNullOrWhiteSpace(ownerAddress))
+            {
+                return;
+            }
+
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                OwnedPropertiesLoading = true;
+            });
+
             IReadOnlyList<XcavatePaseoNftsPalletNft> page;
 
             if (OwnedActive)
@@ -318,22 +348,34 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
             offset += page.Count;
 
-            foreach (var property in page)
+            var wrappedBatch = await Task.WhenAll(
+                page.Select(property => PropertyWrapperModel.ToXcavateNftWrapperAsync(property, token)))
+                .ConfigureAwait(false);
+
+            token.ThrowIfCancellationRequested();
+
+            var toAdd = new List<XcavateNftWrapper>(wrappedBatch.Length);
+            foreach (var wrappedProperty in wrappedBatch)
             {
-                token.ThrowIfCancellationRequested();
-
-                var wrappedProperty = await PropertyWrapperModel.ToXcavateNftWrapperAsync(property, token).ConfigureAwait(false);
-
                 if (ownedPropertiesDict.ContainsKey(wrappedProperty.Key))
                 {
                     continue;
                 }
 
                 ownedPropertiesDict[wrappedProperty.Key] = wrappedProperty;
+                toAdd.Add(wrappedProperty);
+            }
 
+            if (toAdd.Count > 0)
+            {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    OwnedProperties.Add(wrappedProperty);
+                    foreach (var wrappedProperty in toAdd)
+                    {
+                        OwnedProperties.Add(wrappedProperty);
+                    }
+
+                    RecalculatePortfolioMetrics();
                 });
             }
 
@@ -357,7 +399,10 @@ public partial class InvestorMainPageViewModel : ObservableObject
             MainThread.BeginInvokeOnMainThread(() =>
             {
                 OwnedPropertiesLoading = false;
+                OnPropertyChanged(nameof(NoOwnedProperties));
             });
+
+            loadMoreSemaphore.Release();
         }
     }
 
@@ -365,20 +410,23 @@ public partial class InvestorMainPageViewModel : ObservableObject
     {
         offset = 0;
         hasMore = true;
+        isBackgroundHydrationRunning = false;
         ownedPropertiesDict.Clear();
 
         MainThread.BeginInvokeOnMainThread(() =>
         {
             OwnedProperties.Clear();
+            RecalculatePortfolioMetrics();
+            OnPropertyChanged(nameof(NoOwnedProperties));
         });
     }
 
     private void OnOwnedPropertiesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        OnPropertiesAdded();
+        OnPropertyChanged(nameof(NoOwnedProperties));
     }
 
-    private void OnPropertiesAdded()
+    private void RecalculatePortfolioMetrics()
     {
         TotalTokens = (uint)OwnedProperties.Count;
         var totalInvested = OwnedProperties.Sum(x => (long)((x.TokensBought + x.TokensOwned) * ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.PricePerToken ?? 0));
@@ -386,4 +434,5 @@ public partial class InvestorMainPageViewModel : ObservableObject
         decimal totalIncome = OwnedProperties.Sum(x => (x.TokensBought + x.TokensOwned) * ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.EstimatedRentalIncome ?? 0);
         Roi = totalInvested > 0 ? ((double)totalIncome / totalInvested) * 100 : 0;
     }
+
 }
