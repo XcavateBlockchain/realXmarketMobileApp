@@ -64,11 +64,10 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
     {
         try
         {
-            // Warm up selected endpoints without forcing a full layout reload.
             await SubstrateClientModel.ChangeConnectedClientsAsync(
                 EndpointsModel.GetSelectedEndpointKeys(),
                 cancellationToken,
-                reload: false).ConfigureAwait(false);
+                reload: true).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
