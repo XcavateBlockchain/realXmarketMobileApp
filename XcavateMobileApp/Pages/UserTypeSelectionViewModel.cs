@@ -92,8 +92,7 @@ namespace XcavateMobileApp.Pages
 
                 var questionnaireInfo = new QuestionnaireInfo
                 {
-                    QuestionId = 0,
-                    Questions = questions,
+                    Sections = questions,
                     Navigation = () => NavigateToSumsubAsync(role, email, phoneNumber, address, didAddress)
                 };
 
