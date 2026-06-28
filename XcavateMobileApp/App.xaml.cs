@@ -12,6 +12,7 @@ namespace XcavateMobileApp
 {
     public partial class App : Application
     {
+        private readonly SemaphoreSlim _initLock = new SemaphoreSlim(1, 1);
         private bool _isInitialized;
 
         public App()
@@ -39,12 +40,16 @@ namespace XcavateMobileApp
 
         private async Task InitializeAsync()
         {
-            if (_isInitialized)
-            {
-                return;
-            }
+            await _initLock.WaitAsync();
 
-            _isInitialized = true;
+            try
+            {
+                if (_isInitialized)
+                {
+                    return;
+                }
+
+                _isInitialized = true;
 
             // Let the first frame render before doing heavier setup.
             await Task.Yield();
@@ -122,6 +127,11 @@ namespace XcavateMobileApp
                 true when KeysModel.HasSubstrateKey() => new XcavateAppShell(),
                 _ => new OnboardingShell(),
             };
+            }
+            finally
+            {
+                _initLock.Release();
+            }
         }
 
 
