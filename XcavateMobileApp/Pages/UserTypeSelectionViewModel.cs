@@ -96,7 +96,7 @@ namespace XcavateMobileApp.Pages
                     Navigation = () => NavigateToSumsubAsync(role, email, phoneNumber, address, didAddress)
                 };
 
-                await Shell.Current.Navigation.PushAsync(new QuestionnairePage(questionnaireInfo));
+                await Shell.Current.Navigation.PushAsync(new QuestionnaireV2QuestionsPage(questionnaireInfo));
             }
             catch (Exception ex)
             {
