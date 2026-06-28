@@ -55,10 +55,20 @@ namespace XcavateMobileApp
 
             NavigationModel.NavigateToKYC = UserTypeSelectionViewModel.ResumeKycFromSavedProfileAsync;
 
-            NavigationModel.NavigateAfterAccountCreation = () =>
+            NavigationModel.NavigateAfterAccountCreation = async () =>
             {
-                // TODO: Verify if user has KYC
-                return UserTypeSelectionViewModel.NavigateToUserDetailsAsync();
+                // Check if user has already completed KYC
+                var userInfo = await XcavateUserDatabase.GetUserInformationAsync();
+
+                if (userInfo != null)
+                {
+                    await UserTypeSelectionViewModel.NavigateToUserDetailsAsync();
+                }
+                else
+                {
+                    // New user - must complete KYC before accessing the app
+                    await UserTypeSelectionViewModel.ResumeKycFromSavedProfileAsync();
+                }
             };
 
             // Register app-level import account coordinator as a delegate for framework components
