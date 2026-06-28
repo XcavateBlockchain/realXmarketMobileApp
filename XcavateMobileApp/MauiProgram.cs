@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using System.Globalization;
 using PlutoFramework;
+using PlutoFramework.Constants;
 using System.Reflection;
 
 using Microsoft.Extensions.Configuration;
@@ -64,6 +65,7 @@ public static class MauiProgram
             .Build();
 
         builder.Configuration.AddConfiguration(configuration);
+        Endpoints.ConfigureEndpointUrls(key => configuration[key]);
 
         return builder;
     }
