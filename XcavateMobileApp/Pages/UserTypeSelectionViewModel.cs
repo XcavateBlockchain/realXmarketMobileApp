@@ -100,9 +100,10 @@ namespace XcavateMobileApp.Pages
             }
             catch (Exception ex)
             {
+#if DEBUG
                 Console.WriteLine("UserTypeSelectionPage error:");
                 Console.WriteLine(ex);
-
+#endif
                 await Shell.Current.Navigation.PushAsync(new BadInternetConnectionPage());
             }
         }
@@ -164,10 +165,10 @@ namespace XcavateMobileApp.Pages
             }
             catch (Exception ex)
             {
+#if DEBUG
                 Console.WriteLine("UserTypeSelectionPage error:");
-
                 Console.WriteLine(ex);
-
+#endif
                 // Most likely bad internet connection
                 await Shell.Current.Navigation.PushAsync(new BadInternetConnectionPage());
             }

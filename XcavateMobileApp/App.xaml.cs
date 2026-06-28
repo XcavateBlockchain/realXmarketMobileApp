@@ -12,6 +12,7 @@ namespace XcavateMobileApp
 {
     public partial class App : Application
     {
+        private readonly SemaphoreSlim _initLock = new SemaphoreSlim(1, 1);
         private bool _isInitialized;
 
         public App()
@@ -39,12 +40,16 @@ namespace XcavateMobileApp
 
         private async Task InitializeAsync()
         {
-            if (_isInitialized)
-            {
-                return;
-            }
+            await _initLock.WaitAsync();
 
-            _isInitialized = true;
+            try
+            {
+                if (_isInitialized)
+                {
+                    return;
+                }
+
+                _isInitialized = true;
 
             // Let the first frame render before doing heavier setup.
             await Task.Yield();
@@ -55,10 +60,20 @@ namespace XcavateMobileApp
 
             NavigationModel.NavigateToKYC = UserTypeSelectionViewModel.ResumeKycFromSavedProfileAsync;
 
-            NavigationModel.NavigateAfterAccountCreation = () =>
+            NavigationModel.NavigateAfterAccountCreation = async () =>
             {
-                // TODO: Verify if user has KYC
-                return UserTypeSelectionViewModel.NavigateToUserDetailsAsync();
+                // Check if user has already completed KYC
+                var userInfo = await XcavateUserDatabase.GetUserInformationAsync();
+
+                if (userInfo != null)
+                {
+                    await UserTypeSelectionViewModel.NavigateToUserDetailsAsync();
+                }
+                else
+                {
+                    // New user - must complete KYC before accessing the app
+                    await UserTypeSelectionViewModel.ResumeKycFromSavedProfileAsync();
+                }
             };
 
             // Register app-level import account coordinator as a delegate for framework components
@@ -68,7 +83,17 @@ namespace XcavateMobileApp
                 await coordinator.StartAsync(flowMode);
             };
 
-            NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());
+            NavigationModel.NavigateToSettingsPageAsync = async () =>
+            {
+                if (Shell.Current?.Navigation is var nav && nav != null)
+                {
+                    await nav.PushAsync(new SettingsPage());
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Navigation is not available", "OK");
+                }
+            };
 
             NavigationModel.NavigateToUserPageAsync = NavigateToUserPageAsync;
 
@@ -112,6 +137,11 @@ namespace XcavateMobileApp
                 true when KeysModel.HasSubstrateKey() => new XcavateAppShell(),
                 _ => new OnboardingShell(),
             };
+            }
+            finally
+            {
+                _initLock.Release();
+            }
         }
 
 

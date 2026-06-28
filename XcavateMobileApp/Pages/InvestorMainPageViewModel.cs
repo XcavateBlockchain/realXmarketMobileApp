@@ -134,7 +134,9 @@ public partial class InvestorMainPageViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if DEBUG
             Console.WriteLine(ex);
+#endif
         }
     }
 
@@ -264,7 +266,6 @@ public partial class InvestorMainPageViewModel : ObservableObject
         }
 
         previousCts?.Cancel();
-        previousCts?.Dispose();
 
         return newCts.Token;
     }
@@ -390,9 +391,11 @@ public partial class InvestorMainPageViewModel : ObservableObject
         }
         catch (Exception ex)
         {
+#if DEBUG
             Console.WriteLine("Owned indexed properties list error:");
             Console.WriteLine(ex);
-            hasMore = false;
+#endif
+            // Don't set hasMore = false on error - allow retry on next refresh
         }
         finally
         {
