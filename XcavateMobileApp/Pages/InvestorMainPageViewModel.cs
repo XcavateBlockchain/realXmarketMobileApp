@@ -264,7 +264,6 @@ public partial class InvestorMainPageViewModel : ObservableObject
         }
 
         previousCts?.Cancel();
-        previousCts?.Dispose();
 
         return newCts.Token;
     }
