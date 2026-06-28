@@ -83,7 +83,17 @@ namespace XcavateMobileApp
                 await coordinator.StartAsync(flowMode);
             };
 
-            NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());
+            NavigationModel.NavigateToSettingsPageAsync = async () =>
+            {
+                if (Shell.Current?.Navigation is var nav && nav != null)
+                {
+                    await nav.PushAsync(new SettingsPage());
+                }
+                else
+                {
+                    await Application.Current.MainPage.DisplayAlert("Error", "Navigation is not available", "OK");
+                }
+            };
 
             NavigationModel.NavigateToUserPageAsync = NavigateToUserPageAsync;
 
