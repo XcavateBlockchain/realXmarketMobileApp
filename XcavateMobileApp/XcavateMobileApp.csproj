@@ -94,6 +94,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <MauiXaml Update="Components\Sumsub\SumsubUserPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+    </MauiXaml>
     <MauiXaml Update="Components\XcavateMainPageTopNavigationBarView.xaml">
       <Generator>MSBuild:Compile</Generator>
     </MauiXaml>

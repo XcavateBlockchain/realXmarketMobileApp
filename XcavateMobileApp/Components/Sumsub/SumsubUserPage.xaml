@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<template:PageTemplate xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       xmlns:template="clr-namespace:PlutoFramework.Templates.PageTemplate;assembly=PlutoFramework"
+                       x:Class="XcavateMobileApp.Components.Sumsub.SumsubUserPage"
+                       Title="KYC Information">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+            <!-- Loading indicator -->
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               HorizontalOptions="Center"
+                               IsRunning="True"
+                               IsVisible="True" />
+
+            <!-- User Information Card -->
+            <Frame x:Name="UserInfoCard"
+                   IsVisible="False"
+                   Padding="15"
+                   BorderColor="Gray"
+                   CornerRadius="10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="User Information"
+                           FontSize="Header"
+                           FontAttributes="Bold" />
+                    <Label x:Name="SubstrateKeyLabel" />
+                    <Label x:Name="ApplicantIdLabel" />
+                    <Label x:Name="EmailLabel" />
+                    <Label x:Name="PhoneLabel" />
+                    <Label x:Name="PlatformLabel" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Verification Status Card -->
+            <Frame x:Name="StatusCard"
+                   IsVisible="False"
+                   Padding="15"
+                   BorderColor="Gray"
+                   CornerRadius="10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Verification Status"
+                           FontSize="Header"
+                           FontAttributes="Bold" />
+                    <Label x:Name="StatusLabel" />
+                    <Label x:Name="RoleLabel" />
+                    <Label x:Name="AttemptsLabel" />
+                    <Label x:Name="PriorityLabel" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Timeline Card -->
+            <Frame x:Name="TimelineCard"
+                   IsVisible="False"
+                   Padding="15"
+                   BorderColor="Gray"
+                   CornerRadius="10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Timeline"
+                           FontSize="Header"
+                           FontAttributes="Bold" />
+                    <VerticalStackLayout x:Name="TimelineLayout"
+                                         Spacing="12" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- Error message -->
+            <Label x:Name="ErrorLabel"
+                   IsVisible="False"
+                   TextColor="Red" />
+        </VerticalStackLayout>
+    </ScrollView>
+</template:PageTemplate>
