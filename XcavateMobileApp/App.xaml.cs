@@ -80,9 +80,9 @@ namespace XcavateMobileApp
                 (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.NativeReserved, 0),
 
                 // tGBP
-                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.Assets, 1),
-                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsFrozen, 1),
-                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsReserved, 1),
+                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.Assets, 10),
+                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsFrozen, 10),
+                (EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsReserved, 10),
 
                 // USDC
                 //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.Assets, 1337),
