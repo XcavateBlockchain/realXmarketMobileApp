@@ -97,7 +97,7 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
 
         if (accountLocked.Count() > 0)
         {
-            importWarningPopupViewModel.WarningText = "JSON importing unfortunately does not support importing of DID and X25519 Encryption key that are derived from the account. New DID and Encryption key were created. If you wish it import your existing keys, you can do so later in the setting of the app.";
+            importWarningPopupViewModel.WarningText = "JSON importing unfortunately does not support importing of DID and X25519 Encryption key that are derived from the account. New DID and Encryption key were created. If you wish to import your existing keys, you can do so later in the setting of the app.";
             importWarningPopupViewModel.IsVisible = true;
 
             await OnJsonImportedAsync(mnemonics);
