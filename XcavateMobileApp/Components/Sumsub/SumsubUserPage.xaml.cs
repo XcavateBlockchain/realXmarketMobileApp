@@ -1,7 +1,7 @@
+using PlutoFramework.Components.Card;
 using PlutoFramework.Model.Sumsub;
 using PlutoFramework.Templates.PageTemplate;
 using System.Globalization;
-using PlutoFramework.Components.Card;
 
 namespace XcavateMobileApp.Components.Sumsub
 {
@@ -43,14 +43,16 @@ namespace XcavateMobileApp.Components.Sumsub
                     return;
                 }
 
+                var enhancedData = await LoadEnhancedTimelineDataAsync(applicant, secrets.SecretKey, secrets.AppToken, CancellationToken.None);
+
                 PopulateUserInfo(applicant, substrateKey);
                 PopulateVerificationStatus(applicant);
-                BuildTimeline(applicant);
+                BuildTimeline(applicant, enhancedData);
 
                 UserInfoCard.IsVisible = true;
                 StatusCard.IsVisible = true;
                 if (TimelineLayout.Children.Count > 0)
-                    TimelineCard.IsVisible = true;
+                    Timeline.IsVisible = true;
             }
             catch (Exception ex)
             {
@@ -61,6 +63,43 @@ namespace XcavateMobileApp.Components.Sumsub
             {
                 LoadingIndicator.IsRunning = false;
                 LoadingIndicator.IsVisible = false;
+            }
+        }
+
+        private static async Task<EnhancedTimelineData> LoadEnhancedTimelineDataAsync(
+            SumsubApplicant applicant,
+            string secretKey,
+            string appToken,
+            CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(applicant.Id))
+            {
+                return new EnhancedTimelineData();
+            }
+
+            var reviewStatusTask = SafeLoadAsync(() => SumsubModel.GetApplicantReviewStatusAsync(applicant.Id, secretKey, appToken, cancellationToken));
+            var reviewHistoryTask = SafeLoadAsync(() => SumsubModel.GetApplicantReviewHistoryAsync(applicant.Id, secretKey, appToken, cancellationToken));
+            var stepStatusTask = SafeLoadAsync(() => SumsubModel.GetApplicantVerificationStepsStatusAsync(applicant.Id, secretKey, appToken, cancellationToken));
+            var notesTask = SafeLoadAsync(() => SumsubModel.GetApplicantNotesAsync(applicant.Id, secretKey, appToken, cancellationToken));
+
+            await Task.WhenAll(reviewStatusTask, reviewHistoryTask, stepStatusTask, notesTask);
+
+            return new EnhancedTimelineData(
+                reviewStatusTask.Result,
+                reviewHistoryTask.Result,
+                stepStatusTask.Result,
+                notesTask.Result);
+        }
+
+        private static async Task<T?> SafeLoadAsync<T>(Func<Task<T?>> loader)
+        {
+            try
+            {
+                return await loader();
+            }
+            catch
+            {
+                return default;
             }
         }
 
@@ -97,10 +136,10 @@ namespace XcavateMobileApp.Components.Sumsub
         /// Timeline entries include application creation, review initiation,
         /// and verification status changes.
         /// </summary>
-        private void BuildTimeline(SumsubApplicant applicant)
+        private void BuildTimeline(SumsubApplicant applicant, EnhancedTimelineData enhancedData)
         {
             TimelineLayout.Clear();
-            var timelineItems = BuildTimelineEvents(applicant);
+            var timelineItems = BuildTimelineEvents(applicant, enhancedData);
 
             if (timelineItems.Count == 0)
             {
@@ -125,7 +164,7 @@ namespace XcavateMobileApp.Components.Sumsub
 
                 if (i == 0)
                 {
-                    gap = "Latest";
+
                 }
                 else if (current.Date.HasValue && previousDatedEvent.HasValue)
                 {
@@ -145,7 +184,7 @@ namespace XcavateMobileApp.Components.Sumsub
             }
         }
 
-        private List<TimelineEventItem> BuildTimelineEvents(SumsubApplicant applicant)
+        private List<TimelineEventItem> BuildTimelineEvents(SumsubApplicant applicant, EnhancedTimelineData enhancedData)
         {
             var timelineItems = new List<TimelineEventItem>();
 
@@ -243,6 +282,93 @@ namespace XcavateMobileApp.Components.Sumsub
                 }
             }
 
+            if (enhancedData.ReviewStatus != null)
+            {
+                var details = new List<string>();
+                if (enhancedData.ReviewStatus.ReviewResult?.RejectLabels?.Count > 0)
+                {
+                    details.Add($"Reject labels: {string.Join(", ", enhancedData.ReviewStatus.ReviewResult.RejectLabels)}");
+                }
+
+                if (!string.IsNullOrWhiteSpace(enhancedData.ReviewStatus.ReviewResult?.ModerationComment))
+                {
+                    details.Add($"Moderation: {enhancedData.ReviewStatus.ReviewResult.ModerationComment}");
+                }
+
+                var reviewDate = ParseSumsubDate(enhancedData.ReviewStatus.ReviewDate)
+                    ?? ParseSumsubDate(enhancedData.ReviewStatus.CreateDate);
+                timelineItems.Add(new TimelineEventItem(
+                    reviewDate,
+                    $"Current review status: {enhancedData.ReviewStatus.ReviewStatus ?? "unknown"}",
+                    GetStatusCategoryFromReviewAnswer(enhancedData.ReviewStatus.ReviewResult?.ReviewAnswer, enhancedData.ReviewStatus.ReviewStatus),
+                    !string.IsNullOrWhiteSpace(enhancedData.ReviewStatus.LevelName) ? $"Level: {enhancedData.ReviewStatus.LevelName}" : null,
+                    details));
+            }
+
+            if (enhancedData.ReviewHistory?.Items != null)
+            {
+                foreach (var history in enhancedData.ReviewHistory.Items)
+                {
+                    var details = new List<string>();
+                    if (history.ReviewResult?.RejectLabels?.Count > 0)
+                    {
+                        details.Add($"Reject labels: {string.Join(", ", history.ReviewResult.RejectLabels)}");
+                    }
+
+                    if (!string.IsNullOrWhiteSpace(history.ReviewResult?.ModerationComment))
+                    {
+                        details.Add($"Moderation: {history.ReviewResult.ModerationComment}");
+                    }
+
+                    timelineItems.Add(new TimelineEventItem(
+                        ParseSumsubDate(history.ReviewDate),
+                        $"Review attempt {history.AttemptId ?? "unknown"}: {history.ReviewStatus ?? "unknown"}",
+                        GetStatusCategoryFromReviewAnswer(history.ReviewResult?.ReviewAnswer, history.ReviewStatus),
+                        !string.IsNullOrWhiteSpace(history.LevelName) ? $"Level: {history.LevelName}" : null,
+                        details));
+                }
+            }
+
+            if (enhancedData.StepStatuses != null)
+            {
+                foreach (var step in enhancedData.StepStatuses)
+                {
+                    var status = step.Value;
+                    var details = new List<string>();
+
+                    if (!string.IsNullOrWhiteSpace(status.IdDocType)) details.Add($"Document: {status.IdDocType}");
+                    if (!string.IsNullOrWhiteSpace(status.Country)) details.Add($"Country: {status.Country}");
+                    if (status.ImageIds?.Count > 0) details.Add($"Images uploaded: {status.ImageIds.Count}");
+                    if (!string.IsNullOrWhiteSpace(status.ReviewResult?.ModerationComment)) details.Add($"Moderation: {status.ReviewResult.ModerationComment}");
+                    if (status.ReviewResult?.RejectLabels?.Count > 0) details.Add($"Reject labels: {string.Join(", ", status.ReviewResult.RejectLabels)}");
+
+                    timelineItems.Add(new TimelineEventItem(
+                        null,
+                        $"Step {step.Key}: {status.ReviewResult?.ReviewAnswer ?? status.ReviewStatus ?? "pending"}",
+                        GetStatusCategoryFromReviewAnswer(status.ReviewResult?.ReviewAnswer, status.ReviewStatus),
+                        null,
+                        details));
+                }
+            }
+
+            if (enhancedData.Notes?.List?.Items != null)
+            {
+                foreach (var note in enhancedData.Notes.List.Items)
+                {
+                    if (string.IsNullOrWhiteSpace(note.Note))
+                    {
+                        continue;
+                    }
+
+                    timelineItems.Add(new TimelineEventItem(
+                        ParseSumsubDate(note.CreatedAt),
+                        "Reviewer note added",
+                        "info",
+                        !string.IsNullOrWhiteSpace(note.CreatedBy) ? $"By: {note.CreatedBy}" : null,
+                        new List<string> { note.Note }));
+                }
+            }
+
             return timelineItems;
         }
 
@@ -251,6 +377,26 @@ namespace XcavateMobileApp.Components.Sumsub
             if (string.IsNullOrWhiteSpace(value))
             {
                 return null;
+            }
+
+            var formats = new[]
+            {
+                "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd HH:mm:ss+0000",
+                "yyyy-MM-dd HH:mm:sszzz",
+                "yyyy-MM-ddTHH:mm:ssZ",
+                "yyyy-MM-ddTHH:mm:ss.fffZ",
+                "yyyy-MM-ddTHH:mm:ss.fffffffZ",
+            };
+
+            if (DateTimeOffset.TryParseExact(
+                value,
+                formats,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeUniversal | DateTimeStyles.AdjustToUniversal,
+                out var dto))
+            {
+                return dto.UtcDateTime;
             }
 
             if (DateTime.TryParseExact(
@@ -271,6 +417,37 @@ namespace XcavateMobileApp.Components.Sumsub
             return null;
         }
 
+        private static string GetStatusCategoryFromReviewAnswer(string? reviewAnswer, string? reviewStatus)
+        {
+            if (!string.IsNullOrWhiteSpace(reviewAnswer))
+            {
+                return reviewAnswer.ToUpperInvariant() switch
+                {
+                    "GREEN" => "success",
+                    "RED" => "error",
+                    "YELLOW" => "warning",
+                    _ => "info"
+                };
+            }
+
+            return GetStatusCategoryFromReviewStatus(reviewStatus);
+        }
+
+        private static string GetStatusCategoryFromReviewStatus(string? reviewStatus)
+        {
+            return (reviewStatus ?? string.Empty).ToLowerInvariant() switch
+            {
+                "completed" => "success",
+                "pending" => "warning",
+                "queued" => "warning",
+                "prechecked" => "warning",
+                "onhold" => "warning",
+                "awaitingservice" => "warning",
+                "awaitinguser" => "warning",
+                _ => "info"
+            };
+        }
+
         private View BuildTimelineEntry(TimelineEventItem item, string timeGapText, bool isFirst, bool isLast)
         {
             var dotColor = item.Status switch
@@ -283,34 +460,37 @@ namespace XcavateMobileApp.Components.Sumsub
 
             var wrapper = new Grid
             {
-                ColumnSpacing = 8,
+                ColumnSpacing = 10,
                 ColumnDefinitions =
                 {
-                    new ColumnDefinition(GridLength.Auto),
+                    new ColumnDefinition(64),
                     new ColumnDefinition(GridLength.Star)
+                },
+                RowDefinitions =
+                {
+                    new RowDefinition(GridLength.Auto),
+                    new RowDefinition(GridLength.Auto)
                 }
             };
 
-            var leftColumn = new VerticalStackLayout
-            {
-                WidthRequest = 56,
-                Spacing = 2,
-                VerticalOptions = LayoutOptions.Fill
-            };
-
-            leftColumn.Add(new Label
+            var gapLabel = new Label
             {
                 Text = timeGapText,
                 FontSize = 11,
                 TextColor = Color.FromArgb("#6E6E6E"),
                 HorizontalTextAlignment = TextAlignment.Start,
+                VerticalTextAlignment = TextAlignment.End,
+                LineBreakMode = LineBreakMode.TailTruncation,
+                MaxLines = 1,
                 IsVisible = !string.IsNullOrWhiteSpace(timeGapText)
-            });
+            };
+            wrapper.Add(gapLabel, 0, 0);
 
             var markerGrid = new Grid
             {
                 WidthRequest = 20,
-                HeightRequest = 88,
+                HorizontalOptions = LayoutOptions.Center,
+                VerticalOptions = LayoutOptions.Fill,
                 RowDefinitions =
                 {
                     new RowDefinition(GridLength.Star),
@@ -344,11 +524,25 @@ namespace XcavateMobileApp.Components.Sumsub
                 IsVisible = !isLast
             }, 0, 2);
 
-            leftColumn.Add(markerGrid);
-            wrapper.Add(leftColumn, 0, 0);
+            var railHost = new Grid
+            {
+                VerticalOptions = LayoutOptions.Fill,
+                HorizontalOptions = LayoutOptions.Fill,
+                Padding = new Thickness(0, 0, 0, 0)
+            };
+            railHost.Add(markerGrid);
+            wrapper.Add(railHost, 0, 1);
 
             var content = new VerticalStackLayout { Spacing = 4 };
-            var titleRow = new HorizontalStackLayout { Spacing = 8 };
+            var titleRow = new Grid
+            {
+                ColumnSpacing = 8,
+                ColumnDefinitions =
+                {
+                    new ColumnDefinition(GridLength.Star),
+                    new ColumnDefinition(GridLength.Auto)
+                }
+            };
 
             titleRow.Add(new Label
             {
@@ -356,8 +550,10 @@ namespace XcavateMobileApp.Components.Sumsub
                 FontAttributes = FontAttributes.Bold,
                 FontSize = 14,
                 VerticalOptions = LayoutOptions.Center,
-                HorizontalOptions = LayoutOptions.StartAndExpand
-            });
+                HorizontalOptions = LayoutOptions.Fill,
+                LineBreakMode = LineBreakMode.WordWrap,
+                MaxLines = 3
+            }, 0, 0);
 
             titleRow.Add(new Label
             {
@@ -368,7 +564,7 @@ namespace XcavateMobileApp.Components.Sumsub
                 TextColor = dotColor,
                 VerticalOptions = LayoutOptions.Center,
                 HorizontalOptions = LayoutOptions.End
-            });
+            }, 1, 0);
 
             content.Add(titleRow);
 
@@ -378,7 +574,8 @@ namespace XcavateMobileApp.Components.Sumsub
                 {
                     Text = item.Date.Value.ToString("MMM dd, yyyy HH:mm:ss 'UTC'", CultureInfo.InvariantCulture),
                     FontSize = 12,
-                    TextColor = Color.FromArgb("#6E6E6E")
+                    TextColor = Color.FromArgb("#6E6E6E"),
+                    LineBreakMode = LineBreakMode.WordWrap
                 });
             }
 
@@ -388,7 +585,8 @@ namespace XcavateMobileApp.Components.Sumsub
                 {
                     Text = item.Subtitle,
                     FontSize = 12,
-                    TextColor = Color.FromArgb("#6E6E6E")
+                    TextColor = Color.FromArgb("#6E6E6E"),
+                    LineBreakMode = LineBreakMode.WordWrap
                 });
             }
 
@@ -403,7 +601,8 @@ namespace XcavateMobileApp.Components.Sumsub
                 {
                     Text = $"• {detail}",
                     FontSize = 12,
-                    TextColor = Color.FromArgb("#6E6E6E")
+                    TextColor = Color.FromArgb("#6E6E6E"),
+                    LineBreakMode = LineBreakMode.WordWrap
                 });
             }
 
@@ -415,7 +614,9 @@ namespace XcavateMobileApp.Components.Sumsub
             };
 
             eventCard.View = content;
-            wrapper.Add(eventCard, 1, 0);
+            wrapper.Add(eventCard, 1, 1);
+
+            markerGrid.SetBinding(HeightRequestProperty, new Binding(nameof(Height), source: eventCard));
 
             return wrapper;
         }
@@ -475,5 +676,11 @@ namespace XcavateMobileApp.Components.Sumsub
         {
             public List<string> Details { get; } = Details ?? new List<string>();
         }
+
+        private sealed record EnhancedTimelineData(
+            SumsubReview? ReviewStatus = null,
+            SumsubReviewHistoryResponse? ReviewHistory = null,
+            Dictionary<string, SumsubVerificationStepStatus>? StepStatuses = null,
+            SumsubApplicantNotesResponse? Notes = null);
     }
 }
