@@ -6,6 +6,7 @@ using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Xcavate;
 using PlutoFrameworkCore;
 using XcavateMobileApp.Components.Account;
+using XcavateMobileApp.Components.Sumsub;
 using XcavateMobileApp.Pages;
 
 namespace XcavateMobileApp
@@ -67,6 +68,8 @@ namespace XcavateMobileApp
                 var coordinator = new ImportAccountCoordinator();
                 await coordinator.StartAsync(flowMode);
             };
+
+            NavigationModel.NavigateToKYCUserPage = () => Shell.Current.Navigation.PushAsync(new SumsubUserPage(KeysModel.GetSubstrateKey()));
 
             NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());
 
