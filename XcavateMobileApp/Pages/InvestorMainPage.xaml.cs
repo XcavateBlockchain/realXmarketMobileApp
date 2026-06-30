@@ -1,6 +1,8 @@
 using PlutoFramework;
 using PlutoFramework.Components.NetworkSelect;
+using PlutoFramework.Components.Sumsub;
 using PlutoFramework.Model;
+using PlutoFramework.Model.Sumsub;
 
 namespace XcavateMobileApp.Pages;
 
@@ -52,11 +54,48 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
             // Prioritize the page's own data path so first content appears quickly.
             await viewModel.RefreshAsync(cancellationToken);
 
+            await LoadSumsubStatusAsync(cancellationToken);
+
             _ = WarmupConnectedClientsAsync(cancellationToken);
         }
         catch (OperationCanceledException)
         {
             // Page disappeared while initialization work was in flight.
+        }
+    }
+
+    private async Task LoadSumsubStatusAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var status = await SumsubUserModel.GetCurrentStatusAsync(cancellationToken);
+
+            if (status == null)
+            {
+                return;
+            }
+
+            switch (status.StatusType)
+            {
+                case SumsubStatusType.Approved:
+                    SumsubApprovedPopup.Bind(status);
+                    SumsubApprovedPopup.IsVisible = true;
+                    break;
+
+                case SumsubStatusType.Rejected:
+                    SumsubRejectedPopup.Bind(status);
+                    SumsubRejectedPopup.IsVisible = true;
+                    break;
+
+                case SumsubStatusType.NeedsResubmit:
+                    SumsubNeedsResubmitPopup.Bind(status);
+                    SumsubNeedsResubmitPopup.IsVisible = true;
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load Sumsub status: {ex}");
         }
     }
 

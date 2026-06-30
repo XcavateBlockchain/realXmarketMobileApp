@@ -1,3 +1,4 @@
+using PlutoFramework.Components.Sumsub;
 using PlutoFramework.Model.Sumsub;
 using PlutoFramework.Templates.PageTemplate;
 using System.Globalization;
@@ -6,7 +7,7 @@ namespace XcavateMobileApp.Components.Sumsub
 {
     /// <summary>
     /// Displays Sumsub KYC information for a user identified by their Substrate key.
-    /// Shows user details, verification status, and a chronological timeline of KYC actions.
+    /// Uses Sumsub status components for displaying verified/rejected/needsResubmit states.
     /// </summary>
     public partial class SumsubUserPage : PageTemplate
     {
@@ -42,12 +43,15 @@ namespace XcavateMobileApp.Components.Sumsub
                     return;
                 }
 
+                var status = SumsubStatusModelParser.ParseStatus(applicant);
+
                 PopulateUserInfo(applicant, substrateKey);
-                PopulateVerificationStatus(applicant);
+                ShowStatusComponent(status);
                 BuildTimeline(applicant);
 
                 UserInfoCard.IsVisible = true;
-                StatusCard.IsVisible = true;
+                if (StatusComponentLayout.IsVisible)
+                    StatusComponentLayout.IsVisible = true;
                 if (TimelineLayout.Children.Count > 0)
                     TimelineCard.IsVisible = true;
             }
@@ -63,6 +67,88 @@ namespace XcavateMobileApp.Components.Sumsub
             }
         }
 
+        private void ShowStatusComponent(SumsubStatusData status)
+        {
+            StatusComponentLayout.IsVisible = true;
+            StatusLabel.Text = status.StatusType switch
+            {
+                SumsubStatusType.Approved => "Verification Approved",
+                SumsubStatusType.Rejected => "Verification Rejected",
+                SumsubStatusType.NeedsResubmit => "Needs Resubmission",
+                SumsubStatusType.Pending => "Verification Pending",
+                _ => "Verification Not Reviewed"
+            };
+
+            // Remove any existing components from the container
+            StatusComponentContainer.Content = null;
+
+            ContentView? component = status.StatusType switch
+            {
+                SumsubStatusType.Approved =>
+                    CreateApprovedComponent(status),
+                SumsubStatusType.Rejected =>
+                    CreateRejectedComponent(status),
+                SumsubStatusType.NeedsResubmit =>
+                    CreateNeedsResubmitComponent(status),
+                SumsubStatusType.Pending =>
+                    CreatePendingComponent(status),
+                _ => null
+            };
+
+            if (component != null)
+            {
+                StatusComponentContainer.Content = component;
+            }
+        }
+
+        private ContentView CreateApprovedComponent(SumsubStatusData status)
+        {
+            var view = new SumsubApprovedView();
+            view.Bind(status);
+            return view;
+        }
+
+        private ContentView CreateRejectedComponent(SumsubStatusData status)
+        {
+            var view = new SumsubRejectedView();
+            view.Bind(status);
+            return view;
+        }
+
+        private ContentView CreateNeedsResubmitComponent(SumsubStatusData status)
+        {
+            var view = new SumsubNeedsResubmitView();
+            view.Bind(status);
+            return view;
+        }
+
+        private ContentView CreatePendingComponent(SumsubStatusData status)
+        {
+            // Simple pending indicator
+            var layout = new VerticalStackLayout
+            {
+                Spacing = 5,
+                Padding = 15
+            };
+
+            layout.Add(new Label
+            {
+                Text = "Your verification is being reviewed.",
+                FontSize = 14,
+                HorizontalOptions = LayoutOptions.Fill
+            });
+
+            layout.Add(new Label
+            {
+                Text = $"Submitted on {status.Timestamp:dddd, dd MMMM yyyy}",
+                FontSize = 12,
+                TextColor = Colors.Gray,
+                HorizontalOptions = LayoutOptions.Fill
+            });
+
+            return new ContentView { Content = layout };
+        }
+
         private void PopulateUserInfo(SumsubApplicant applicant, string substrateKey)
         {
             SubstrateKeyLabel.Text = $"Substrate Key: {substrateKey}";
@@ -70,25 +156,6 @@ namespace XcavateMobileApp.Components.Sumsub
             EmailLabel.Text = $"Email: {applicant.Email ?? "Not provided"}";
             PhoneLabel.Text = $"Phone: {applicant.Phone ?? "Not provided"}";
             PlatformLabel.Text = $"Platform: {applicant.ApplicantPlatform}";
-        }
-
-        private void PopulateVerificationStatus(SumsubApplicant applicant)
-        {
-            var review = applicant.Review;
-            if (review != null)
-            {
-                StatusLabel.Text = $"Status: {review.ReviewStatus ?? "Unknown"}";
-                RoleLabel.Text = $"Role: {review.LevelName ?? "Not assigned"}";
-                AttemptsLabel.Text = $"Attempts: {review.AttemptCnt ?? 0}";
-                PriorityLabel.Text = $"Priority: {review.Priority ?? "Default"}";
-            }
-            else
-            {
-                StatusLabel.Text = "Status: No review found";
-                RoleLabel.Text = "Role: Not assigned";
-                AttemptsLabel.Text = "Attempts: 0";
-                PriorityLabel.Text = "Priority: Default";
-            }
         }
 
         /// <summary>
@@ -178,7 +245,7 @@ namespace XcavateMobileApp.Components.Sumsub
 
                 var dot = new Label
                 {
-                    Text = "\u25cf",
+                    Text = "●",
                     TextColor = dotColor,
                     FontSize = 16,
                     VerticalOptions = LayoutOptions.Center

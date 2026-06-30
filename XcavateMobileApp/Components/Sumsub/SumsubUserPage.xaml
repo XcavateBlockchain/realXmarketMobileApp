@@ -2,6 +2,7 @@
 <template:PageTemplate xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                        xmlns:template="clr-namespace:PlutoFramework.Templates.PageTemplate;assembly=PlutoFramework"
+                       xmlns:sumsub="clr-namespace:PlutoFramework.Components.Sumsub;assembly=PlutoFramework"
                        x:Class="XcavateMobileApp.Components.Sumsub.SumsubUserPage"
                        Title="KYC Information">
     <ScrollView>
@@ -12,6 +13,18 @@
                                HorizontalOptions="Center"
                                IsRunning="True"
                                IsVisible="True" />
+
+            <!-- Dynamic Sumsub status component (shows approved/rejected/needsResubmit) -->
+            <VerticalStackLayout x:Name="StatusComponentLayout"
+                                 IsVisible="False"
+                                 Spacing="15">
+                <Label x:Name="StatusLabel"
+                       Text="Verification Status"
+                       FontSize="Header"
+                       FontAttributes="Bold" />
+                <!-- Status component placeholder - populated at runtime -->
+                <ContentView x:Name="StatusComponentContainer" />
+            </VerticalStackLayout>
 
             <!-- User Information Card -->
             <Frame x:Name="UserInfoCard"
@@ -28,23 +41,6 @@
                     <Label x:Name="EmailLabel" />
                     <Label x:Name="PhoneLabel" />
                     <Label x:Name="PlatformLabel" />
-                </VerticalStackLayout>
-            </Frame>
-
-            <!-- Verification Status Card -->
-            <Frame x:Name="StatusCard"
-                   IsVisible="False"
-                   Padding="15"
-                   BorderColor="Gray"
-                   CornerRadius="10">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Verification Status"
-                           FontSize="Header"
-                           FontAttributes="Bold" />
-                    <Label x:Name="StatusLabel" />
-                    <Label x:Name="RoleLabel" />
-                    <Label x:Name="AttemptsLabel" />
-                    <Label x:Name="PriorityLabel" />
                 </VerticalStackLayout>
             </Frame>
 

@@ -22,6 +22,7 @@
              xmlns:account="clr-namespace:PlutoFramework.Components.Account;assembly=PlutoFramework"
              xmlns:password="clr-namespace:PlutoFramework.Components.Password;assembly=PlutoFramework"
              xmlns:kilt="clr-namespace:PlutoFramework.Components.Kilt;assembly=PlutoFramework"
+             xmlns:sumsub="clr-namespace:PlutoFramework.Components.Sumsub;assembly=PlutoFramework"
              BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}"
              Shell.PresentationMode="NotAnimated"
              HideSoftInputOnTapped="True">
@@ -144,6 +145,11 @@
         <account:NoAccountPopup ZIndex="10" />
 
         <kilt:NoDidPopupView ZIndex="10" />
+
+        <!-- Sumsub status popups -->
+        <sumsub:SumsubApprovedView ZIndex="10" x:Name="SumsubApprovedPopup" IsVisible="False" />
+        <sumsub:SumsubRejectedView ZIndex="10" x:Name="SumsubRejectedPopup" IsVisible="False" />
+        <sumsub:SumsubNeedsResubmitView ZIndex="10" x:Name="SumsubNeedsResubmitPopup" IsVisible="False" />
 
         <xcavate:UserProfileNotCreatedPopupView ZIndex="10" />
 
