@@ -2,10 +2,11 @@
 <template:PageTemplate xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                        xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                        xmlns:template="clr-namespace:PlutoFramework.Templates.PageTemplate;assembly=PlutoFramework"
+                       xmlns:card="clr-namespace:PlutoFramework.Components.Card;assembly=PlutoFramework"
                        x:Class="XcavateMobileApp.Components.Sumsub.SumsubUserPage"
                        Title="KYC Information">
     <ScrollView>
-        <VerticalStackLayout Padding="20" Spacing="15">
+        <VerticalStackLayout Padding="20,10,20,120" Spacing="15">
 
             <!-- Loading indicator -->
             <ActivityIndicator x:Name="LoadingIndicator"
@@ -14,59 +15,71 @@
                                IsVisible="True" />
 
             <!-- User Information Card -->
-            <Frame x:Name="UserInfoCard"
-                   IsVisible="False"
-                   Padding="15"
-                   BorderColor="Gray"
-                   CornerRadius="10">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="User Information"
-                           FontSize="Header"
-                           FontAttributes="Bold" />
-                    <Label x:Name="SubstrateKeyLabel" />
-                    <Label x:Name="ApplicantIdLabel" />
-                    <Label x:Name="EmailLabel" />
-                    <Label x:Name="PhoneLabel" />
-                    <Label x:Name="PlatformLabel" />
-                </VerticalStackLayout>
-            </Frame>
+            <card:Card x:Name="UserInfoCard"
+                       IsVisible="False"
+                       CardPadding="15,12">
+                <card:Card.View>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="User Information"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                        <BoxView HeightRequest="1"
+                                 Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+                        <Label x:Name="SubstrateKeyLabel" />
+                        <Label x:Name="ApplicantIdLabel" />
+                        <Label x:Name="EmailLabel" />
+                        <Label x:Name="PhoneLabel" />
+                        <Label x:Name="PlatformLabel" />
+                    </VerticalStackLayout>
+                </card:Card.View>
+            </card:Card>
 
             <!-- Verification Status Card -->
-            <Frame x:Name="StatusCard"
-                   IsVisible="False"
-                   Padding="15"
-                   BorderColor="Gray"
-                   CornerRadius="10">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Verification Status"
-                           FontSize="Header"
-                           FontAttributes="Bold" />
-                    <Label x:Name="StatusLabel" />
-                    <Label x:Name="RoleLabel" />
-                    <Label x:Name="AttemptsLabel" />
-                    <Label x:Name="PriorityLabel" />
-                </VerticalStackLayout>
-            </Frame>
+            <card:Card x:Name="StatusCard"
+                       IsVisible="False"
+                       CardPadding="15,12">
+                <card:Card.View>
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="Verification Status"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                        <BoxView HeightRequest="1"
+                                 Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+                        <Label x:Name="StatusLabel" />
+                        <Label x:Name="RoleLabel" />
+                        <Label x:Name="AttemptsLabel" />
+                        <Label x:Name="PriorityLabel" />
+                    </VerticalStackLayout>
+                </card:Card.View>
+            </card:Card>
 
             <!-- Timeline Card -->
-            <Frame x:Name="TimelineCard"
-                   IsVisible="False"
-                   Padding="15"
-                   BorderColor="Gray"
-                   CornerRadius="10">
-                <VerticalStackLayout Spacing="8">
-                    <Label Text="Timeline"
-                           FontSize="Header"
-                           FontAttributes="Bold" />
-                    <VerticalStackLayout x:Name="TimelineLayout"
-                                         Spacing="12" />
-                </VerticalStackLayout>
-            </Frame>
+            <card:Card x:Name="TimelineCard"
+                       IsVisible="False"
+                       CardPadding="15,12">
+                <card:Card.View>
+                    <VerticalStackLayout Spacing="10">
+                        <Label Text="Timeline"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                        <Label Text="Latest events first"
+                               FontSize="12"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray300}}" />
+                        <BoxView HeightRequest="1"
+                                 Color="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}" />
+                        <VerticalStackLayout x:Name="TimelineLayout"
+                                             Spacing="8" />
+                    </VerticalStackLayout>
+                </card:Card.View>
+            </card:Card>
 
             <!-- Error message -->
             <Label x:Name="ErrorLabel"
                    IsVisible="False"
-                   TextColor="Red" />
+                   TextColor="{StaticResource DangerousRed}" />
         </VerticalStackLayout>
     </ScrollView>
 </template:PageTemplate>
