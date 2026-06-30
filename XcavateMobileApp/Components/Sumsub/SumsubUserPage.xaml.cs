@@ -80,7 +80,7 @@ namespace XcavateMobileApp.Components.Sumsub
                 StatusLabel.Text = $"Status: {review.ReviewStatus ?? "Unknown"}";
                 RoleLabel.Text = $"Role: {review.LevelName ?? "Not assigned"}";
                 AttemptsLabel.Text = $"Attempts: {review.AttemptCnt ?? 0}";
-                PriorityLabel.Text = $"Priority: {review.Priority ?? "Default"}";
+                PriorityLabel.Text = $"Priority: {(review.Priority.HasValue ? review.Priority.ToString() : "Default")}";
             }
             else
             {
