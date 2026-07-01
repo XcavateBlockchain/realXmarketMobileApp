@@ -1,6 +1,5 @@
 using PlutoFramework;
 using PlutoFramework.Components.NetworkSelect;
-using PlutoFramework.Components.Sumsub;
 using PlutoFramework.Model;
 using PlutoFramework.Model.Sumsub;
 
@@ -77,11 +76,6 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
 
             switch (status.StatusType)
             {
-                case SumsubStatusType.Approved:
-                    SumsubApprovedPopup.Bind(status);
-                    SumsubApprovedPopup.IsVisible = true;
-                    break;
-
                 case SumsubStatusType.Rejected:
                     SumsubRejectedPopup.Bind(status);
                     SumsubRejectedPopup.IsVisible = true;

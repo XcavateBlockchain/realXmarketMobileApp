@@ -1,5 +1,5 @@
-using PlutoFramework.Components.Sumsub;
 using PlutoFramework.Components.Card;
+using PlutoFramework.Components.Sumsub;
 using PlutoFramework.Model.Sumsub;
 using PlutoFramework.Templates.PageTemplate;
 using System.Globalization;
@@ -47,12 +47,16 @@ namespace XcavateMobileApp.Components.Sumsub
                 var status = SumsubStatusModelParser.ParseStatus(applicant);
                 var enhancedData = await LoadEnhancedTimelineDataAsync(applicant, secrets.SecretKey, secrets.AppToken, CancellationToken.None);
 
+                Console.WriteLine("Sumsub Status:");
+                Console.WriteLine(status);
+
                 PopulateUserInfo(applicant, substrateKey);
                 ShowStatusComponent(status);
                 PopulateVerificationStatus(applicant);
                 BuildTimeline(applicant, enhancedData);
 
                 UserInfoCard.IsVisible = true;
+                StatusCard.IsVisible = true;
                 if (StatusComponentLayout.IsVisible)
                     StatusComponentLayout.IsVisible = true;
                 if (TimelineLayout.Children.Count > 0)
@@ -70,20 +74,33 @@ namespace XcavateMobileApp.Components.Sumsub
             }
         }
 
+        private void PopulateVerificationStatus(SumsubApplicant applicant)
+        {
+            var review = applicant.Review;
+            if (review != null)
+            {
+                StatusLabel.Text = $"Status: {review.ReviewStatus ?? "Unknown"}";
+                RoleLabel.Text = $"Role: {review.LevelName ?? "Not assigned"}";
+                AttemptsLabel.Text = $"Attempts: {review.AttemptCnt ?? 0}";
+                PriorityLabel.Text = $"Priority: {(review.Priority.HasValue ? review.Priority.ToString() : "Default")}";
+            }
+            else
+            {
+                StatusLabel.Text = "Status: No review found";
+                RoleLabel.Text = "Role: Not assigned";
+                AttemptsLabel.Text = "Attempts: 0";
+                PriorityLabel.Text = "Priority: Default";
+            }
+        }
+
         private void ShowStatusComponent(SumsubStatusData status)
         {
             StatusComponentLayout.IsVisible = true;
-            StatusLabel.Text = status.StatusType switch
-            {
-                SumsubStatusType.Approved => "Verification Approved",
-                SumsubStatusType.Rejected => "Verification Rejected",
-                SumsubStatusType.NeedsResubmit => "Needs Resubmission",
-                SumsubStatusType.Pending => "Verification Pending",
-                _ => "Verification Not Reviewed"
-            };
 
             // Remove any existing components from the container
             StatusComponentContainer.Content = null;
+
+
 
             ContentView? component = status.StatusType switch
             {
