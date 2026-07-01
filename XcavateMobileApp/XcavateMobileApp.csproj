@@ -44,7 +44,12 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'android'">
-    <!-- Ensure APK/AAB native library alignment is compatible with Android 16 KB page-size devices. -->
+    <!--
+      Aligns zip entries for bundled .so files to 16 KB (already the SDK default here, kept explicit for clarity).
+      This only controls where each native library starts inside the APK/AAB zip - it does NOT fix a library's
+      own internal ELF LOAD segment alignment. A .so built with 4 KB-aligned LOAD segments still fails Google
+      Play's 16 KB check regardless of this setting; that must be fixed upstream by the library/package itself.
+    -->
     <AndroidZipAlignment>16</AndroidZipAlignment>
   </PropertyGroup>
 
