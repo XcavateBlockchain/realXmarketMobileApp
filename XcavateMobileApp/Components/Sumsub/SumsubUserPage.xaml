@@ -7,7 +7,7 @@
                        x:Class="XcavateMobileApp.Components.Sumsub.SumsubUserPage"
                        Title="KYC Information">
     <ScrollView>
-        <VerticalStackLayout Padding="20,10,20,120" Spacing="15">
+        <VerticalStackLayout Padding="20,20,20,120" Spacing="15">
 
             <!-- Loading indicator -->
             <ActivityIndicator x:Name="LoadingIndicator"
@@ -19,10 +19,6 @@
             <VerticalStackLayout x:Name="StatusComponentLayout"
                                  IsVisible="False"
                                  Spacing="15">
-                <Label x:Name="StatusLabel"
-                       Text="Verification Status"
-                       FontSize="Header"
-                       FontAttributes="Bold" />
                 <!-- Status component placeholder - populated at runtime -->
                 <ContentView x:Name="StatusComponentContainer" />
             </VerticalStackLayout>
