@@ -4,6 +4,7 @@
              xmlns:xcavateproperty="clr-namespace:PlutoFramework.Components.XcavateProperty;assembly=PlutoFramework"
              xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
             xmlns:pages="clr-namespace:XcavateMobileApp.Pages"
+       xmlns:settings="clr-namespace:PlutoFramework.Components.Settings;assembly=PlutoFramework"
              x:Class="XcavateMobileApp.XcavateAppShell">
     <ShellContent ContentTemplate="{DataTemplate pages:InvestorMainPage}"
                   Route="Account" >
@@ -19,5 +20,8 @@
     </ShellContent>
     <ShellContent ContentTemplate="{DataTemplate xcavateproperty:XcavateIndexedPropertyNoticeboardPage}"
                   Route="Noticeboard">
+    </ShellContent>
+    <ShellContent ContentTemplate="{DataTemplate settings:LoggedOutPage}"
+                  Route="LoggedOutPage">
     </ShellContent>
 </Shell>

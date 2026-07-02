@@ -40,6 +40,7 @@
 
     <template:PageTemplate.PopupContent>
         <accounts:NoAccountPopup />
+        <settings:LogOutPopup />
     </template:PageTemplate.PopupContent>
 </template:PageTemplate>
 

@@ -25,19 +25,25 @@ public partial class SettingsPage : PageTemplate
 
     async void OnLogOutClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
-        // Authenticate before logging out
-        var account = await KeysModel.GetAccountAsync();
+        var popupViewModel = DependencyService.Get<LogOutPopupViewModel>();
 
-        if (account is null)
+        popupViewModel.ContinueRequested = async () =>
         {
-            return;
-        }
+            var account = await KeysModel.GetAccountAsync();
 
-        ClearStateModel.Clear();
+            if (account is null)
+            {
+                return;
+            }
 
-        await SQLiteModel.DeleteAllDatabasesAsync();
+            ClearStateModel.Clear();
 
-        Application.Current.MainPage = new OnboardingShell();
+            await SQLiteModel.DeleteAllDatabasesAsync();
+
+            await Shell.Current.GoToAsync("//LoggedOutPage");
+        };
+
+        popupViewModel.IsVisible = true;
     }
     async void OnDeveloperSettingsClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
