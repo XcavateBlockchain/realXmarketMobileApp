@@ -38,6 +38,7 @@ All colours are declared as shared resources in
 **Practice:** Every colour that affects the UI is a keyed resource. Hardcoded
 hex literals appear only in rare one-off decorations (e.g. the slider
 gradient stops in `SliderView.xaml`).
+  Gradient colors: `#ecb278`, `#dc7da6`, `#3b4f74`, `#57a0c5` at offsets 0.1/0.4/0.7/1.0.
 
 ### 1.2 Typography
 
@@ -401,6 +402,9 @@ Pill-shaped status indicators on property cards:
 
 ### 5.1 Pull-to-refresh
 
+- Splash/carousel on WelcomePage: `CarouselView` with `IndicatorView` (dots below)
+  for onboarding screen transitions (`WelcomePage.xaml`), not a simple image slideshow.
+
 Every main list page wraps its `CollectionView` or `ScrollView` in a
 `RefreshView` with `Command` bound to a `RelayCommand` on the view model.
 
@@ -602,6 +606,7 @@ Shells). Components not used by any reachable page are excluded.
 | `Form` | `FormInputView`, `FormValueView`, `FormLargeInputView` | Text and value input/display |
 | `Xcavate` | `XcavateCell`, `RiskWarningView`, `UserTypeBadgeView` | Domain-specific UI |
 | `XcavateProperty` | `PropertyThumbnailView`, `SliderView` | Property listing cards |
+| `PropertyDetailPage` | `PropertyDetailPage` | Full property detail with NftAttributeView rows, slider bars, map, buy popup |
 | `Balance` | `BalanceOverviewView`, `AssetView`, `UsdBalanceView` | Wallet / balance display |
 | `Account` | `NoAccountPopup`, `CreateAccountPopup` | Account state popups |
 | `Extrinsic` | `ExtrinsicStatusStackLayout` | Transaction status toasts |
