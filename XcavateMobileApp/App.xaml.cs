@@ -50,9 +50,7 @@ namespace XcavateMobileApp
             // Let the first frame render before doing heavier setup.
             await Task.Yield();
 
-            // Run full framework initialization on a background thread and await it
-            // so registrations are available before we access them below.
-            await Task.Run(() => PlutoFramework.MauiAppBuilderExtensions.InitializePlutoFrameworkFull());
+            PlutoFramework.MauiAppBuilderExtensions.InitializePlutoFrameworkFull();
 
             NavigationModel.NavigateToKYC = UserTypeSelectionViewModel.ResumeKycFromSavedProfileAsync;
 
