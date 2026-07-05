@@ -19,10 +19,7 @@
         <Image HeightRequest="45"
                Grid.Column="0"
                Source="realxmarket.png"
-               
             />
-
-
 
         <Border HeightRequest="35"
                     WidthRequest="35"
@@ -36,7 +33,7 @@
             </Border.StrokeShape>
             <Image HeightRequest="25"
                WidthRequest="25"
-                   Source="xcavatebell.png"/>
+                   Source="xcavatemail.png"/>
 
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Command="{Binding OpenMessagingCommand}"/>
