@@ -96,6 +96,10 @@ namespace XcavateMobileApp
                 //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsReserved, 1984),
             ];
 
+            PlutoConfigurationModel.WhitelistedDApps = [
+                "realxmessage.xcavate.io",
+            ];
+
             NavigationModel.SetWelcomeShell = () =>
             {
                 Application.Current.MainPage = new OnboardingShell();
