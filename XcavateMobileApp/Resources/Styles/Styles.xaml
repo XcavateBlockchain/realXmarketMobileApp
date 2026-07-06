@@ -12,10 +12,10 @@
     <Shadow x:Key="CardShadow"
             Brush="Black"
             Offset="0,0" 
-            Radius="4"
-            Opacity="0.25">
+            Radius="2"
+            Opacity="0.16">
     </Shadow>
-
+    
     <Color x:Key="TextCardBackgroundColorDark">#0D3B4F74</Color>
     <Color x:Key="TextCardBackgroundColorLight">#0D3B4F74</Color>
 
