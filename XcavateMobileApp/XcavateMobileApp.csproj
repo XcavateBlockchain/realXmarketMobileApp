@@ -26,9 +26,9 @@
     <ApplicationIdGuid>36D62217-2B7E-41BF-AAA9-8A559B7F5A88</ApplicationIdGuid>
 
     <!-- Versions -->
-    <ApplicationDisplayVersion>0.22</ApplicationDisplayVersion>
-    <PackageVersion>0.22</PackageVersion>
-    <ApplicationVersion>41</ApplicationVersion>
+    <ApplicationDisplayVersion>0.23</ApplicationDisplayVersion>
+    <PackageVersion>0.23</PackageVersion>
+    <ApplicationVersion>42</ApplicationVersion>
 
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
 
