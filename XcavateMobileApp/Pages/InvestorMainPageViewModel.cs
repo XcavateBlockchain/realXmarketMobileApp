@@ -32,6 +32,10 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private string includesPropertyType = string.Empty;
     private string includesPropertyName = string.Empty;
     private bool filterActive = false;
+    private string lastLoadedTownCity = string.Empty;
+    private string lastLoadedPropertyType = string.Empty;
+    private string lastLoadedPropertyName = string.Empty;
+    private bool hasLoadedQuery;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TotalTokensText))]
@@ -61,6 +65,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
         if (value)
         {
             filterActive = false;
+            hasLoadedQuery = false;
             filterPopupViewModel.SetToDefault();
             BoughtActive = false;
             BoughtButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
@@ -74,6 +79,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
         if (value)
         {
             filterActive = false;
+            hasLoadedQuery = false;
             filterPopupViewModel.SetToDefault();
             OwnedActive = false;
             OwnedButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
@@ -117,7 +123,11 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
         filterActive = true;
 
-        await RestartOwnedPropertiesLoadAsync(CancellationToken.None).ConfigureAwait(false);
+        if (!IsSameLoadedQuery(includesPropertyName, includesTownCity, includesPropertyType))
+        {
+            await RestartOwnedPropertiesLoadAsync(CancellationToken.None).ConfigureAwait(false);
+            RememberLoadedQuery();
+        }
 
         filterPopupViewModel.IsVisible = false;
     }
@@ -224,7 +234,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
         var shouldReload = substrateClient is null ||
                            !ReferenceEquals(substrateClient, selectedClient) ||
-                           !string.Equals(ownerAddress, selectedOwnerAddress, StringComparison.Ordinal);
+                           !string.Equals(ownerAddress, selectedOwnerAddress, StringComparison.Ordinal) ||
+                           !IsSameLoadedQuery(includesPropertyName, includesTownCity, includesPropertyType);
 
         substrateClient = selectedClient;
         ownerAddress = selectedOwnerAddress;
@@ -232,6 +243,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
         if (shouldReload)
         {
             ResetOwnedProperties();
+            RememberLoadedQuery();
             await LoadMoreOwnedPropertiesAsync(token).ConfigureAwait(false);
             _ = HydrateRemainingOwnedPropertiesAsync(token);
         }
@@ -445,6 +457,22 @@ public partial class InvestorMainPageViewModel : ObservableObject
             return (x.TokensBought + x.TokensOwned) * (rentalIncome / tokens);
         });
         Roi = totalInvested > 0 ? ((double)totalIncome / totalInvested) * 12 : 0;
+    }
+
+    private bool IsSameLoadedQuery(string searchText, string townCity, string propertyType)
+    {
+        return hasLoadedQuery
+            && string.Equals(lastLoadedPropertyName, searchText ?? string.Empty, StringComparison.Ordinal)
+            && string.Equals(lastLoadedTownCity, townCity ?? string.Empty, StringComparison.Ordinal)
+            && string.Equals(lastLoadedPropertyType, propertyType ?? string.Empty, StringComparison.Ordinal);
+    }
+
+    private void RememberLoadedQuery()
+    {
+        lastLoadedPropertyName = includesPropertyName;
+        lastLoadedTownCity = includesTownCity;
+        lastLoadedPropertyType = includesPropertyType;
+        hasLoadedQuery = true;
     }
 
 }
