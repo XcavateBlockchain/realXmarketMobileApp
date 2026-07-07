@@ -45,6 +45,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
     public string TotalInvestedText => ((double)TotalInvested).ToCurrencyString();
 
     [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(RoiText))]
     private double roi;
     public string RoiText => $"{Roi:P1}";
     public InvestorMainPageViewModel()
@@ -428,11 +429,22 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
     private void RecalculatePortfolioMetrics()
     {
-        TotalTokens = (uint)OwnedProperties.Count;
+        TotalTokens = (uint)OwnedProperties.Sum(x => x.TokensBought + x.TokensOwned);
         var totalInvested = OwnedProperties.Sum(x => (long)((x.TokensBought + x.TokensOwned) * ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.PricePerToken ?? 0));
         TotalInvested = totalInvested;
-        decimal totalIncome = OwnedProperties.Sum(x => (x.TokensBought + x.TokensOwned) * ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.EstimatedRentalIncome ?? 0);
-        Roi = totalInvested > 0 ? ((double)totalIncome / totalInvested) * 100 : 0;
+        decimal totalIncome = OwnedProperties.Sum(x =>
+        {
+            decimal rentalIncome = ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.EstimatedRentalIncome ?? 0;
+            decimal tokens = ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.NumberOfTokens ?? 0;
+
+            if (tokens == 0)
+            {
+                return 0;
+            }
+
+            return (x.TokensBought + x.TokensOwned) * (rentalIncome / tokens);
+        });
+        Roi = totalInvested > 0 ? ((double)totalIncome / totalInvested) * 12 : 0;
     }
 
 }
