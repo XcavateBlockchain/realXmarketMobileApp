@@ -57,16 +57,19 @@
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                         <xcavate:XcavateCell Title="Property shares"
                                              Value="{Binding TotalTokensText}"
+                                             RollingTicker="True"
                                              Grid.Column="0" />
                         <xcavate:XcavateCell Title="Total invested"
                                              Value="{Binding TotalInvestedText}"
-                                             Grid.Column="1" />
+                                             Grid.Column="1"
+                                             RollingTicker="True"/>
                     </Grid>
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
                         <xcavate:XcavateCell Title="ROI"
                                              Value="{Binding RoiText}"
-                                             Grid.Column="0"/>
+                                             Grid.Column="0"
+                                             RollingTicker="True"/>
 
                         <xcavatecells:BalanceCellView Grid.Column="1"
                                                       x:Name="balanceCellView"/>
