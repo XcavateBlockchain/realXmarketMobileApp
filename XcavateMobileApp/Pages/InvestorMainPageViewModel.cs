@@ -56,6 +56,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
     {
         filterPopupViewModel = DependencyService.Get<PropertyMarketplaceFilterPopupViewModel>();
         filterPopupViewModel.ApplyRequested = ApplyFiltersAsync;
+        filterPopupViewModel.CancelRequested = async () => await HandleFilterCancelAsync().ConfigureAwait(false);
         OwnedProperties.CollectionChanged += OnOwnedPropertiesCollectionChanged;
     }
 
@@ -108,6 +109,20 @@ public partial class InvestorMainPageViewModel : ObservableObject
         BoughtButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
 
         filterPopupViewModel.IsVisible = true;
+    }
+
+    private async Task HandleFilterCancelAsync()
+    {
+        // When filter is cancelled, reset to default state and reload
+        filterActive = false;
+        hasLoadedQuery = false;
+        filterPopupViewModel.SetToDefault();
+        OwnedActive = false;
+        BoughtActive = false;
+        OwnedButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+        BoughtButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
+        
+        await RestartOwnedPropertiesLoadAsync(CancellationToken.None).ConfigureAwait(false);
     }
 
     private async Task ApplyFiltersAsync()
