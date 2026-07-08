@@ -23,6 +23,7 @@
              xmlns:password="clr-namespace:PlutoFramework.Components.Password;assembly=PlutoFramework"
              xmlns:kilt="clr-namespace:PlutoFramework.Components.Kilt;assembly=PlutoFramework"
              xmlns:sumsub="clr-namespace:PlutoFramework.Components.Sumsub;assembly=PlutoFramework"
+             xmlns:card="clr-namespace:PlutoFramework.Components.Card;assembly=PlutoFramework"
              BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}"
              Shell.PresentationMode="NotAnimated"
              HideSoftInputOnTapped="True">
@@ -131,6 +132,10 @@
         </RefreshView>
 
         <components:XcavateMainPageTopNavigationBarView />
+
+        <card:BottomPillBackgroundView />
+
+        <card:TopPillBackgroundView />
 
         <extrinsic:ExtrinsicStatusStackLayout />
 
