@@ -6,7 +6,7 @@ using PlutoFramework.Model.Xcavate;
 
 namespace XcavateMobileApp.Pages
 {
-    public partial class ModifyUserProfilePopupViewModel : ModifyUserProfilePageViewModel, IPopup, ISetToDefault
+    public partial class ModifyUserProfilePopupViewModel : ModifyUserViewModel, IPopup, ISetToDefault
     {
         [ObservableProperty]
         private bool isVisible = false;
@@ -39,7 +39,7 @@ namespace XcavateMobileApp.Pages
             }
 
             loading = true;
-                
+
             var newUserInfo = new XcavateUser
             {
                 FirstName = FirstName,

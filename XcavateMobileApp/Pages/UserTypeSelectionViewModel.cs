@@ -8,6 +8,7 @@ using PlutoFramework.Model;
 using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Sumsub;
 using PlutoFramework.Model.Xcavate;
+using XcavateMobileApp.Components.Account;
 
 namespace XcavateMobileApp.Pages
 {
@@ -155,10 +156,9 @@ namespace XcavateMobileApp.Pages
                     applicant,
                     navigation: () =>
                     {
-                        OnboardingModel.SetOnboardingStage(OnboardingStage.Finished);
-                        Application.Current.MainPage = new XcavateAppShell();
+                        OnboardingModel.SetOnboardingStage(OnboardingStage.ProfileRegistration);
 
-                        return Task.FromResult(0);
+                        return ImportAccountCoordinator.NavigateToProfileRegistrationAsync();
                     }
                 ));
             }

@@ -1,6 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using PlutoFramework.Model;
 using PlutoFramework.Model.Xcavate;
 
 namespace XcavateMobileApp.Pages
@@ -37,6 +36,7 @@ namespace XcavateMobileApp.Pages
             AccountCreatedAt = null,
             DeveloperStats = null,
         };
+
         public string FullName => User.FullName;
         public ImageSource ProfilePicture => User.ProfilePicture;
         public ImageSource ProfileBackground => User.ProfileBackground;
@@ -53,16 +53,6 @@ namespace XcavateMobileApp.Pages
         public string PhoneNumber => User.PhoneNumber;
 
         [RelayCommand]
-        public Task EditAsync() => Application.Current.MainPage.Navigation.PushAsync(new ModifyUserProfilePage(
-            new ModifyUserProfilePageViewModel
-            {
-                Title = "Modify personal profile",
-                ProfilePicture = XcavateFileModel.GetSavedProfilePicture(),
-                ProfileBackground = XcavateFileModel.GetSavedProfileBackground(),
-                FirstName = User.FirstName,
-                LastName = User.LastName,
-                Email = User.Email,
-                PhoneNumber = User.PhoneNumber,
-            }));
+        public Task EditAsync() => Task.FromResult(0);
     }
 }

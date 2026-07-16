@@ -1,9 +1,10 @@
 ﻿using PlutoFramework.Components.Account;
+using PlutoFramework.Components.Loading;
 using PlutoFramework.Components.Onboarding;
 using PlutoFramework.Constants;
 using PlutoFramework.Model;
-using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Xcavate;
+using PlutoFramework.Model.Xcavate.Profile;
 using PlutoFrameworkCore;
 using XcavateMobileApp.Components.Account;
 using XcavateMobileApp.Components.Sumsub;
@@ -129,35 +130,25 @@ namespace XcavateMobileApp
 
         public static async Task NavigateToUserPageAsync()
         {
-            var userInfo = await XcavateUserDatabase.GetUserInformationAsync();
+            var loadingViewModel = DependencyService.Get<FullPageLoadingViewModel>();
+            loadingViewModel.IsVisible = true;
+            loadingViewModel.Message = "Finding profile";
 
-            if (userInfo is null)
-            {
-                return;
-            }
+            var profileService = new XcavateProfileService();
+            var profile = await profileService.GetProfileAsync();
 
-            var viewModel = new UserProfileViewModel
+            var viewModel = new ModifyUserProfilePageViewModel()
             {
-                CanEdit = true,
-                User = userInfo,
+                Title = "Edit public profile",
+                FirstSetup = false,
+                Nickname = profile?.Nickname ?? string.Empty,
+                Bio = profile?.Bio ?? string.Empty,
+                ProfilePicture = profile?.ProfilePicture,
             };
 
-            // Clean temporary files
-            string tempProfileBackgroundPath = Path.Combine(FileSystem.Current.AppDataDirectory, "temporaryprofilebackground");
+            loadingViewModel.IsVisible = false;
 
-            if (File.Exists(tempProfileBackgroundPath))
-            {
-                File.Delete(tempProfileBackgroundPath);
-            }
-
-            string tempProfilePicturePath = Path.Combine(FileSystem.Current.AppDataDirectory, "temporaryprofilepicture");
-
-            if (File.Exists(tempProfilePicturePath))
-            {
-                File.Delete(tempProfilePicturePath);
-            }
-
-            await Shell.Current.Navigation.PushAsync(new UserProfilePage(viewModel));
+            await Shell.Current.Navigation.PushAsync(new ModifyUserProfilePage(viewModel));
         }
 
         public static async Task GenerateNewAccountAsync()

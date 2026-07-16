@@ -1,55 +1,63 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.Buttons;
-using PlutoFramework.Components.Loading;
+using PlutoFramework.Model;
+using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Xcavate;
-using PlutoFramework.Model.Xcavate.Profile;
 
 namespace XcavateMobileApp.Pages
 {
-    public partial class ModifyUserProfilePageViewModel : ObservableObject
+    public partial class ModifyUserViewModel : ObservableObject
     {
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(CancelButtonText))]
-        private bool firstSetup = false;
+        private string title;
 
         [ObservableProperty]
-        private string? title;
+        private ImageSource profilePicture;
 
         [ObservableProperty]
-        private ImageSource? profilePicture;
-
-        [ObservableProperty]
-        private ImageSource? profileBackground;
-
-        private Stream? profilePictureStream;
+        private ImageSource profileBackground;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SaveButtonState))]
-        private string nickname = "";
+        private string firstName = "";
 
         [ObservableProperty]
-        private string bio = "";
+        [NotifyPropertyChangedFor(nameof(SaveButtonState))]
+        private string lastName = "";
 
-        public string CancelButtonText => FirstSetup ? "Skip" : "Cancel";
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SaveButtonState))]
+        private string email = "";
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SaveButtonState))]
+        private string phoneNumber = "";
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SaveLayoutIsVisible))]
+        private bool continueLayoutIsVisible = false;
+
+        public bool SaveLayoutIsVisible => !ContinueLayoutIsVisible;
+
+        public UserRoleEnum UserRole;
 
         [RelayCommand]
         public async Task PickProfilePictureAsync()
         {
-            var result = await MediaPicker.PickPhotosAsync(new MediaPickerOptions
+            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
             {
-                Title = "Select a profile picture",
-                SelectionLimit = 1,
+                Title = "Select a profile picture"
             });
 
-            if (result == null || result.Count() != 1)
+            if (result == null)
             {
                 return;
             }
 
             string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "temporaryprofilepicture");
 
-            using (var inputStream = await result.First().OpenReadAsync())
+            using (var inputStream = await result.OpenReadAsync())
             using (FileStream outputStream = File.Create(targetFile))
             {
                 await inputStream.CopyToAsync(outputStream);
@@ -64,8 +72,6 @@ namespace XcavateMobileApp.Pages
                 {
                     return File.OpenRead(targetFile);
                 });
-
-                profilePictureStream = File.OpenRead(targetFile);
             }
         }
 
@@ -73,13 +79,12 @@ namespace XcavateMobileApp.Pages
         [RelayCommand]
         public async Task PickProfileBackgroundAsync()
         {
-            var result = await MediaPicker.PickPhotosAsync(new MediaPickerOptions
+            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
             {
-                Title = "Select a profile background",
-                SelectionLimit = 1,
+                Title = "Select a profile background"
             });
 
-            if (result == null || result.Count() != 1)
+            if (result == null)
             {
                 return;
             }
@@ -91,7 +96,7 @@ namespace XcavateMobileApp.Pages
                 File.Delete(targetFile);
             }
 
-            using (var inputStream = await result.First().OpenReadAsync())
+            using (var inputStream = await result.OpenReadAsync())
             using (FileStream outputStream = new FileStream(targetFile, FileMode.Create, FileAccess.Write))
             {
                 await inputStream.CopyToAsync(outputStream);
@@ -107,49 +112,37 @@ namespace XcavateMobileApp.Pages
         }
 
         [RelayCommand]
-        public async Task CancelAsync()
-        {
-            if (!FirstSetup)
-            {
-                await Application.Current.MainPage.Navigation.PopAsync();
-            }
-            else
-            {
-                var profileService = new XcavateProfileService();
-                await profileService.RegisterProfileAsync();
-
-                finishFirstSetup();
-            }
-        }
+        public Task CancelAsync() => Application.Current.MainPage.Navigation.PopAsync();
 
         [RelayCommand]
         public async Task SaveAsync()
         {
-            var loadingViewModel = DependencyService.Get<FullPageLoadingViewModel>();
-            loadingViewModel.IsVisible = true;
-            loadingViewModel.Message = "Moving image data";
+            // Save the user profile
+            if (UserProfilePage.ViewModel is null)
+            {
+                return;
+            }
 
             MoveImages();
 
-            var profileService = new XcavateProfileService();
-
-
-            await profileService.RegisterProfileAsync(nickname: Nickname, profilePictureStream: profilePictureStream, bio: Bio);
-
-            if (!FirstSetup)
+            var newUserInfo = new XcavateUser
             {
-                await Application.Current.MainPage.Navigation.PopAsync();
-            }
-            else
-            {
-                finishFirstSetup();
-            }
-        }
+                FirstName = FirstName,
+                LastName = LastName,
+                Email = Email,
+                PhoneNumber = PhoneNumber,
+                Role = UserProfilePage.ViewModel.User.Role,
+                DeveloperStats = UserProfilePage.ViewModel.User.DeveloperStats,
+                AccountCreatedAt = UserProfilePage.ViewModel.User.AccountCreatedAt,
+                ProfilePicture = XcavateFileModel.GetSavedProfilePicture(),
+                ProfileBackground = XcavateFileModel.GetSavedProfileBackground(),
+            };
 
-        private void finishFirstSetup()
-        {
-            OnboardingModel.SetOnboardingStage(OnboardingStage.Finished);
-            Application.Current.MainPage = new XcavateAppShell();
+            UserProfilePage.ViewModel.User = newUserInfo;
+
+            await Application.Current.MainPage.Navigation.PopAsync();
+
+            await XcavateUserDatabase.SaveUserInformationAsync(newUserInfo);
         }
 
         private void MoveImages()
@@ -171,6 +164,6 @@ namespace XcavateMobileApp.Pages
             }
         }
 
-        public ButtonStateEnum SaveButtonState => ButtonStateEnum.Enabled;
+        public ButtonStateEnum SaveButtonState => (FirstName != "" && LastName != "" && FormModel.IsValidEmail(Email) && PhoneNumber != "") ? ButtonStateEnum.Enabled : ButtonStateEnum.Disabled;
     }
 }

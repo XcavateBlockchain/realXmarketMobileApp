@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<template:PageTemplate xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="XcavateMobileApp.Pages.ModifyUserProfilePage"
              xmlns:navigationbar="clr-namespace:PlutoFramework.Components.NavigationBar;assembly=PlutoFramework"
              xmlns:form="clr-namespace:PlutoFramework.Components.Form;assembly=PlutoFramework"
              xmlns:buttons="clr-namespace:PlutoFramework.Components.Buttons;assembly=PlutoFramework"
-             Title="ModifyUserProfilePage"
-             BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}">
+             xmlns:template="clr-namespace:PlutoFramework.Templates.PageTemplate;assembly=PlutoFramework"
+             Title="{Binding Title}">
     <AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1" AbsoluteLayout.LayoutFlags="All">
         <ScrollView AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1" AbsoluteLayout.LayoutFlags="All">
-            <VerticalStackLayout Margin="0, 30, 0, 0"
+            <VerticalStackLayout Margin="0, 0, 0, 0"
                                 Spacing="15"
-                                Padding="0, 15, 0, 200">
+                                Padding="0, 0, 0, 200">
                 <AbsoluteLayout HeightRequest="200"
                                 >
                     <AbsoluteLayout AbsoluteLayout.LayoutBounds="0,0,1,160"
@@ -76,23 +76,14 @@
                                      Margin="20,20,20,0"
                                     x:Name="verticalStackLayout"
                                      >
-                    
-                    <form:FormInputView Placeholder="First name"
-                                        CardWidth="{Binding Source={x:Reference verticalStackLayout}, Path=Width}"
-                                        Text="{Binding FirstName}" />
-                
-                    <form:FormInputView Placeholder="Last name"
-                                        CardWidth="{Binding Source={x:Reference verticalStackLayout}, Path=Width}"
-                                        Text="{Binding LastName}" />
 
-                    <form:FormInputView Placeholder="Email"
+                    <Label Text="Nickname" FontSize="14" TextColor="{AppThemeBinding Light=#9ca3af, Dark=#d1d5db}" />
+                    <form:FormInputView Placeholder="Enter your nickname (optional)"
                                         CardWidth="{Binding Source={x:Reference verticalStackLayout}, Path=Width}"
-                                        ValidateEmail="True"
-                                        Text="{Binding Email}" />
+                                        Text="{Binding Nickname}" />
 
-                    <form:FormInputView Placeholder="Phone Number"
-                                        CardWidth="{Binding Source={x:Reference verticalStackLayout}, Path=Width}"
-                                        Text="{Binding PhoneNumber}"/>
+                    <Label Text="Bio" FontSize="14" TextColor="{AppThemeBinding Light=#9ca3af, Dark=#d1d5db}" />
+                    <form:FormLargeInputView Placeholder="Enter your bio (optional)" Text="{Binding Bio}" />
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
@@ -105,7 +96,7 @@
             <Grid AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 50"
                   AbsoluteLayout.LayoutFlags="PositionProportional, WidthProportional"
                   ColumnSpacing="15"
-                  Margin="20, 0, 20, 10"> 
+                  Margin="20, 0, 20, 10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
@@ -120,30 +111,9 @@
                                         Grid.Column="1"
                                         Command="{Binding SaveCommand}"
                                         ButtonState="{Binding SaveButtonState}"/>
-                
             </Grid>
         </AbsoluteLayout>
-
-        <AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5, 1, 1, 80"
-                        AbsoluteLayout.LayoutFlags="PositionProportional, WidthProportional"
-                        IsVisible="{Binding ContinueLayoutIsVisible}">
-
-            <Grid AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 50"
-                  AbsoluteLayout.LayoutFlags="PositionProportional, WidthProportional"
-                  ColumnSpacing="15"
-                  Margin="20, 0, 20, 10">   
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-
-                <buttons:ElevatedButton Text="Continue"
-                                Grid.Column="0"
-                                Command="{Binding ContinueCommand}"
-                                ButtonState="{Binding SaveButtonState}"/>
-
-            </Grid>
-        </AbsoluteLayout>
-
-        <navigationbar:TopNavigationBar Title="{Binding Title}"/>
+        
+        <navigationbar:TopNavigationBar />
     </AbsoluteLayout>
-</ContentPage>
+</template:PageTemplate>

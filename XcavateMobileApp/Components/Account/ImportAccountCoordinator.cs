@@ -37,9 +37,21 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
             OnboardingStage.AgreeTerms or OnboardingStage.AgreeAgreement or OnboardingStage.AgreePrivacy =>
                 new OnboardingAgreementCoordinator().ContinueFromStageAsync(stage, UserTypeSelectionViewModel.ResumeKycFromSavedProfileAsync),
             OnboardingStage.KYC => UserTypeSelectionViewModel.ResumeKycFromSavedProfileAsync(),
+            OnboardingStage.ProfileRegistration => NavigateToProfileRegistrationAsync(),
             OnboardingStage.Finished => NavigateToAppShellAsync(),
             _ => UserTypeSelectionViewModel.NavigateToUserDetailsAsync(),
         };
+    }
+
+    public static Task NavigateToProfileRegistrationAsync()
+    {
+        var viewModel = new ModifyUserProfilePageViewModel
+        {
+            Title = "Register public profile",
+            FirstSetup = true,
+        };
+
+        return Shell.Current.Navigation.PushAsync(new ModifyUserProfilePage(viewModel));
     }
 
     private static Task NavigateToAppShellAsync()

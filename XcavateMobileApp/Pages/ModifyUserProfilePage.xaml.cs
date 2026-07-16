@@ -1,14 +1,13 @@
+using PlutoFramework.Templates.PageTemplate;
+
 namespace XcavateMobileApp.Pages;
 
-public partial class ModifyUserProfilePage : ContentPage
+public partial class ModifyUserProfilePage : PageTemplate
 {
-	public ModifyUserProfilePage(ModifyUserProfilePageViewModel viewModel)
-	{
-        NavigationPage.SetHasNavigationBar(this, false);
-        Shell.SetNavBarIsVisible(this, false);
-
+    public ModifyUserProfilePage(ModifyUserProfilePageViewModel viewModel)
+    {
         InitializeComponent();
 
-		BindingContext = viewModel;
-	}
+        BindingContext = viewModel;
+    }
 }
