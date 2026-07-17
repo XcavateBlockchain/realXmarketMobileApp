@@ -49,24 +49,25 @@ namespace XcavateMobileApp.Pages
 
             string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "temporaryprofilepicture");
 
+            // Release the handle from a previous pick, otherwise recreating the file throws IOException
+            profilePictureStream?.Dispose();
+            profilePictureStream = null;
+
+            byte[] imageBytes;
+
             using (var inputStream = await result.First().OpenReadAsync())
-            using (FileStream outputStream = File.Create(targetFile))
+            using (var memoryStream = new MemoryStream())
             {
-                await inputStream.CopyToAsync(outputStream);
+                await inputStream.CopyToAsync(memoryStream);
 
-                outputStream.Close();
-                inputStream.Close();
+                imageBytes = memoryStream.ToArray();
             }
 
-            if (File.Exists(targetFile))
-            {
-                ProfilePicture = ImageSource.FromStream(() =>
-                {
-                    return File.OpenRead(targetFile);
-                });
+            await File.WriteAllBytesAsync(targetFile, imageBytes);
 
-                profilePictureStream = File.OpenRead(targetFile);
-            }
+            ProfilePicture = ImageSource.FromStream(() => new MemoryStream(imageBytes));
+
+            profilePictureStream = new MemoryStream(imageBytes);
         }
 
 
@@ -86,24 +87,19 @@ namespace XcavateMobileApp.Pages
 
             string targetFile = Path.Combine(FileSystem.Current.AppDataDirectory, "temporaryprofilebackground");
 
-            if (File.Exists(targetFile))
-            {
-                File.Delete(targetFile);
-            }
+            byte[] imageBytes;
 
             using (var inputStream = await result.First().OpenReadAsync())
-            using (FileStream outputStream = new FileStream(targetFile, FileMode.Create, FileAccess.Write))
+            using (var memoryStream = new MemoryStream())
             {
-                await inputStream.CopyToAsync(outputStream);
+                await inputStream.CopyToAsync(memoryStream);
+
+                imageBytes = memoryStream.ToArray();
             }
 
-            if (File.Exists(targetFile))
-            {
-                ProfileBackground = ImageSource.FromStream(() =>
-                {
-                    return File.OpenRead(targetFile);
-                });
-            }
+            await File.WriteAllBytesAsync(targetFile, imageBytes);
+
+            ProfileBackground = ImageSource.FromStream(() => new MemoryStream(imageBytes));
         }
 
         [RelayCommand]
