@@ -172,6 +172,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
     [ObservableProperty]
     private bool isRefreshing;
 
+    private bool isRefreshInProgress;
+
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(NoOwnedProperties))]
     private ObservableCollection<XcavateNftWrapper> ownedProperties = [];
@@ -202,16 +204,22 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
     public async Task RefreshAsync(CancellationToken externalToken)
     {
-        if (IsRefreshing)
+        // RefreshView sets IsRefreshing to true (TwoWay binding) before executing
+        // RefreshCommand, so IsRefreshing cannot be used as a re-entrancy guard here.
+        if (isRefreshInProgress)
         {
             return;
         }
 
+        isRefreshInProgress = true;
         IsRefreshing = true;
 
         try
         {
             var token = ReplaceLoadingToken(externalToken);
+
+            // A user-initiated refresh should always re-fetch, even for the same query.
+            hasLoadedQuery = false;
 
             await LoadOwnedPropertiesForSelectedEndpointAsync(token).ConfigureAwait(false);
         }
@@ -222,6 +230,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
         finally
         {
             IsRefreshing = false;
+            isRefreshInProgress = false;
         }
     }
 
