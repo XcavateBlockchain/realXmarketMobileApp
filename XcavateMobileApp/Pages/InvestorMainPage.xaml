@@ -24,6 +24,7 @@
              xmlns:kilt="clr-namespace:PlutoFramework.Components.Kilt;assembly=PlutoFramework"
              xmlns:sumsub="clr-namespace:PlutoFramework.Components.Sumsub;assembly=PlutoFramework"
              xmlns:card="clr-namespace:PlutoFramework.Components.Card;assembly=PlutoFramework"
+             xmlns:loading="clr-namespace:PlutoFramework.Components.Loading;assembly=PlutoFramework"
              BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}"
              Shell.PresentationMode="NotAnimated"
              HideSoftInputOnTapped="True">
@@ -162,7 +163,9 @@
         <xcavate:NotWhitelistedPopupView ZIndex="10" />
 
         <password:EnterPasswordPopupView ZIndex="10"/>
-        
+
+        <loading:FullPageLoadingView ZIndex="20" />
+
         <addressview:AddressQrCodeView />
 
         <transferview:TransferView />
