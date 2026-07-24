@@ -25,6 +25,7 @@
              xmlns:sumsub="clr-namespace:PlutoFramework.Components.Sumsub;assembly=PlutoFramework"
              xmlns:card="clr-namespace:PlutoFramework.Components.Card;assembly=PlutoFramework"
              xmlns:loading="clr-namespace:PlutoFramework.Components.Loading;assembly=PlutoFramework"
+             xmlns:animations="clr-namespace:PlutoFramework.Components.Animations;assembly=PlutoFramework"
              BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}"
              Shell.PresentationMode="NotAnimated"
              HideSoftInputOnTapped="True">
@@ -41,7 +42,11 @@
                      AbsoluteLayout.LayoutFlags="All"
                      Margin="0,65,0,65"
                      Command="{Binding RefreshCommand}"
+                     RefreshColor="Transparent"
                      IsRefreshing="{Binding IsRefreshing}">
+            <RefreshView.Behaviors>
+                <animations:PullProgressBehavior x:Name="mainPullProgress" />
+            </RefreshView.Behaviors>
             <ScrollView x:Name="mainScrollView"
                         AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
                         AbsoluteLayout.LayoutFlags="All"
@@ -131,6 +136,12 @@
                 </VerticalStackLayout>
             </ScrollView>
         </RefreshView>
+
+        <animations:ParticleStreamView AbsoluteLayout.LayoutBounds="0, 65, 1, 100"
+                                       AbsoluteLayout.LayoutFlags="XProportional,WidthProportional"
+                                       ParticleColor="{StaticResource Primary}"
+                                       Playing="{Binding IsRefreshing}"
+                                       PullProgress="{Binding Source={x:Reference mainPullProgress}, Path=Progress}" />
 
         <components:XcavateMainPageTopNavigationBarView />
 
