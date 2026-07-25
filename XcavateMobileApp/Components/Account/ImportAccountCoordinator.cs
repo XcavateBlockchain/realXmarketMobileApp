@@ -10,8 +10,18 @@ namespace XcavateMobileApp.Components.Account;
 
 public class ImportAccountCoordinator : IImportAccountCoordinator
 {
+    /// <summary>
+    /// The flow the user picked on the welcome page, stored next to the onboarding stage.
+    /// </summary>
+    /// <remarks>
+    /// Both flows sit at <see cref="OnboardingStage.SetupPassword"/> until onboarding finishes,
+    /// so the stage alone cannot tell them apart on resume. Without this, a user who chose
+    /// Import, set a password and was interrupted on the seed-phrase page came back to a
+    /// freshly generated wallet while believing their funded one had been imported.
+    /// </remarks>
+    private const string FLOW_MODE_KEY = "OnboardingImportAccountFlowMode";
+
     private readonly INavigationService _navigationService;
-    private ImportAccountFlowMode _flowMode;
 
     public ImportAccountCoordinator()
         : this(new MauiNavigationService())
@@ -58,17 +68,35 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Resumes onboarding into the flow the user originally chose. Both flows re-run the
+    /// password step, which is what the Create path already did before it resumed.
+    /// </summary>
     private Task ContinueSetupPasswordAsync()
     {
+        if (GetSavedFlowMode() == ImportAccountFlowMode.Import)
+        {
+            return ShowImportMethodPopupAsync();
+        }
+
         return _navigationService.NavigateToAsync(new SetupPasswordPage
         {
             Navigation = CreateSolanaAccountAsync,
         });
     }
 
+    /// <summary>
+    /// Defaults to <see cref="ImportAccountFlowMode.Create"/> so a stage written before this
+    /// preference existed resumes exactly as it used to. A stale value cannot be read: the
+    /// only reader runs at <see cref="OnboardingStage.SetupPassword"/>, and only
+    /// <see cref="StartAsync"/> sets that stage - after writing the preference.
+    /// </summary>
+    private static ImportAccountFlowMode GetSavedFlowMode() =>
+        (ImportAccountFlowMode)Preferences.Get(FLOW_MODE_KEY, (int)ImportAccountFlowMode.Create);
+
     public async Task StartAsync(ImportAccountFlowMode flowMode)
     {
-        _flowMode = flowMode;
+        Preferences.Set(FLOW_MODE_KEY, (int)flowMode);
 
         OnboardingModel.SetOnboardingStage(OnboardingStage.SetupPassword);
 
