@@ -9,6 +9,7 @@
          xmlns:txanalyzer="clr-namespace:PlutoFramework.Components.TransactionAnalyzer;assembly=PlutoFramework"
          xmlns:password="clr-namespace:PlutoFramework.Components.Password;assembly=PlutoFramework"
              xmlns:onboarding="clr-namespace:PlutoFramework.Components.Onboarding;assembly=PlutoFramework"
+             xmlns:solana="clr-namespace:PlutoFramework.Components.Solana;assembly=PlutoFramework"
          BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}">
     <AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1" AbsoluteLayout.LayoutFlags="All">
 
@@ -112,5 +113,6 @@
         </Grid>
 
         <onboarding:OnboardingInProgressPopup />
+        <solana:ImportMethodPopupView />
     </AbsoluteLayout>
 </ContentPage>
