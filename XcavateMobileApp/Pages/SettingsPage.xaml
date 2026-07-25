@@ -5,6 +5,7 @@
                        xmlns:template="clr-namespace:PlutoFramework.Templates.PageTemplate;assembly=PlutoFramework"
                        xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
                        xmlns:accounts="clr-namespace:PlutoFramework.Components.Account;assembly=PlutoFramework"
+                       xmlns:solana="clr-namespace:PlutoFramework.Components.Solana;assembly=PlutoFramework"
                        x:Class="XcavateMobileApp.Pages.SettingsPage"
                        Title="Settings">
     <ScrollView AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
@@ -12,6 +13,8 @@
         <VerticalStackLayout HorizontalOptions="Center"
                          Padding="20, 10, 20, 100"
                          Spacing="15">
+
+            <solana:SolanaNetworkSettingsView />
 
             <settings:GenericButton Title="Developer settings"
                                 IsVisible="False">
