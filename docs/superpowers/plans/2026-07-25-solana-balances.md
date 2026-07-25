@@ -2258,7 +2258,9 @@ git commit -m "feat: show the Solana balance on the investor main page"
 - Consumes: `ImportMethodPopupViewModel` (Task 10), `KeysModel.SaveSolanaMnemonicKeyAsync`, `SolanaMnemonicsModel.GenerateMnemonics`, `EnterSolanaMnemonicsPage`, `ConnectMwaPage`, `OnboardingModel.SetOnboardingStage`.
 - Produces: `ImportAccountCoordinator.StartAsync(ImportAccountFlowMode)` saving a Solana key and finishing onboarding.
 
-**Ordering is load-bearing.** `SaveSolanaMnemonicKeyAsync` and `SolanaMwaModel.ConnectAndSaveAsync` both read the stored password (`SecureStorage.Default.GetAsync(PreferencesModel.PASSWORD)`) and pass it to `SaveKeyAsync` as non-null. The password step must therefore complete before any key is saved — the create branch generates after the password page, and the MWA branch connects after it.
+**Ordering is load-bearing.** `SaveSolanaMnemonicKeyAsync` and `SolanaMwaModel.ConnectAndSaveAsync` both read the stored password (`SecureStorage.Default.GetAsync(PreferencesModel.PASSWORD)`) and pass it to `SaveKeyAsync` as non-null. The password step must therefore complete before any key is saved, so **all three branches are password-first**.
+
+This matters most on the seed branch, and the reason is not obvious: `EnterSolanaMnemonicsViewModel.ContinueWithMnemonicsAsync` (`EnterSolanaMnemonicsViewModel.cs:67`) calls `SaveSolanaMnemonicKeyAsync` **itself**, before invoking its `Navigation` callback — and wraps both in a `try/catch` that sets `IncorrectMnemonicsEntered`. Reach that page without a stored password and the save throws, the catch swallows it, and the user is told a perfectly valid seed phrase is invalid, with no way forward. So the password page comes *before* `EnterSolanaMnemonicsPage`, and that page's `Navigation` callback only finishes onboarding — it must not save again. `ConnectMwaPageViewModel` saves itself the same way, so the MWA branch has the same shape.
 
 `OnboardingStage.Finished` is set only in `ModifyUserProfilePageViewModel.cs:147` today. Since this flow no longer reaches profile registration, the coordinator must set it, or `App.xaml.cs:116` sends the user back into onboarding on every launch.
 
@@ -2302,11 +2304,19 @@ In `XcavateMobileApp/Components/Account/ImportAccountCoordinator.cs`, replace `S
     {
         var popup = DependencyService.Get<ImportMethodPopupViewModel>();
 
-        popup.SeedPhraseChosen = () => _navigationService.NavigateToAsync(new EnterSolanaMnemonicsPage(
-            new EnterSolanaMnemonicsViewModel
-            {
-                Navigation = OnSolanaMnemonicsEnteredAsync,
-            }));
+        // Both branches set the password first, then open a page that saves the key itself.
+        // EnterSolanaMnemonicsViewModel.ContinueWithMnemonicsAsync calls
+        // SaveSolanaMnemonicKeyAsync before invoking Navigation, and that save reads the
+        // stored password — reaching it without one throws, and the view model's catch
+        // reports a valid phrase as invalid, dead-ending onboarding.
+        popup.SeedPhraseChosen = () => _navigationService.NavigateToAsync(new SetupPasswordPage
+        {
+            Navigation = () => _navigationService.NavigateToAsync(new EnterSolanaMnemonicsPage(
+                new EnterSolanaMnemonicsViewModel
+                {
+                    Navigation = (mnemonics) => FinishOnboardingAsync(),
+                })),
+        });
 
         popup.MwaChosen = () => _navigationService.NavigateToAsync(new SetupPasswordPage
         {
@@ -2320,19 +2330,6 @@ In `XcavateMobileApp/Components/Account/ImportAccountCoordinator.cs`, replace `S
         popup.IsVisible = true;
 
         return Task.CompletedTask;
-    }
-
-    private Task OnSolanaMnemonicsEnteredAsync(string mnemonics)
-    {
-        return _navigationService.NavigateToAsync(new SetupPasswordPage
-        {
-            Navigation = async () =>
-            {
-                await KeysModel.SaveSolanaMnemonicKeyAsync(mnemonics);
-
-                await FinishOnboardingAsync();
-            },
-        });
     }
 
     private static async Task CreateSolanaAccountAsync()
