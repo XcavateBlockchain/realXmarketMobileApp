@@ -6,6 +6,7 @@ using PlutoFramework.Model;
 using PlutoFramework.Model.Xcavate;
 using PlutoFramework.Model.Xcavate.Profile;
 using PlutoFrameworkCore;
+using PlutoFrameworkCore.Solana;
 using XcavateMobileApp.Components.Account;
 using XcavateMobileApp.Components.Sumsub;
 using XcavateMobileApp.Pages;
@@ -97,6 +98,27 @@ namespace XcavateMobileApp
                 //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsReserved, 1984),
             ];
 
+            // Mint addresses are cluster-specific; the same token has a different one on each.
+            // Both verified live on 2026-07-25.
+            PlutoConfigurationModel.WhitelistedSolanaTokens = [
+                new SolanaTokenWhitelistEntry
+                {
+                    Cluster = SolanaCluster.Mainnet,
+                    Mint = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                    Symbol = "USDC",
+                    Decimals = 6,
+                    PinnedUsdPrice = 1.00,
+                },
+                new SolanaTokenWhitelistEntry
+                {
+                    Cluster = SolanaCluster.Devnet,
+                    Mint = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+                    Symbol = "USDC",
+                    Decimals = 6,
+                    PinnedUsdPrice = 1.00,
+                },
+            ];
+
             PlutoConfigurationModel.WhitelistedDApps = [
                 "realxmessage.xcavate.io",
             ];
@@ -113,9 +135,11 @@ namespace XcavateMobileApp
             var onboardingPopupViewModel = DependencyService.Get<OnboardingInProgressPopupViewModel>();
             onboardingPopupViewModel.ContinueRequested = ContinueOnboardingAsync;
 
+            // Either key counts. New accounts are Solana-only; users onboarded before that
+            // change still hold a Substrate key and must not be pushed back into onboarding.
             MainPage = OnboardingModel.IsOnboardingCompleted() switch
             {
-                true when KeysModel.HasSubstrateKey() => new XcavateAppShell(),
+                true when KeysModel.HasSolanaKey() || KeysModel.HasSubstrateKey() => new XcavateAppShell(),
                 _ => new OnboardingShell(),
             };
         }
@@ -162,15 +186,7 @@ namespace XcavateMobileApp
         {
             await KeysModel.ClearAsync();
 
-            string mnemonics = MnemonicsModel.GenerateMnemonics();
-            string didMnemonics = $"{mnemonics}//did";
-            string x25519Mnemonics = $"{mnemonics}//x25519";
-
-            await Task.WhenAll(
-                KeysModel.SaveSr25519KeyAsync(mnemonics),
-                KeysModel.SaveDidKeyAsync(didMnemonics),
-                KeysModel.GenerateNewEncryptionX25519KeyAsync()
-            );
+            await KeysModel.GenerateNewSolanaAccountAsync();
         }
     }
 }
