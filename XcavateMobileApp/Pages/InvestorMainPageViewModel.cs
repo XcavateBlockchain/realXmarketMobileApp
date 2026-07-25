@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using PlutoFramework;
 using PlutoFramework.Components.XcavateProperty;
 using PlutoFramework.Constants;
 using PlutoFramework.Model;
@@ -222,6 +223,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
             hasLoadedQuery = false;
 
             await LoadOwnedPropertiesForSelectedEndpointAsync(token).ConfigureAwait(false);
+
+            await MainPageLayoutUpdater.ViewLocalLoadAsync(token).ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
