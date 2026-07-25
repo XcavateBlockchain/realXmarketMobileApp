@@ -69,7 +69,19 @@ namespace XcavateMobileApp
                 await coordinator.StartAsync(flowMode);
             };
 
-            NavigationModel.NavigateToKYCUserPage = () => Shell.Current.Navigation.PushAsync(new SumsubUserPage(KeysModel.GetSubstrateKey()));
+            // Sumsub applicants are keyed by Substrate address. Without one there is nothing
+            // to look up, and GetSubstrateKey() would hand over its placeholder string.
+            NavigationModel.NavigateToKYCUserPage = () =>
+            {
+                if (!KeysModel.HasSubstrateKey())
+                {
+                    DependencyService.Get<NoAccountPopupViewModel>().IsVisible = true;
+
+                    return Task.CompletedTask;
+                }
+
+                return Shell.Current.Navigation.PushAsync(new SumsubUserPage(KeysModel.GetSubstrateKey()));
+            };
 
             NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());
 

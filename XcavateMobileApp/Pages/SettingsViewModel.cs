@@ -9,7 +9,7 @@ namespace XcavateMobileApp.Pages
         private bool hasAccount;
         public SettingsViewModel()
         {
-            hasAccount = KeysModel.HasSubstrateKey();
+            hasAccount = KeysModel.HasSolanaKey() || KeysModel.HasSubstrateKey();
         }
     }
 }
