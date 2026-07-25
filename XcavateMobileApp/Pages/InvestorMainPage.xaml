@@ -83,6 +83,17 @@
                                                                 x:Name="balanceCellView"/>
                     </Grid>
 
+                    <!--
+                        Headless on purpose. The Solana cell above replaced this one visually, but
+                        this is still the only view that populates AssetsModel.AssetsDict for
+                        existing Substrate users - the Substrate BalancePage, BuyPropertyTokensViewModel
+                        and AssetSelectButtonViewModel all read that dictionary. IsVisible="False"
+                        makes it Visibility.Collapsed, so VerticalStackLayout skips it for both
+                        measure and spacing: it loads, it does not lay out.
+                    -->
+                    <xcavatecells:BalanceCellView x:Name="substrateBalanceCellView"
+                                                  IsVisible="False" />
+
                     <VerticalStackLayout Spacing="5">
                         <Grid Margin="0,0,0,5" ColumnDefinitions="Auto,Auto,*,62" ColumnSpacing="10">
                             <buttons:ElevatedButton Grid.Column="0"

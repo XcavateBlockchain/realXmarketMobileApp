@@ -7,7 +7,13 @@ namespace XcavateMobileApp.Pages;
 
 public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
 {
-    public IList<IView> Views => [balanceCellView];
+    /// <summary>
+    /// Everything MainPageLayoutUpdater loads on this page. <c>substrateBalanceCellView</c> is
+    /// invisible and belongs here purely as a loader: it is the only caller of
+    /// <c>AssetsModel.LoadAssets</c> and <c>AssetsModel.GetBalanceAsync</c>, so dropping it from
+    /// this list leaves <c>AssetsModel.AssetsDict</c> empty for existing Substrate users.
+    /// </summary>
+    public IList<IView> Views => [balanceCellView, substrateBalanceCellView];
     public static MultiNetworkSelectView? NetworksView { get; set; }
 
     private readonly InvestorMainPageViewModel viewModel;
