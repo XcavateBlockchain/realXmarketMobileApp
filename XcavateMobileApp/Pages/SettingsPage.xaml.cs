@@ -29,9 +29,20 @@ public partial class SettingsPage : PageTemplate
 
         popupViewModel.ContinueRequested = async () =>
         {
-            var account = await KeysModel.GetAccountAsync();
+            // GetAccountAsync only looks at Sr25519/PolkadotJson keys, so it returns null for a
+            // Solana-only user and the old unconditional early return made this button a silent
+            // no-op for them - confirmed, then nothing, with no way to remove the wallet from
+            // the device. The decrypt is still the ownership check on the Substrate path.
+            if (KeysModel.HasSubstrateKey())
+            {
+                var account = await KeysModel.GetAccountAsync();
 
-            if (account is null)
+                if (account is null)
+                {
+                    return;
+                }
+            }
+            else if (!KeysModel.HasSolanaKey())
             {
                 return;
             }
