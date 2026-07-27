@@ -121,28 +121,46 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
     {
         var popup = DependencyService.Get<ImportMethodPopupViewModel>();
 
-        // Both branches set the password first, then open a page that saves the key itself.
-        // EnterSolanaMnemonicsViewModel.ContinueWithMnemonicsAsync calls
-        // SaveSolanaMnemonicKeyAsync before invoking Navigation, and that save reads the
+        // Both branches set the password first, then open a popup that saves the key itself.
+        // EnterSolanaMnemonicsPopupViewModel.ContinueWithMnemonicsAsync calls
+        // SaveSolanaMnemonicKeyAsync before invoking Completed, and that save reads the
         // stored password — reaching it without one throws, and the view model's catch
         // reports a valid phrase as invalid, dead-ending onboarding.
         popup.SeedPhraseChosen = () => _navigationService.NavigateToAsync(new SetupPasswordPage
         {
-            Navigation = () => _navigationService.NavigateToAsync(new EnterSolanaMnemonicsPage(
-                new EnterSolanaMnemonicsViewModel
-                {
-                    Navigation = (mnemonics) => FinishOnboardingAsync(),
-                })),
+            Navigation = ShowEnterSolanaMnemonicsPopupAsync,
         });
 
         popup.MwaChosen = () => _navigationService.NavigateToAsync(new SetupPasswordPage
         {
-            Navigation = () => _navigationService.NavigateToAsync(new ConnectMwaPage(
-                new ConnectMwaPageViewModel
-                {
-                    Navigation = FinishOnboardingAsync,
-                })),
+            Navigation = ShowConnectMwaPopupAsync,
         });
+
+        popup.IsVisible = true;
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Both popups open over <see cref="SetupPasswordPage"/>, which hosts them, rather than
+    /// pushing a further page onto a stack the user never gets to walk back through.
+    /// </summary>
+    private static Task ShowEnterSolanaMnemonicsPopupAsync()
+    {
+        var popup = DependencyService.Get<EnterSolanaMnemonicsPopupViewModel>();
+
+        popup.Completed = (mnemonics) => FinishOnboardingAsync();
+
+        popup.IsVisible = true;
+
+        return Task.CompletedTask;
+    }
+
+    private static Task ShowConnectMwaPopupAsync()
+    {
+        var popup = DependencyService.Get<ConnectMwaPopupViewModel>();
+
+        popup.Completed = FinishOnboardingAsync;
 
         popup.IsVisible = true;
 
