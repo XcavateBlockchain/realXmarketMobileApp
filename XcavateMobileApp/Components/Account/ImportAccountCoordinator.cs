@@ -160,7 +160,12 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
     {
         var popup = DependencyService.Get<ConnectMwaPopupViewModel>();
 
-        popup.Completed = FinishOnboardingAsync;
+        popup.Completed = async (key) =>
+        {
+            await KeysModel.SaveSolanaMwaKeyAsync(key);
+
+            await FinishOnboardingAsync();
+        };
 
         popup.IsVisible = true;
 
