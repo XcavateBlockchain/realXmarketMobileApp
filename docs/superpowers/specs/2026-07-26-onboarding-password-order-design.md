@@ -150,7 +150,7 @@ stored password) still holds and still explains the ordering inside each handler
 |---|---|
 | Combined page abandoned | Nothing written. Resume re-shows the import-method popup. |
 | MWA connected, app killed before password | The key was only ever in memory, so nothing is written. Resume re-shows the import-method popup; the user reconnects. The abandoned wallet-side authorization is left un-revoked. |
-| Invalid phrase | Existing inline "That is not a valid seed phrase." |
+| Invalid phrase | Inline "That is not a valid seed phrase." appears live, once the phrase reaches 12 words and still fails validation. |
 | Passwords mismatch | Existing mismatch label; Continue stays disabled until the rules pass. |
 | Key save throws on the combined page | Its own message — "Could not save your wallet. Please try again." The phrase is already validated by that point, so reusing the popup's invalid-phrase catch would tell the user their correct phrase is wrong. |
 | MWA connect fails | Unchanged: the popup stays open on its error and the user retries. |

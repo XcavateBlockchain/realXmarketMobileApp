@@ -143,8 +143,9 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
     }
 
     /// <summary>
-    /// Opens over whatever page raised the import-method popup - the page template hosts it -
-    /// so the wallet is connected before anything is asked of the user.
+    /// Opens over whatever page raised the import-method popup - the page template hosts it,
+    /// and <see cref="WelcomePage"/> declares its own - so the wallet is connected before
+    /// anything is asked of the user.
     /// </summary>
     private Task ShowConnectMwaPopupAsync()
     {
