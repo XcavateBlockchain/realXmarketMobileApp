@@ -70,8 +70,9 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
     }
 
     /// <summary>
-    /// Resumes onboarding into the flow the user originally chose. Both flows re-run the
-    /// password step, which is what the Create path already did before it resumed.
+    /// Resumes onboarding into the flow the user originally chose. Create re-runs the
+    /// password page; Import re-runs the method popup, which is where its password step now
+    /// lives - on the import page for a phrase, after the wallet for MWA.
     /// </summary>
     private Task ContinueSetupPasswordAsync()
     {
@@ -115,27 +116,26 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
     }
 
     /// <summary>
-    /// Asks how the account arrives. Both answers end at the password page, because saving
-    /// any key — a phrase or an MWA auth token — needs the stored password to encrypt it.
+    /// Asks how the account arrives, then continues into whichever flow can ask for a
+    /// password at the right moment for it.
     /// </summary>
+    /// <remarks>
+    /// Saving any key - a phrase or an MWA auth token - reads the stored password to encrypt
+    /// it, so a password still has to exist before the save. What differs is where it is
+    /// asked for: a phrase import collects it on the same screen as the phrase, and a wallet
+    /// connection collects it after the wallet has approved.
+    /// </remarks>
     private Task ShowImportMethodPopupAsync()
     {
         var popup = DependencyService.Get<ImportMethodPopupViewModel>();
 
-        // Both branches set the password first, then open a popup that saves the key itself.
-        // EnterSolanaMnemonicsPopupViewModel.ContinueWithMnemonicsAsync calls
-        // SaveSolanaMnemonicKeyAsync before invoking Completed, and that save reads the
-        // stored password — reaching it without one throws, and the view model's catch
-        // reports a valid phrase as invalid, dead-ending onboarding.
-        popup.SeedPhraseChosen = () => _navigationService.NavigateToAsync(new SetupPasswordPage
+        popup.SeedPhraseChosen = () => _navigationService.NavigateToAsync(new ImportSolanaWalletPage
         {
-            Navigation = ShowEnterSolanaMnemonicsPopupAsync,
+            // The page saves the password and the phrase itself, in that order.
+            Navigation = FinishOnboardingAsync,
         });
 
-        popup.MwaChosen = () => _navigationService.NavigateToAsync(new SetupPasswordPage
-        {
-            Navigation = ShowConnectMwaPopupAsync,
-        });
+        popup.MwaChosen = ShowConnectMwaPopupAsync;
 
         popup.IsVisible = true;
 
@@ -143,42 +143,36 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
     }
 
     /// <summary>
-    /// Both popups open over <see cref="SetupPasswordPage"/>, which hosts them, rather than
-    /// pushing a further page onto a stack the user never gets to walk back through.
+    /// Opens over whatever page raised the import-method popup - the page template hosts it -
+    /// so the wallet is connected before anything is asked of the user.
     /// </summary>
-    private static Task ShowEnterSolanaMnemonicsPopupAsync()
-    {
-        var popup = DependencyService.Get<EnterSolanaMnemonicsPopupViewModel>();
-
-        popup.Completed = (mnemonics) => FinishOnboardingAsync();
-
-        popup.IsVisible = true;
-
-        return Task.CompletedTask;
-    }
-
-    private static Task ShowConnectMwaPopupAsync()
+    private Task ShowConnectMwaPopupAsync()
     {
         var popup = DependencyService.Get<ConnectMwaPopupViewModel>();
 
-        popup.Completed = async (key) =>
+        // The popup does not persist the authorization. It is held here, in memory only,
+        // until the password that encrypts it exists. Abandoning the flow at the password
+        // page therefore saves nothing, and the user reconnects on the next attempt.
+        popup.Completed = (key) => _navigationService.NavigateToAsync(new SetupPasswordPage
         {
-            // SaveSolanaMwaKeyAsync deletes the existing Solana key before it can fail, so a
-            // failure here must not be reported as success - it can leave the account slot
-            // empty rather than unchanged.
-            try
+            Navigation = async () =>
             {
-                await KeysModel.SaveSolanaMwaKeyAsync(key);
-            }
-            catch (Exception ex)
-            {
-                await Toast.Make($"Could not save your wallet: {ex.Message}").Show();
+                try
+                {
+                    // The save clears any existing Solana key before it can fail, so a silent
+                    // failure would leave no account at all.
+                    await KeysModel.SaveSolanaMwaKeyAsync(key);
+                }
+                catch (Exception ex)
+                {
+                    await Toast.Make($"Could not save your wallet: {ex.Message}").Show();
 
-                return;
-            }
+                    return;
+                }
 
-            await FinishOnboardingAsync();
-        };
+                await FinishOnboardingAsync();
+            },
+        });
 
         popup.IsVisible = true;
 
