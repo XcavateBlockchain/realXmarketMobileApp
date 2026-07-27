@@ -114,5 +114,9 @@
 
         <onboarding:OnboardingInProgressPopup />
         <solana:ImportMethodPopupView />
+        <!-- Not a PageTemplate page, so the MWA popup the import-method popup opens into has
+             to be declared here. Onboarding connects the wallet from this page, before there
+             is any password to set. -->
+        <solana:ConnectMwaPopupView />
     </AbsoluteLayout>
 </ContentPage>
