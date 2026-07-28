@@ -173,20 +173,13 @@ namespace XcavateMobileApp
             var profileService = new XcavateProfileService();
             var profile = await profileService.GetProfileAsync();
 
-            var profilePictureImageSource = profile?.ProfilePicture != null ? new UriImageSource
-            {
-                Uri = new Uri(profile.ProfilePicture),
-                CachingEnabled = false,
-                CacheValidity = TimeSpan.FromSeconds(0),
-            } : null;
-
             var viewModel = new ModifyUserProfilePageViewModel()
             {
                 Title = "Edit public profile",
                 FirstSetup = false,
                 Nickname = profile?.Nickname ?? string.Empty,
                 Bio = profile?.Bio ?? string.Empty,
-                ProfilePicture = profilePictureImageSource,
+                ProfilePicture = ProfilePictureImageSourceModel.Create(profile?.ProfilePicture),
             };
 
             loadingViewModel.IsVisible = false;
