@@ -1,5 +1,6 @@
 using CommunityToolkit.Maui.Alerts;
 using PlutoFramework.Components.Account;
+using PlutoFramework.Components.Loading;
 using PlutoFramework.Components.Onboarding;
 using PlutoFramework.Components.Password;
 using PlutoFramework.Components.Solana;
@@ -131,8 +132,9 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
 
         popup.SeedPhraseChosen = () => _navigationService.NavigateToAsync(new ImportSolanaWalletPage
         {
-            // The page saves the password and the phrase itself, in that order.
-            Navigation = FinishOnboardingAsync,
+            // The page saves the password and the phrase itself, in that order, then hands
+            // the phrase back so the Substrate identity comes off the same backup.
+            Navigation = (mnemonics) => ContinueAfterAccountCreatedAsync(mnemonics),
         });
 
         popup.MwaChosen = ShowConnectMwaPopupAsync;
@@ -171,7 +173,9 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
                     return;
                 }
 
-                await FinishOnboardingAsync();
+                // No phrase to pass on: the wallet app keeps it. The Substrate identity is
+                // generated independently, as the X25519 key already is on this path.
+                await ContinueAfterAccountCreatedAsync();
             },
         });
 
@@ -188,18 +192,48 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
 
         await KeysModel.SaveSolanaMnemonicKeyAsync(mnemonics);
 
-        await FinishOnboardingAsync();
+        await ContinueAfterAccountCreatedAsync(mnemonics);
     }
 
     /// <summary>
-    /// Ends onboarding. This flow no longer reaches profile registration, which is where
-    /// <see cref="OnboardingStage.Finished"/> used to be set, so setting it here is what
-    /// stops App.xaml.cs routing the user back into onboarding on every launch.
+    /// Hands off from "the wallet exists" to the rest of onboarding: role, user details,
+    /// questionnaire, agreements, KYC and finally profile registration, which is what sets
+    /// <see cref="OnboardingStage.Finished"/>.
     /// </summary>
-    private static Task FinishOnboardingAsync()
+    /// <remarks>
+    /// The Substrate identity is written first because every step after this one is keyed to
+    /// it - the questionnaire submits an SS58 address, the Sumsub applicant is created under
+    /// one plus a DID, and roles are granted against one in the XcavatePaseo whitelist
+    /// pallet. Writing it before the stage advances also means a user interrupted here
+    /// resumes into a role selection that has the keys it needs.
+    /// </remarks>
+    private static async Task ContinueAfterAccountCreatedAsync(string? mnemonics = null)
     {
-        OnboardingModel.SetOnboardingStage(OnboardingStage.Finished);
+        var loadingViewModel = DependencyService.Get<FullPageLoadingViewModel>();
 
-        return NavigateToAppShellAsync();
+        loadingViewModel.IsVisible = true;
+        loadingViewModel.Message = "Setting up your account";
+
+        try
+        {
+            await KeysModel.EnsureSubstrateIdentityAsync(mnemonics);
+        }
+        catch (Exception ex)
+        {
+            // The wallet is saved by this point, so this is recoverable - but silently
+            // continuing would strand the user at a questionnaire that throws on a key that
+            // is not there.
+            await Toast.Make($"Could not finish setting up your account: {ex.Message}").Show();
+
+            return;
+        }
+        finally
+        {
+            loadingViewModel.IsVisible = false;
+        }
+
+        OnboardingModel.SetOnboardingStage(OnboardingStage.SelectRole);
+
+        await NavigationModel.NavigateAfterAccountCreation.Invoke();
     }
 }
