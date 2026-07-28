@@ -14,6 +14,8 @@
                          Padding="20, 10, 20, 100"
                          Spacing="15">
 
+            <settings:MainKeySettingsView />
+
             <solana:SolanaNetworkSettingsView />
 
             <settings:GenericButton Title="Developer settings"
