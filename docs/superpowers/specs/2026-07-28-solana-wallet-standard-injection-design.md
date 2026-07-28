@@ -352,6 +352,62 @@ not change. Reauthorizing onto the requested chain is exactly the mismatch-handl
 unified-account design already established, pointed at the dapp's choice rather than the
 app's setting.
 
+## Legacy Phantom-style provider
+
+**Added 2026-07-29, after the Wallet Standard registration alone was found not to work
+against the actual dashboard.**
+
+The hosted dashboard does not consume the Wallet Standard. Its Solana path
+(`app/services/wallet/solanaProvider.ts` and `walletCatalog.ts` in
+[assetDidCommDashboard](https://github.com/rostislavlitovkin/assetDidCommDashboard)) probes
+three globals directly:
+
+```ts
+if (w.phantom?.solana) return { provider: w.phantom.solana, name: 'Phantom' }
+if (w.solflare)       return { provider: w.solflare,       name: 'Solflare' }
+if (w.backpack)       return { provider: w.backpack,       name: 'Backpack' }
+return null
+```
+
+and uses exactly three members of what it finds:
+
+```ts
+interface SolanaInjectedProvider {
+  publicKey?: { toBase58(): string } | null
+  connect(options?: { onlyIfTrusted?: boolean }): Promise<{ publicKey?: { toBase58(): string } } | void>
+  signMessage(message: Uint8Array, display?: 'utf8' | 'hex'): Promise<{ signature: Uint8Array } | Uint8Array>
+}
+```
+
+Its Polkadot path reads `window.injectedWeb3`, which is why the existing Polkadot injection
+has always worked and why the mismatch was specific to Solana.
+
+The injected script therefore installs a second surface at `window.phantom.solana`, backed by
+the same bridge methods, alongside the Wallet Standard registration. Behaviour that the
+dashboard's code depends on:
+
+| Requirement | Why |
+|---|---|
+| `connect({ onlyIfTrusted: true })` must **reject** when unapproved | The dashboard reads a rejection as "not trusted yet" and leaves the stored session alone. Resolving without a key throws deeper in its own `resolveAddress` with a misleading message. |
+| `connect()` resolves `{ publicKey: { toBase58() } }` | `resolveAddress` reads `connectResult.publicKey` first, falling back to `provider.publicKey`. |
+| `provider.publicKey` non-null after connect | `signApiRequest` compares it against the address it was asked to sign for. |
+| `signMessage` returns a real `Uint8Array` | The result goes straight into `@polkadot/util-crypto`'s `base58Encode`. |
+
+The Wallet Standard registration is kept. It costs nothing, is already covered by tests, and
+keeps the wallet usable by any other dapp built on `@solana/wallet-adapter`.
+
+### Known limitation: the wallet is labelled "Phantom"
+
+The dashboard's `WALLET_CATALOG` has exactly three Solana brand ids and takes the displayed
+provider name from whichever global matched — there is no generic or first-party slot. Since
+the app injects at `window.phantom.solana`, the dashboard shows the in-app wallet as
+"Phantom".
+
+Nothing on the injection side can change this; the name is decided by the dashboard's
+detection order, not read from the provider. Fixing it properly means a change in the
+dashboard: a fourth catalog entry detecting a first-party global, with `solanaProvider.ts`
+probing it ahead of the three extensions.
+
 ## Autoconnect
 
 At injection time, if the host already has a positive entry in
@@ -409,10 +465,10 @@ installed; both will be reported as untested rather than implied to work.
 
 - **`solana:signIn` (SIWS).** It needs a domain-bound message builder and an approval screen
   with no Polkadot counterpart, so its UX could not be "identical" to anything existing.
-- **A legacy `window.solana` shim.** This design assumes the hosted dashboard discovers
-  wallets through `@solana/wallet-adapter` or `@wallet-standard/app`. A dapp reading
-  `window.solana` directly would not see a Wallet Standard registration. Adding a shim later
-  is small and additive.
+- ~~**A legacy `window.solana` shim.**~~ **This assumption was wrong — see
+  [Legacy Phantom-style provider](#legacy-phantom-style-provider).** The hosted dashboard
+  does not use `@solana/wallet-adapter` or `@wallet-standard/app` at all, so the shim is
+  required rather than optional and is now part of the implementation.
 - **Multi-signature transactions where this account is not among the required signers.**
   `FindSignerIndex` throws rather than guessing.
 - **Priority fees, compute-budget instructions, transaction simulation and confirmation
