@@ -11,7 +11,14 @@
              xmlns:pages="clr-namespace:XcavateMobileApp.Pages"
              xmlns:page="clr-namespace:PlutoFramework.Templates.PageTemplate;assembly=PlutoFramework"
              NavigationBarIsVisible="false">
-    <Grid AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1" AbsoluteLayout.LayoutFlags="All"
+    <Grid AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+          AbsoluteLayout.LayoutFlags="All"
+          RowDefinitions="55,*">
+        <navigationbar:TopNavigationStepperBar Grid.Row="0"
+                                               Step="{Binding Step}"
+                                               Steps="{Binding Steps}" />
+
+        <Grid Grid.Row="1"
               Padding="20"
               ColumnSpacing="15"
               RowSpacing="15">
@@ -182,6 +189,7 @@
                     <TapGestureRecognizer Command="{Binding SelectLawyerCommand}" />
                 </card:ClickableCard.GestureRecognizers>
             </card:ClickableCard>
+        </Grid>
         </Grid>
     </Grid>
 
