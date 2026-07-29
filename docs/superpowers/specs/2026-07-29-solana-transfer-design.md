@@ -1,7 +1,8 @@
 # Solana Transfer — Design
 
 **Date:** 2026-07-29
-**Status:** Approved, ready for implementation planning
+**Status:** Implemented. See "Corrections found during implementation" for the four places
+where the design as written was wrong or was improved on.
 **Builds on:** [Solana balances and Solana-first onboarding](2026-07-25-solana-balances-design.md),
 [Solana token detail page](2026-07-26-solana-token-detail-design.md),
 [Unified PlutoFrameworkSolanaAccount](2026-07-25-unified-solana-account-design.md)
@@ -663,6 +664,73 @@ over time.
 - **Transferring NFTs or Token-2022 mints with transfer hooks.** The whitelist has no
   Token-2022 entry today; the `ProgramId` field means adding a plain one is configuration.
 - **A Solana `TransactionAnalyzer` equivalent.** No confirmation screen with decoded effects.
+
+## Corrections found during implementation
+
+### The `ProgramId` field could not simply "carry through"
+
+"Verified instruction signatures" above was read from `bmresearch/Solnet@master`. The
+**published** `Solana.Programs` 8.7.0 — the newest release — ships only:
+
+```
+AssociatedTokenAccountProgram.DeriveAssociatedTokenAccount(owner, mint)
+AssociatedTokenAccountProgram.CreateAssociatedTokenAccount(payer, owner, mint)
+```
+
+Both hardcode the legacy SPL token program, as does `TokenProgram.TransferChecked`, which
+stamps `TokenProgram.ProgramIdKey` onto the instruction it returns. The `tokenProgramId`
+overloads exist on master and have never been released.
+
+So the claim that a Token-2022 mint is configuration rather than a code change was false as
+written. `SolanaAssociatedTokenAccount` now does the derivation and the create instruction
+with an explicit token program, and the planner corrects the program id on the transfer
+instruction. `LegacyDerivationMatchesSolnetsOwn` pins the derivation against Solnet's for
+the legacy case, so the seed order is checked against an independent implementation rather
+than against itself.
+
+The second half of this — `TransferChecked` hardcoding the program too — was found by a test
+rather than by reading, which is what the Token-2022 case in the plan tests is for.
+
+### The SOL reserve does not cover token-account rent
+
+The reserve was justified as "leaving headroom for a subsequent ATA-creating send". It does
+not: 0.001 SOL is 1,000,000 lamports and associated-token-account rent is about 2,039,280.
+The value is kept, with the honest justification — 200 times the signature fee, so a Max SOL
+send pays for itself with room to spare. Sizing it to fund a hypothetical later SPL transfer
+would quietly send less SOL than the user asked to.
+
+### The popup is hosted by the page template, not per page
+
+Part C had the global scanner navigate to `SolanaBalancesPage` before opening the popup,
+because the popup was to be listed in each page's `PopupContent`. Putting
+`SolanaTransferView` and `SolanaTokenSelectView` in `Page.xaml`'s control template instead —
+where `ConnectMwaPopupView` and `EnterPasswordPopupView` already live — makes the popup
+available on every page, so the scan opens it in place with no navigation at all.
+
+### One view model, not two
+
+The design named a separate `SolanaTokenSelectViewModel`. The Substrate side splits
+`TransferViewModel` from `AssetSelectViewModel` because that picker is also used by the NFT
+and Xcavate flows; this one serves a single flow, and splitting it would mean keeping a
+balance list and a selection in step across two singletons. Both views share
+`SolanaTransferViewModel`.
+
+Two further structural changes, both for testability rather than correctness:
+`SolanaTransferPlanner` (pure) is split from `SolanaTransferModel` (which does the RPC
+probe), and `SolanaTransferBalanceAssembler` holds the spendable rule, so neither needs a
+cluster to test.
+
+## What was built and verified
+
+90 new unit tests, all passing; the suite went from 240 to 330 passing with the 26
+pre-existing network-dependent Substrate failures unchanged. `PlutoFramework` and
+`XcavateMobileApp` both build for `net10.0-android`.
+
+**Untested, and stated as such rather than implied to work:** every live RPC call
+(`getAccountInfo`, `getSignatureStatuses`, `sendTransaction`); the tracker against a real
+cluster; submission through Mobile Wallet Adapter, which needs an Android device with a
+wallet installed; the toast stack's visual offset; and the ten-second poll over time. No
+transfer has been sent on any cluster.
 
 ## Sources
 
