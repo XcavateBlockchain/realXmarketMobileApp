@@ -132,7 +132,7 @@ namespace XcavateMobileApp
             ];
 
             PlutoConfigurationModel.WhitelistedDApps = [
-                "realxmessage.xcavate.io",
+                "realxmessenger.xcavate.io",
             ];
 
             NavigationModel.SetWelcomeShell = () =>
