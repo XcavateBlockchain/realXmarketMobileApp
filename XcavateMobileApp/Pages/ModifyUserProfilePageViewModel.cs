@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.Buttons;
 using PlutoFramework.Components.Loading;
+using PlutoFramework.Components.Onboarding;
 using PlutoFramework.Model.Xcavate;
 using PlutoFramework.Model.Xcavate.Profile;
 
@@ -11,6 +12,7 @@ namespace XcavateMobileApp.Pages
     {
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CancelButtonText))]
+        [NotifyPropertyChangedFor(nameof(IsEditMode))]
         private bool firstSetup = false;
 
         [ObservableProperty]
@@ -32,6 +34,12 @@ namespace XcavateMobileApp.Pages
         private string bio = "";
 
         public string CancelButtonText => FirstSetup ? "Skip" : "Cancel";
+
+        public bool IsEditMode => !FirstSetup;
+
+        public int Step => OnboardingStepperViewModel.GetStep(OnboardingStage.ProfileRegistration);
+
+        public int Steps => OnboardingStepperViewModel.TotalSteps;
 
         [RelayCommand]
         public async Task PickProfilePictureAsync()
