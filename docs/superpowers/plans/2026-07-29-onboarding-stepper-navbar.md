@@ -32,7 +32,7 @@
 - Consumes: `OnboardingStage` enum from `PlutoFramework.Model.Xcavate` (values: `SetupPassword`, `SelectRole`, `EnterUserDetails`, `Questionaire` (sic — existing spelling), `AgreeTerms`, `AgreeAgreement`, `AgreePrivacy`, `KYC`, `ProfileRegistration`).
 - Produces: `OnboardingStepperViewModel.TotalSteps == 8` (const int) and `static int GetStep(OnboardingStage stage)` returning the 0-based mapping below. Tasks 2–4 call both.
 
-- [ ] **Step 1: Update the mapping**
+- [x] **Step 1: Update the mapping**
 
 Replace the body of `OnboardingStepperViewModel` (keep the class shell, constructor, `Stage`, `Step`, `Steps` members as they are) so the constant and mapping read:
 
@@ -61,12 +61,12 @@ public static int GetStep(OnboardingStage stage)
 
 `EnterUserDetails` maps to 1 because the user-details popup opens over the role-selection page; the stepper underneath stays on step 2-of-8.
 
-- [ ] **Step 2: Build to verify**
+- [x] **Step 2: Build to verify**
 
 Run: `dotnet build P:\programming\realXmarketMobileApp\realXmarketPlutoFramework\PlutoFramework\PlutoFramework.csproj -f net10.0-android`
 Expected: Build succeeded (warnings OK).
 
-- [ ] **Step 3: Commit (in the submodule repo)**
+- [x] **Step 3: Commit (in the submodule repo)**
 
 ```powershell
 git -C P:\programming\realXmarketMobileApp\realXmarketPlutoFramework add PlutoFramework/Components/Onboarding/OnboardingStepperViewModel.cs
@@ -89,7 +89,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 - Consumes: `OnboardingStepperViewModel(OnboardingStage)` from Task 1; `TopNavigationStepperBar` (existing, `PlutoFramework.Components.NavigationBar`, bindables `Step`, `Steps`, back arrow pops by default).
 - Produces: nothing consumed by later tasks.
 
-- [ ] **Step 1: Restructure the XAML**
+- [x] **Step 1: Restructure the XAML**
 
 Replace the full content of `SetupPasswordPage.xaml` with:
 
@@ -145,7 +145,7 @@ Replace the full content of `SetupPasswordPage.xaml` with:
 
 This is the current page with the `ScrollView` moved into row 1 of a new root `Grid` (structure copied from `QuestionnaireV2QuestionsPage`), the stepper bar in row 0, and the now-redundant `AbsoluteLayout.*` attributes dropped from the inner elements.
 
-- [ ] **Step 2: Set the stepper BindingContext in code-behind**
+- [x] **Step 2: Set the stepper BindingContext in code-behind**
 
 In `SetupPasswordPage.xaml.cs`, add these usings:
 
@@ -167,12 +167,12 @@ public SetupPasswordPage()
 
 This is the same pattern `SumsubWebSDKPage` uses. `ImportWarningPopup` sets its own `BindingContext` in its constructor, so the page-level context does not affect it. Every caller of this page (create flow, MWA import, `NoAccountPopupViewModel` fallback) is at `OnboardingStage.SetupPassword`.
 
-- [ ] **Step 3: Build to verify**
+- [x] **Step 3: Build to verify**
 
 Run: `dotnet build P:\programming\realXmarketMobileApp\realXmarketPlutoFramework\PlutoFramework\PlutoFramework.csproj -f net10.0-android`
 Expected: Build succeeded.
 
-- [ ] **Step 4: Commit (in the submodule repo)**
+- [x] **Step 4: Commit (in the submodule repo)**
 
 ```powershell
 git -C P:\programming\realXmarketMobileApp\realXmarketPlutoFramework add PlutoFramework/Components/Password/SetupPasswordPage.xaml PlutoFramework/Components/Password/SetupPasswordPage.xaml.cs
@@ -195,7 +195,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 - Consumes: `OnboardingStepperViewModel.GetStep` / `.TotalSteps` from Task 1; `TopNavigationStepperBar` (xmlns `navigationbar` is already declared in this XAML file).
 - Produces: `UserTypeSelectionViewModel.Step` (int, get-only) and `.Steps` (int, get-only) — bound by the page only.
 
-- [ ] **Step 1: Add `Step`/`Steps` to the view model**
+- [x] **Step 1: Add `Step`/`Steps` to the view model**
 
 In `UserTypeSelectionViewModel.cs` (the `using PlutoFramework.Components.Onboarding;` and `using PlutoFramework.Model.Xcavate;` directives already exist), add inside the class, next to the other public members:
 
@@ -207,7 +207,7 @@ public int Steps => OnboardingStepperViewModel.TotalSteps;
 
 The page's BindingContext is `new UserTypeSelectionViewModel()` (set in the page constructor), so the bar's bindings resolve against these.
 
-- [ ] **Step 2: Wrap the page content in a stepper grid**
+- [x] **Step 2: Wrap the page content in a stepper grid**
 
 In `UserTypeSelectionPage.xaml`, the root content is currently
 `<Grid AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1" AbsoluteLayout.LayoutFlags="All" Padding="20" ColumnSpacing="15" RowSpacing="15">…</Grid>`.
@@ -232,12 +232,12 @@ Wrap it in an outer grid so the bar sits full-width above the padded content —
 
 Keep the existing `<page:PageTemplate.PopupContent>` block after the grid untouched.
 
-- [ ] **Step 3: Build to verify**
+- [x] **Step 3: Build to verify**
 
 Run: `dotnet build P:\programming\realXmarketMobileApp\XcavateMobileApp\XcavateMobileApp.csproj -f net10.0-android`
 Expected: Build succeeded.
 
-- [ ] **Step 4: Commit (in the parent repo — do not stage the submodule pointer)**
+- [x] **Step 4: Commit (in the parent repo — do not stage the submodule pointer)**
 
 ```powershell
 git -C P:\programming\realXmarketMobileApp add XcavateMobileApp/Pages/UserTypeSelectionPage.xaml XcavateMobileApp/Pages/UserTypeSelectionViewModel.cs
@@ -260,7 +260,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
 - Consumes: `OnboardingStepperViewModel.GetStep` / `.TotalSteps` from Task 1; existing `FirstSetup` observable property.
 - Produces: `ModifyUserProfilePageViewModel.IsEditMode` (bool, get-only, `!FirstSetup`, change-notified via `FirstSetup`), `.Step` / `.Steps` (int, get-only) — bound by the page only.
 
-- [ ] **Step 1: Add `IsEditMode`, `Step`, `Steps` to the view model**
+- [x] **Step 1: Add `IsEditMode`, `Step`, `Steps` to the view model**
 
 In `ModifyUserProfilePageViewModel.cs`, add the using:
 
@@ -287,7 +287,7 @@ public int Step => OnboardingStepperViewModel.GetStep(OnboardingStage.ProfileReg
 public int Steps => OnboardingStepperViewModel.TotalSteps;
 ```
 
-- [ ] **Step 2: Restructure the XAML root**
+- [x] **Step 2: Restructure the XAML root**
 
 In `ModifyUserProfilePage.xaml`, the root content is currently
 `<AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1" AbsoluteLayout.LayoutFlags="All">…</AbsoluteLayout>`.
@@ -316,12 +316,12 @@ Two changes inside the existing tree, everything else unchanged:
 
 The `Auto` row collapses to zero height when the stepper bar is invisible (MAUI excludes invisible views from measurement), so edit mode renders exactly as today: full-bleed hero image with the translucent overlay bar. In first-setup mode the solid stepper bar (own `HeightRequest="55"`) pushes the hero down and shows step 8-of-8.
 
-- [ ] **Step 3: Build to verify**
+- [x] **Step 3: Build to verify**
 
 Run: `dotnet build P:\programming\realXmarketMobileApp\XcavateMobileApp\XcavateMobileApp.csproj -f net10.0-android`
 Expected: Build succeeded.
 
-- [ ] **Step 4: Commit (in the parent repo — do not stage the submodule pointer)**
+- [x] **Step 4: Commit (in the parent repo — do not stage the submodule pointer)**
 
 ```powershell
 git -C P:\programming\realXmarketMobileApp add XcavateMobileApp/Pages/ModifyUserProfilePage.xaml XcavateMobileApp/Pages/ModifyUserProfilePageViewModel.cs
