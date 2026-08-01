@@ -27,6 +27,7 @@
              xmlns:loading="clr-namespace:PlutoFramework.Components.Loading;assembly=PlutoFramework"
              xmlns:animations="clr-namespace:PlutoFramework.Components.Animations;assembly=PlutoFramework"
              xmlns:solanacomponents="clr-namespace:PlutoFramework.Components.Solana;assembly=PlutoFramework"
+             xmlns:solanatransfer="clr-namespace:PlutoFramework.Components.Solana.Transfer;assembly=PlutoFramework"
              BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}"
              Shell.PresentationMode="NotAnimated"
              HideSoftInputOnTapped="True">
@@ -192,6 +193,10 @@
         <addressview:AddressQrCodeView />
 
         <transferview:TransferView />
+
+        <solanatransfer:SolanaTransferView />
+
+        <solanatransfer:SolanaTokenSelectView />
 
         <dappconnection:DAppConnectionRequestView />
 

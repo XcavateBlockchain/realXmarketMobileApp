@@ -1,8 +1,11 @@
-﻿using PlutoFramework.Components.Account;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using PlutoFramework.Components.Account;
 using PlutoFramework.Components.Loading;
 using PlutoFramework.Components.Onboarding;
 using PlutoFramework.Constants;
 using PlutoFramework.Model;
+using PlutoFramework.Model.Initializers;
 using PlutoFramework.Model.Xcavate;
 using PlutoFramework.Model.Xcavate.Profile;
 using PlutoFrameworkCore;
@@ -154,6 +157,29 @@ namespace XcavateMobileApp
                 true when KeysModel.HasSolanaKey() || KeysModel.HasSubstrateKey() => new XcavateAppShell(),
                 _ => new OnboardingShell(),
             };
+
+            StartNotificationServices();
+        }
+
+        /// <summary>
+        /// Registers this device on the notifications API and links the user's wallet
+        /// addresses to it, so wallet-targeted notifications reach this device. Runs in
+        /// the background; called after the shell is set so the notification permission
+        /// prompt appears over real UI rather than the loading spinner.
+        /// </summary>
+        private static void StartNotificationServices()
+        {
+            var configuration = PlutoFramework.MauiAppBuilderExtensions.Services.GetService<IConfiguration>();
+            var notificationsApiUrl = configuration?["NOTIFICATIONS_API_URL"];
+
+            if (string.IsNullOrWhiteSpace(notificationsApiUrl))
+            {
+                Console.WriteLine("[PlutoNotifications] NOTIFICATIONS_API_URL is not configured, notifications stay disabled.");
+
+                return;
+            }
+
+            PushNotificationsAppInitializer.Initialize(notificationsApiUrl);
         }
 
 
