@@ -80,10 +80,9 @@ Wallet Adapter) already hide behind an async signing call.
 - **`KeysModel.SaveKeyAsync`** — the single funnel every key save goes through — fires the
   matching link in the background: Polkadot types link by address (keeping the legacy
   uid-update call for whatever still targets it), `SolanaMnemonic` links with the secret
-  in hand. `SolanaMwa` is deliberately not auto-linked: the API demands a signature for
-  Solana and an MWA signature means launching the external wallet, which is not acceptable
-  as a silent side effect of saving a key. Such accounts link later only if the server
-  drops the signature requirement or a future interactive flow adds it.
+  in hand. `SolanaMwa` is not hooked here: MWA key saves also happen mid-session when a
+  signature refreshes the authorization, and a second wallet trip from there would collide
+  with the open session. MWA links from the moments below instead.
 - **`KeysModel.ClearAsync`** — unlinks everything previously linked (fire-and-forget)
   before the keys are deleted, so a logged-out device stops receiving wallet-targeted
   notifications.
@@ -102,9 +101,29 @@ Wallet Adapter) already hide behind an async signing call.
 - **`App.xaml.cs`** `InitializeAsync` reads the URL from configuration and calls
   `PushNotificationsAppInitializer.Initialize(url)`.
 
+### Mobile Wallet Adapter accounts (added 2026-08-01)
+
+MWA accounts sign by launching the external wallet, so their link is interactive by
+design rather than silent:
+
+- **`MwaSignPopupView` / `MwaSignPopupViewModel`** — a "Waiting for signature from
+  wallet" bottom card shown for the whole of *every* MWA signature request (transfers,
+  dapp bridges, wallet linking), hosted in the page template. Its Cancel button and the
+  card's swipe-down dismissal cancel a linked `CancellationTokenSource`, which tears down
+  the MWA session itself. Wired inside `MwaSolanaAccount.RunAuthorizedAsync`, the single
+  funnel all MWA signatures pass through.
+- **No local auth for MWA** — `GenericLockedKey.ToSolanaMwaKeyAsync` now uses the no-auth
+  secure-storage read. The stored value cannot sign anything; the user approves each
+  request inside the wallet app, so a local password/biometric gate would double-prompt.
+- **Link triggers** — (1) right after the MWA connect flow completes, when the user has
+  just approved the app in their wallet; (2) after any successful signature session
+  closes, which is how accounts connected before this feature catch up. A
+  re-entrancy flag stops a failed link's own signature from relaunching the wallet, and a
+  wallet decline maps to `OperationCanceledException` so the retry-with-backoff loop
+  stops instead of re-prompting (`RetryHelper`'s `isTransient` hook).
+
 ## Known gaps, deliberate
 
-- **MWA Solana accounts are not auto-linked** (see above).
 - **No `google-services.json` in XcavateMobileApp** — FCM token retrieval fails (caught
   and logged) until Firebase is configured for the app, so delivery cannot work yet;
   registration and wallet links still land server-side.
