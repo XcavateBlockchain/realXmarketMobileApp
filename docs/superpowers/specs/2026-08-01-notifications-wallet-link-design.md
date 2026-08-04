@@ -122,6 +122,27 @@ design rather than silent:
   wallet decline maps to `OperationCanceledException` so the retry-with-backoff loop
   stops instead of re-prompting (`RetryHelper`'s `isTransient` hook).
 
+### Solana-only registration (changed 2026-08-04)
+
+Wallet notification registration now covers Solana only; Polkadot wallets are not
+linked at all. The server records Polkadot links without ownership proof (sr25519
+verification is unimplemented — any device holding a valid JWT can claim any Polkadot
+address), so onboarding and every automatic path skip them. Superseded from the design
+above:
+
+- **`WalletLinkModel.LinkPolkadotAsync()`** — removed (no callers left).
+- **`KeysModel.SaveKeyAsync`** — Sr25519/PolkadotJson saves no longer fire a wallet
+  link. The legacy `uid-update` call stays: it is the generic backend-trusted user
+  identifier (Sumsub, questionnaire, profiles key off the Substrate address), not a
+  wallet link, and remains a current endpoint in the API reference.
+- **`PushNotificationsAppInitializer.SyncAsync`** — no longer makes good a missing
+  Polkadot link on app start or forced re-registration; the notification testing page's
+  Register button and help text follow suit.
+
+Solana link triggers are unchanged. Devices that linked a Polkadot address under the
+previous build keep that link server-side until logout (`UnlinkAllAsync`) or a manual
+`wallet-unlink` call.
+
 ## Known gaps, deliberate
 
 - **No `google-services.json` in XcavateMobileApp** — FCM token retrieval fails (caught

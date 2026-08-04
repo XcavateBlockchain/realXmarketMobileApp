@@ -61,6 +61,11 @@ public partial class SettingsPage : PageTemplate
         await Navigation.PushAsync(new DeveloperSettingsPage());
     }
 
+    async void OnNotificationTestingClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new NotificationTestingPage());
+    }
+
     async void OnXcavateProfileClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         await NavigationModel.NavigateToUserPageAsync();
