@@ -61,6 +61,11 @@ public partial class SettingsPage : PageTemplate
         await Navigation.PushAsync(new DeveloperSettingsPage());
     }
 
+    async void OnNotificationsClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    {
+        await Navigation.PushAsync(new PlutoFramework.Components.Notifications.NotificationsPage());
+    }
+
     async void OnNotificationTestingClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         await Navigation.PushAsync(new NotificationTestingPage());

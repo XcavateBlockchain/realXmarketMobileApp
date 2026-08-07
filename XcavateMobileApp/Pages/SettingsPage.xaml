@@ -18,6 +18,12 @@
 
             <solana:SolanaNetworkSettingsView />
 
+            <settings:GenericButton Title="Notifications">
+                <settings:GenericButton.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnNotificationsClicked" />
+                </settings:GenericButton.GestureRecognizers>
+            </settings:GenericButton>
+
             <settings:GenericButton Title="Notification testing">
                 <settings:GenericButton.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnNotificationTestingClicked" />
