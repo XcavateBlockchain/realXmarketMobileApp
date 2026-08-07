@@ -4,7 +4,9 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Views;
 using AndroidX.Core.View;
+using Plugin.Firebase.CloudMessaging;
 using Plugin.Fingerprint;
+using PlutoFramework.Components.Notifications;
 using PlutoFramework.Model;
 using Plutonication;
 
@@ -12,6 +14,7 @@ namespace XcavateMobileApp.Platforms.Android;
 
 [Activity(Theme = "@style/Maui.SplashTheme",
     MainLauncher = true,
+    LaunchMode = LaunchMode.SingleTop,
     EnableOnBackInvokedCallback = false,
     ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 [IntentFilter(new[] { Intent.ActionView },
@@ -59,20 +62,54 @@ public class MainActivity : MauiAppCompatActivity
 
         CrossFingerprint.SetCurrentActivityResolver(() => this);
 
-        if (Intent.Data != null)
+        HandleIntent(Intent);
+    }
+
+    protected override void OnNewIntent(Intent? intent)
+    {
+        base.OnNewIntent(intent);
+
+        if (intent is not null)
         {
-            var uriString = Intent?.Data.ToString();
+            // Later reads of the activity's Intent should see the newest one.
+            Intent = intent;
+        }
 
-            if (uriString.Equals("plutonication:") || uriString.Equals("plutonication://"))
-            {
-                // Nothing
-            }
-            else if (uriString.StartsWith("plutonication"))
-            {
-                AccessCredentials ac = new AccessCredentials(new Uri(uriString));
+        HandleIntent(intent);
+    }
 
-                PlutonicationModel.ProcessAccessCredentials(ac);
-            }
+    /// <summary>
+    /// Everything a launch or relaunch intent can carry: a plutonication link, a
+    /// tapped push notification (forwarded to Plugin.Firebase so NotificationTapped
+    /// fires for the history recorder), and the bucketId deep link.
+    /// </summary>
+    private static void HandleIntent(Intent? intent)
+    {
+        if (intent is null)
+        {
+            return;
+        }
+
+        FirebaseCloudMessagingImplementation.OnNewIntent(intent);
+
+        NotificationDeepLinkModel.SetBucket(intent.Extras?.GetString("bucketId"));
+
+        var uriString = intent.Data?.ToString();
+
+        if (uriString is null)
+        {
+            return;
+        }
+
+        if (uriString.Equals("plutonication:") || uriString.Equals("plutonication://"))
+        {
+            // Nothing
+        }
+        else if (uriString.StartsWith("plutonication"))
+        {
+            AccessCredentials ac = new AccessCredentials(new Uri(uriString));
+
+            PlutonicationModel.ProcessAccessCredentials(ac);
         }
     }
 }
