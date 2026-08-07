@@ -75,7 +75,7 @@ re-points the WebView. Parameterless callers are unchanged.
   MAUI template default): a tap while the app runs reuses the activity via
   `OnNewIntent` instead of stacking a second MAUI activity instance. This also routes
   `plutonication://` links through `OnNewIntent` when the app is already running.
-- Extract `HandleIntent(Intent? intent)`, called from the end of `OnCreate` and a new
+- Extract `HandleIntent(Intent? intent, bool isRedelivery)`, called from the end of `OnCreate` and a new
   `OnNewIntent` override (which also updates `Intent`):
   1. the existing `plutonication://` URI processing, moved unchanged;
   2. `FirebaseCloudMessagingImplementation.OnNewIntent(intent)` — makes the
