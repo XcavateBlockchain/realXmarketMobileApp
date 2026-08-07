@@ -62,7 +62,7 @@ public class MainActivity : MauiAppCompatActivity
 
         CrossFingerprint.SetCurrentActivityResolver(() => this);
 
-        HandleIntent(Intent);
+        HandleIntent(Intent, isRedelivery: savedInstanceState is not null);
     }
 
     protected override void OnNewIntent(Intent? intent)
@@ -75,7 +75,7 @@ public class MainActivity : MauiAppCompatActivity
             Intent = intent;
         }
 
-        HandleIntent(intent);
+        HandleIntent(intent, isRedelivery: false);
     }
 
     /// <summary>
@@ -83,16 +83,25 @@ public class MainActivity : MauiAppCompatActivity
     /// tapped push notification (forwarded to Plugin.Firebase so NotificationTapped
     /// fires for the history recorder), and the bucketId deep link.
     /// </summary>
-    private static void HandleIntent(Intent? intent)
+    /// <param name="isRedelivery">
+    /// True when this is a stale intent Android handed back - an activity recreation
+    /// with saved state. Notification content must not be consumed again: a task
+    /// relaunch would replay the deep-link navigation and duplicate tap history.
+    /// The same applies to relaunches from Recents, detected via the intent flag.
+    /// </param>
+    private static void HandleIntent(Intent? intent, bool isRedelivery)
     {
         if (intent is null)
         {
             return;
         }
 
-        FirebaseCloudMessagingImplementation.OnNewIntent(intent);
+        if (!isRedelivery && intent.Flags.HasFlag(ActivityFlags.LaunchedFromHistory) == false)
+        {
+            FirebaseCloudMessagingImplementation.OnNewIntent(intent);
 
-        NotificationDeepLinkModel.SetBucket(intent.Extras?.GetString("bucketId"));
+            NotificationDeepLinkModel.SetBucket(intent.Extras?.GetString("bucketId"));
+        }
 
         var uriString = intent.Data?.ToString();
 

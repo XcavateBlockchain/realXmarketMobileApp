@@ -386,5 +386,6 @@ curl -X POST <NOTIFICATIONS_API_URL>/api/notify/ \
 1. App killed (swiped away) → tap → app cold-starts and lands on the bucket page in `MessageWebViewPage`.
 2. App backgrounded → tap → app comes forward and pushes the bucket page (no activity restart).
 3. App foregrounded → notification arrives silently in-app (foreground pushes don't auto-display a tray entry; the in-app history on the Notifications page records it).
+4. After scenario 1, kill the app (swipe away) and reopen it from the Recents screen → the app must open normally and must NOT reopen the bucket page.
 
 Also confirm: a push **without** `data` behaves exactly as before, and a `plutonication://` link still connects a wallet while the app is running (it now flows through `OnNewIntent`).

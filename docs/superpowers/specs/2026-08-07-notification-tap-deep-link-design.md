@@ -55,8 +55,10 @@ Static holder + single consumer:
 - `TryOpenPendingAsync()`:
   - `Shell.Current` is null (app still booting) → keep the id pending; the App init
     consumes it later.
-  - Shell present but `OnboardingModel.IsOnboardingCompleted()` is false → drop the
-    id. A half-onboarded user just gets the app opened.
+  - Shell present but onboarding is incomplete OR the device holds no Solana/Substrate
+    key → drop the id. This mirrors `App.InitializeAsync`'s own shell-selection
+    predicate exactly: anyone routed to `OnboardingShell` instead of the messenger
+    must not have a deep link fire later once the missing condition is met.
   - Otherwise → clear the pending id **before** navigating (a tap can never navigate
     twice), then on the main thread
     `Shell.Current.Navigation.PushAsync(new MessageWebViewPage(url))`.
@@ -80,12 +82,20 @@ re-points the WebView. Parameterless callers are unchanged.
      already-subscribed `NotificationTapped` → notification history fire for taps
      while the app is alive;
   3. `intent?.Extras?.GetString("bucketId")` → `NotificationDeepLinkModel.SetBucket(...)`.
+  Notification consumption (the plugin forward and `SetBucket` call, steps 2 and 3) is
+  skipped when the intent is a stale redelivery — a relaunch from Recents
+  (`FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY`) or an activity recreation with saved state —
+  because the task's base intent keeps carrying the original notification extras until
+  the task itself dies, and replaying them would duplicate the deep-link navigation and
+  tap history.
 
 ### 4. `App.InitializeAsync` (XcavateMobileApp)
 
-Right after `MainPage` is set (shell now exists), `await
-NotificationDeepLinkModel.TryOpenPendingAsync()` — consumes a cold-start stash. When
-the onboarding shell was chosen instead, the call drops the id by the rule above.
+Right after `MainPage` is set (shell now exists),
+`Dispatcher.Dispatch(() => _ = NotificationDeepLinkModel.TryOpenPendingAsync());` —
+consumes a cold-start stash. Deferred one dispatcher loop so the fresh shell's handlers
+attach before a page is pushed onto it. When the onboarding shell was chosen instead,
+the call drops the id by the rule above.
 
 ## Error handling / edge cases
 
@@ -94,6 +104,8 @@ the onboarding shell was chosen instead, the call drops the id by the rule above
 - Navigation failure (shell mid-transition) → swallow and log; a lost deep link must
   never crash startup.
 - The id is escaped before URL interpolation.
+- Two taps on different notifications stack two `MessageWebViewPage` instances on the
+  navigation stack — accepted behavior, no dedupe.
 
 ## Verification
 
