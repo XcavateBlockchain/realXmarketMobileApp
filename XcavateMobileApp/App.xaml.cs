@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using PlutoFramework.Components.Account;
 using PlutoFramework.Components.Loading;
+using PlutoFramework.Components.Notifications;
 using PlutoFramework.Components.Onboarding;
 using PlutoFramework.Constants;
 using PlutoFramework.Model;
@@ -159,6 +160,11 @@ namespace XcavateMobileApp
             };
 
             StartNotificationServices();
+
+            // A cold-start notification tap stashed its deep link in MainActivity
+            // before any shell existed. Deferred one dispatcher loop so the fresh
+            // shell's handlers are attached before a page is pushed onto it.
+            Dispatcher.Dispatch(() => _ = NotificationDeepLinkModel.TryOpenPendingAsync());
         }
 
         /// <summary>
