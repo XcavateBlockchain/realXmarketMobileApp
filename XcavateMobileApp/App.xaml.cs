@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using PlutoFramework.Components.Account;
 using PlutoFramework.Components.Loading;
 using PlutoFramework.Components.Notifications;
@@ -133,6 +132,27 @@ namespace XcavateMobileApp
                     Decimals = 6,
                     PinnedUsdPrice = 1.00,
                 },
+                new SolanaTokenWhitelistEntry {
+                    Cluster = SolanaCluster.Devnet,
+                    Mint = "8umv4NXybZFGiT3tQb1DqJ6DXxLa3rLNhPbcqbQsjXxW",
+                    Symbol = "tUSDC",
+                    Decimals = 6,
+                    PinnedUsdPrice = 1.00,
+                },
+                new SolanaTokenWhitelistEntry {
+                    Cluster = SolanaCluster.Devnet,
+                    Mint = "8dW943dozaNPdRRaW6xpV2vxFv1Kcpz3z63Nji3VLups",
+                    Symbol = "XCAV",
+                    Decimals = 9,
+                    PinnedUsdPrice = 1.00,
+                },
+                new SolanaTokenWhitelistEntry {
+                    Cluster = SolanaCluster.Devnet,
+                    Mint = "71G3dc4B9p9QBosLx3XhWY3ULRPAxjopngsin66M9HUb",
+                    Symbol = "tGBP",
+                    Decimals = 9,
+                    PinnedUsdPrice = 1.00,
+                }
             ];
 
             PlutoConfigurationModel.WhitelistedDApps = [
