@@ -72,18 +72,20 @@ namespace XcavateMobileApp
                 await coordinator.StartAsync(flowMode);
             };
 
-            // Sumsub applicants are keyed by Substrate address. Without one there is nothing
-            // to look up, and GetSubstrateKey() would hand over its placeholder string.
+            // Sumsub applicants are keyed by the Solana wallet address. Without one there is
+            // nothing to look up.
             NavigationModel.NavigateToKYCUserPage = () =>
             {
-                if (!KeysModel.HasSubstrateKey())
+                var solanaAddress = KeysModel.GetSolanaAddress();
+
+                if (solanaAddress is null)
                 {
                     DependencyService.Get<NoAccountPopupViewModel>().IsVisible = true;
 
                     return Task.CompletedTask;
                 }
 
-                return Shell.Current.Navigation.PushAsync(new SumsubUserPage(KeysModel.GetSubstrateKey()));
+                return Shell.Current.Navigation.PushAsync(new SumsubUserPage(solanaAddress));
             };
 
             NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());

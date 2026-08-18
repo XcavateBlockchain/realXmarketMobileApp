@@ -37,15 +37,10 @@ namespace XcavateMobileApp.Pages
                 return;
             }
 
-            string address = KeysModel.GetSubstrateKey();
-            string didAddress = await KeysModel.GetDidAddressAsync(CancellationToken.None);
-
             await NavigateToSumsubAsync(
                 userInfo.Role,
                 userInfo.Email,
-                userInfo.PhoneNumber,
-                address,
-                didAddress
+                userInfo.PhoneNumber
             );
         }
 
@@ -80,9 +75,6 @@ namespace XcavateMobileApp.Pages
         {
             try
             {
-                string address = KeysModel.GetSubstrateKey();
-                string didAddress = await KeysModel.GetDidAddressAsync(CancellationToken.None);
-
                 OnboardingModel.SetOnboardingStage(OnboardingStage.Questionaire);
 
                 var questions = await QuestionnaireModel.GetXcavateQuestionsAsync();
@@ -90,7 +82,7 @@ namespace XcavateMobileApp.Pages
                 if (questions.Count == 0)
                 {
                     await new OnboardingAgreementCoordinator().StartAsync(
-                        () => NavigateToSumsubAsync(role, email, phoneNumber, address, didAddress)
+                        () => NavigateToSumsubAsync(role, email, phoneNumber)
                     );
                     return;
                 }
@@ -98,7 +90,7 @@ namespace XcavateMobileApp.Pages
                 var questionnaireInfo = new QuestionnaireInfo
                 {
                     Sections = questions,
-                    Navigation = () => NavigateToSumsubAsync(role, email, phoneNumber, address, didAddress)
+                    Navigation = () => NavigateToSumsubAsync(role, email, phoneNumber)
                 };
 
                 await Shell.Current.Navigation.PushAsync(new QuestionnaireV2QuestionsPage(questionnaireInfo));
@@ -114,20 +106,16 @@ namespace XcavateMobileApp.Pages
 
         public async Task SumsubVerificationAsync(
             string email,
-            string phoneNumber,
-            string address,
-            string didAddress
+            string phoneNumber
         )
         {
-            await NavigateToSumsubAsync(userRole, email, phoneNumber, address, didAddress);
+            await NavigateToSumsubAsync(userRole, email, phoneNumber);
         }
 
         private static async Task NavigateToSumsubAsync(
             UserRoleEnum role,
             string email,
-            string phoneNumber,
-            string address,
-            string didAddress
+            string phoneNumber
         )
         {
             var token = CancellationToken.None;
@@ -138,16 +126,21 @@ namespace XcavateMobileApp.Pages
 
                 await PermissionsModel.RequestCameraPermissionAsync();
 
+                // Sumsub applicants are keyed by the Solana wallet address - never the
+                // Polkadot/DID address - so registration and lookups agree on one id.
+                string solanaAddress = KeysModel.GetSolanaAddress()
+                    ?? throw new Exception("Solana key not found");
+
                 var applicant = new Applicant
                 {
                     ApplicantIdentifiers = new ApplicantIdentifiers
                     {
                         Email = email,
                         Phone = phoneNumber,
-                        ExternalUserId = didAddress,
+                        ExternalUserId = solanaAddress,
                     },
                     totalInSeconds = 600,
-                    UserId = address,
+                    UserId = solanaAddress,
                     LevelName = role.ToSumsubVerificationLevel(),
                 };
 

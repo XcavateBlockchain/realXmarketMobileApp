@@ -7,22 +7,22 @@ using System.Globalization;
 namespace XcavateMobileApp.Components.Sumsub
 {
     /// <summary>
-    /// Displays Sumsub KYC information for a user identified by their Substrate key.
+    /// Displays Sumsub KYC information for a user identified by their Solana wallet address.
     /// Uses Sumsub status components for displaying verified/rejected/needsResubmit states.
     /// </summary>
     public partial class SumsubUserPage : PageTemplate
     {
         /// <summary>
-        /// Creates a new SumsubUserPage for the given Substrate key (wallet address).
+        /// Creates a new SumsubUserPage for the given Solana wallet address.
         /// </summary>
-        /// <param name="substrateKey">The Substrate address used as the external user ID in Sumsub.</param>
-        public SumsubUserPage(string substrateKey)
+        /// <param name="solanaAddress">The Solana address used as the external user ID in Sumsub.</param>
+        public SumsubUserPage(string solanaAddress)
         {
             InitializeComponent();
-            this.Loaded += async (s, e) => await LoadUserDataAsync(substrateKey);
+            this.Loaded += async (s, e) => await LoadUserDataAsync(solanaAddress);
         }
 
-        private async Task LoadUserDataAsync(string substrateKey)
+        private async Task LoadUserDataAsync(string solanaAddress)
         {
             try
             {
@@ -31,7 +31,7 @@ namespace XcavateMobileApp.Components.Sumsub
 
                 var secrets = SumsubSecretModel.GetSecrets();
                 var applicant = await SumsubModel.GetApplicantDataAsync(
-                    substrateKey,
+                    solanaAddress,
                     secrets.SecretKey,
                     secrets.AppToken,
                     CancellationToken.None
@@ -39,7 +39,7 @@ namespace XcavateMobileApp.Components.Sumsub
 
                 if (applicant is null)
                 {
-                    ErrorLabel.Text = "No KYC data found for this Substrate key.";
+                    ErrorLabel.Text = "No KYC data found for this Solana address.";
                     ErrorLabel.IsVisible = true;
                     return;
                 }
@@ -50,7 +50,7 @@ namespace XcavateMobileApp.Components.Sumsub
                 Console.WriteLine("Sumsub Status:");
                 Console.WriteLine(status);
 
-                PopulateUserInfo(applicant, substrateKey);
+                PopulateUserInfo(applicant, solanaAddress);
                 ShowStatusComponent(status);
                 PopulateVerificationStatus(applicant);
                 BuildTimeline(applicant, enhancedData);
@@ -206,9 +206,9 @@ namespace XcavateMobileApp.Components.Sumsub
             }
         }
 
-        private void PopulateUserInfo(SumsubApplicant applicant, string substrateKey)
+        private void PopulateUserInfo(SumsubApplicant applicant, string solanaAddress)
         {
-            SubstrateKeyLabel.Text = $"Substrate Key: {substrateKey}";
+            SolanaAddressLabel.Text = $"Solana Address: {solanaAddress}";
             ApplicantIdLabel.Text = $"Applicant ID: {applicant.Id ?? "Unknown"}";
             EmailLabel.Text = $"Email: {applicant.Email ?? "Not provided"}";
             PhoneLabel.Text = $"Phone: {applicant.Phone ?? "Not provided"}";
