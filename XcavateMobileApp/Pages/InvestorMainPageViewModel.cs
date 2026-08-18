@@ -9,7 +9,6 @@ using PlutoFrameworkCore.Xcavate;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using UniqueryPlus.Nfts;
-using XcavatePaseo.NetApi.Generated;
 using NftKey = (UniqueryPlus.NftTypeEnum, System.Numerics.BigInteger, System.Numerics.BigInteger);
 using PropertyWrapperModel = PlutoFramework.Components.XcavateProperty.XcavatePropertyModel;
 
@@ -23,7 +22,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private readonly object loadingLock = new();
     private readonly SemaphoreSlim loadMoreSemaphore = new(1, 1);
     private CancellationTokenSource? loadingCts;
-    private SubstrateClientExt? substrateClient;
+    private bool clientLoaded;
     private string ownerAddress = string.Empty;
     private int offset;
     private bool hasMore = true;
@@ -248,23 +247,13 @@ public partial class InvestorMainPageViewModel : ObservableObject
             return;
         }
 
-        var client = await SubstrateClientModel.GetOrAddSubstrateClientAsync(EndpointEnum.XcavatePaseo, token);
-
-        if (client.SubstrateClient is not SubstrateClientExt selectedClient)
-        {
-            ResetOwnedProperties();
-            OwnedPropertiesLoading = false;
-            return;
-        }
-
         var selectedOwnerAddress = KeysModel.GetSubstrateKey(0);
 
-        var shouldReload = substrateClient is null ||
-                           !ReferenceEquals(substrateClient, selectedClient) ||
+        var shouldReload = !clientLoaded ||
                            !string.Equals(ownerAddress, selectedOwnerAddress, StringComparison.Ordinal) ||
                            !IsSameLoadedQuery(includesPropertyName, includesTownCity, includesPropertyType);
 
-        substrateClient = selectedClient;
+        clientLoaded = true;
         ownerAddress = selectedOwnerAddress;
 
         if (shouldReload)
@@ -338,7 +327,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
     private async Task LoadMoreOwnedPropertiesAsync(CancellationToken token)
     {
-        if (!hasMore || substrateClient is null || string.IsNullOrWhiteSpace(ownerAddress))
+        if (!hasMore || !clientLoaded || string.IsNullOrWhiteSpace(ownerAddress))
         {
             return;
         }
@@ -349,7 +338,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
         try
         {
-            if (OwnedPropertiesLoading || !hasMore || substrateClient is null || string.IsNullOrWhiteSpace(ownerAddress))
+            if (OwnedPropertiesLoading || !hasMore || !clientLoaded || string.IsNullOrWhiteSpace(ownerAddress))
             {
                 return;
             }
@@ -363,19 +352,19 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
             if (OwnedActive)
             {
-                page = await XcavateIndexerModel.GetOwnedPropertiesAsync(substrateClient, first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
+                page = await XcavateIndexerModel.GetOwnedPropertiesAsync(first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
             }
             else if (BoughtActive)
             {
-                page = await XcavateIndexerModel.GetBoughtPropertiesAsync(substrateClient, first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
+                page = await XcavateIndexerModel.GetBoughtPropertiesAsync(first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
             }
             else if (filterActive)
             {
-                page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesWithFilterAsync(substrateClient, first: PageSize, offset: offset, tokenOwner: ownerAddress, includesTownCity: includesTownCity, includesPropertyType: includesPropertyType, includesPropertyName: includesPropertyName).ConfigureAwait(false);
+                page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesWithFilterAsync(first: PageSize, offset: offset, tokenOwner: ownerAddress, includesTownCity: includesTownCity, includesPropertyType: includesPropertyType, includesPropertyName: includesPropertyName).ConfigureAwait(false);
             }
             else
             {
-                page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesAsync(substrateClient, first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
+                page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesAsync(first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
             }
 
             token.ThrowIfCancellationRequested();
