@@ -16,6 +16,10 @@ namespace XcavateMobileApp.Pages
     {
         private UserRoleEnum userRole;
 
+        public int Step => OnboardingStepperViewModel.GetStep(OnboardingStage.SelectRole);
+
+        public int Steps => OnboardingStepperViewModel.TotalSteps;
+
         public static Task NavigateToUserDetailsAsync()
         {
             OnboardingModel.SetOnboardingStage(OnboardingStage.SelectRole);

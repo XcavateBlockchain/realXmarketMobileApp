@@ -368,3 +368,7 @@ appsettings.json
 realxmarket.keystore
 
 *.p8
+
+GoogleService-Info.plist
+
+google-services.json

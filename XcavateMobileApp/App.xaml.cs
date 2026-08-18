@@ -1,11 +1,15 @@
-﻿using PlutoFramework.Components.Account;
+﻿using Microsoft.Extensions.Configuration;
+using PlutoFramework.Components.Account;
 using PlutoFramework.Components.Loading;
+using PlutoFramework.Components.Notifications;
 using PlutoFramework.Components.Onboarding;
 using PlutoFramework.Constants;
 using PlutoFramework.Model;
+using PlutoFramework.Model.Initializers;
 using PlutoFramework.Model.Xcavate;
 using PlutoFramework.Model.Xcavate.Profile;
 using PlutoFrameworkCore;
+using PlutoFrameworkCore.Solana;
 using XcavateMobileApp.Components.Account;
 using XcavateMobileApp.Components.Sumsub;
 using XcavateMobileApp.Pages;
@@ -68,7 +72,19 @@ namespace XcavateMobileApp
                 await coordinator.StartAsync(flowMode);
             };
 
-            NavigationModel.NavigateToKYCUserPage = () => Shell.Current.Navigation.PushAsync(new SumsubUserPage(KeysModel.GetSubstrateKey()));
+            // Sumsub applicants are keyed by Substrate address. Without one there is nothing
+            // to look up, and GetSubstrateKey() would hand over its placeholder string.
+            NavigationModel.NavigateToKYCUserPage = () =>
+            {
+                if (!KeysModel.HasSubstrateKey())
+                {
+                    DependencyService.Get<NoAccountPopupViewModel>().IsVisible = true;
+
+                    return Task.CompletedTask;
+                }
+
+                return Shell.Current.Navigation.PushAsync(new SumsubUserPage(KeysModel.GetSubstrateKey()));
+            };
 
             NavigationModel.NavigateToSettingsPageAsync = () => Shell.Current.Navigation.PushAsync(new SettingsPage());
 
@@ -97,8 +113,50 @@ namespace XcavateMobileApp
                 //(EndpointEnum.XcavatePaseo, PlutoFramework.Types.AssetPallet.AssetsReserved, 1984),
             ];
 
+            // Mint addresses are cluster-specific; the same token has a different one on each.
+            // Both verified live on 2026-07-25.
+            PlutoConfigurationModel.WhitelistedSolanaTokens = [
+                new SolanaTokenWhitelistEntry
+                {
+                    Cluster = SolanaCluster.Mainnet,
+                    Mint = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+                    Symbol = "USDC",
+                    Decimals = 6,
+                    PinnedUsdPrice = 1.00,
+                },
+                new SolanaTokenWhitelistEntry
+                {
+                    Cluster = SolanaCluster.Devnet,
+                    Mint = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
+                    Symbol = "USDC",
+                    Decimals = 6,
+                    PinnedUsdPrice = 1.00,
+                },
+                new SolanaTokenWhitelistEntry {
+                    Cluster = SolanaCluster.Devnet,
+                    Mint = "8umv4NXybZFGiT3tQb1DqJ6DXxLa3rLNhPbcqbQsjXxW",
+                    Symbol = "tUSDC",
+                    Decimals = 6,
+                    PinnedUsdPrice = 1.00,
+                },
+                new SolanaTokenWhitelistEntry {
+                    Cluster = SolanaCluster.Devnet,
+                    Mint = "8dW943dozaNPdRRaW6xpV2vxFv1Kcpz3z63Nji3VLups",
+                    Symbol = "XCAV",
+                    Decimals = 9,
+                    PinnedUsdPrice = 1.00,
+                },
+                new SolanaTokenWhitelistEntry {
+                    Cluster = SolanaCluster.Devnet,
+                    Mint = "71G3dc4B9p9QBosLx3XhWY3ULRPAxjopngsin66M9HUb",
+                    Symbol = "tGBP",
+                    Decimals = 9,
+                    PinnedUsdPrice = 1.00,
+                }
+            ];
+
             PlutoConfigurationModel.WhitelistedDApps = [
-                "realxmessage.xcavate.io",
+                "realxmessenger.xcavate.io",
             ];
 
             NavigationModel.SetWelcomeShell = () =>
@@ -113,11 +171,41 @@ namespace XcavateMobileApp
             var onboardingPopupViewModel = DependencyService.Get<OnboardingInProgressPopupViewModel>();
             onboardingPopupViewModel.ContinueRequested = ContinueOnboardingAsync;
 
+            // Either key counts. New accounts are Solana-only; users onboarded before that
+            // change still hold a Substrate key and must not be pushed back into onboarding.
             MainPage = OnboardingModel.IsOnboardingCompleted() switch
             {
-                true when KeysModel.HasSubstrateKey() => new XcavateAppShell(),
+                true when KeysModel.HasSolanaKey() || KeysModel.HasSubstrateKey() => new XcavateAppShell(),
                 _ => new OnboardingShell(),
             };
+
+            StartNotificationServices();
+
+            // A cold-start notification tap stashed its deep link in MainActivity
+            // before any shell existed. Deferred one dispatcher loop so the fresh
+            // shell's handlers are attached before a page is pushed onto it.
+            Dispatcher.Dispatch(() => _ = NotificationDeepLinkModel.TryOpenPendingAsync());
+        }
+
+        /// <summary>
+        /// Registers this device on the notifications API and links the user's wallet
+        /// addresses to it, so wallet-targeted notifications reach this device. Runs in
+        /// the background; called after the shell is set so the notification permission
+        /// prompt appears over real UI rather than the loading spinner.
+        /// </summary>
+        private static void StartNotificationServices()
+        {
+            var configuration = PlutoFramework.MauiAppBuilderExtensions.Services.GetService<IConfiguration>();
+            var notificationsApiUrl = configuration?["NOTIFICATIONS_API_URL"];
+
+            if (string.IsNullOrWhiteSpace(notificationsApiUrl))
+            {
+                Console.WriteLine("[PlutoNotifications] NOTIFICATIONS_API_URL is not configured, notifications stay disabled.");
+
+                return;
+            }
+
+            PushNotificationsAppInitializer.Initialize(notificationsApiUrl);
         }
 
 
@@ -137,20 +225,13 @@ namespace XcavateMobileApp
             var profileService = new XcavateProfileService();
             var profile = await profileService.GetProfileAsync();
 
-            var profilePictureImageSource = profile?.ProfilePicture != null ? new UriImageSource
-            {
-                Uri = new Uri(profile.ProfilePicture),
-                CachingEnabled = false,
-                CacheValidity = TimeSpan.FromSeconds(0),
-            } : null;
-
             var viewModel = new ModifyUserProfilePageViewModel()
             {
                 Title = "Edit public profile",
                 FirstSetup = false,
                 Nickname = profile?.Nickname ?? string.Empty,
                 Bio = profile?.Bio ?? string.Empty,
-                ProfilePicture = profilePictureImageSource,
+                ProfilePicture = ProfilePictureImageSourceModel.Create(profile?.ProfilePicture),
             };
 
             loadingViewModel.IsVisible = false;
@@ -162,15 +243,7 @@ namespace XcavateMobileApp
         {
             await KeysModel.ClearAsync();
 
-            string mnemonics = MnemonicsModel.GenerateMnemonics();
-            string didMnemonics = $"{mnemonics}//did";
-            string x25519Mnemonics = $"{mnemonics}//x25519";
-
-            await Task.WhenAll(
-                KeysModel.SaveSr25519KeyAsync(mnemonics),
-                KeysModel.SaveDidKeyAsync(didMnemonics),
-                KeysModel.GenerateNewEncryptionX25519KeyAsync()
-            );
+            await KeysModel.GenerateNewSolanaAccountAsync();
         }
     }
 }

@@ -4,7 +4,9 @@ using Android.Content.PM;
 using Android.OS;
 using Android.Views;
 using AndroidX.Core.View;
+using Plugin.Firebase.CloudMessaging;
 using Plugin.Fingerprint;
+using PlutoFramework.Components.Notifications;
 using PlutoFramework.Model;
 using Plutonication;
 
@@ -12,6 +14,7 @@ namespace XcavateMobileApp.Platforms.Android;
 
 [Activity(Theme = "@style/Maui.SplashTheme",
     MainLauncher = true,
+    LaunchMode = LaunchMode.SingleTop,
     EnableOnBackInvokedCallback = false,
     ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation | ConfigChanges.UiMode | ConfigChanges.ScreenLayout | ConfigChanges.SmallestScreenSize | ConfigChanges.Density)]
 [IntentFilter(new[] { Intent.ActionView },
@@ -59,20 +62,63 @@ public class MainActivity : MauiAppCompatActivity
 
         CrossFingerprint.SetCurrentActivityResolver(() => this);
 
-        if (Intent.Data != null)
+        HandleIntent(Intent, isRedelivery: savedInstanceState is not null);
+    }
+
+    protected override void OnNewIntent(Intent? intent)
+    {
+        base.OnNewIntent(intent);
+
+        if (intent is not null)
         {
-            var uriString = Intent?.Data.ToString();
+            // Later reads of the activity's Intent should see the newest one.
+            Intent = intent;
+        }
 
-            if (uriString.Equals("plutonication:") || uriString.Equals("plutonication://"))
-            {
-                // Nothing
-            }
-            else if (uriString.StartsWith("plutonication"))
-            {
-                AccessCredentials ac = new AccessCredentials(new Uri(uriString));
+        HandleIntent(intent, isRedelivery: false);
+    }
 
-                PlutonicationModel.ProcessAccessCredentials(ac);
-            }
+    /// <summary>
+    /// Everything a launch or relaunch intent can carry: a plutonication link, a
+    /// tapped push notification (forwarded to Plugin.Firebase so NotificationTapped
+    /// fires for the history recorder), and the bucketId deep link.
+    /// </summary>
+    /// <param name="isRedelivery">
+    /// True when this is a stale intent Android handed back - an activity recreation
+    /// with saved state. Notification content must not be consumed again: a task
+    /// relaunch would replay the deep-link navigation and duplicate tap history.
+    /// The same applies to relaunches from Recents, detected via the intent flag.
+    /// </param>
+    private static void HandleIntent(Intent? intent, bool isRedelivery)
+    {
+        if (intent is null)
+        {
+            return;
+        }
+
+        if (!isRedelivery && intent.Flags.HasFlag(ActivityFlags.LaunchedFromHistory) == false)
+        {
+            FirebaseCloudMessagingImplementation.OnNewIntent(intent);
+
+            NotificationDeepLinkModel.SetBucket(intent.Extras?.GetString("bucketId"));
+        }
+
+        var uriString = intent.Data?.ToString();
+
+        if (uriString is null)
+        {
+            return;
+        }
+
+        if (uriString.Equals("plutonication:") || uriString.Equals("plutonication://"))
+        {
+            // Nothing
+        }
+        else if (uriString.StartsWith("plutonication"))
+        {
+            AccessCredentials ac = new AccessCredentials(new Uri(uriString));
+
+            PlutonicationModel.ProcessAccessCredentials(ac);
         }
     }
 }

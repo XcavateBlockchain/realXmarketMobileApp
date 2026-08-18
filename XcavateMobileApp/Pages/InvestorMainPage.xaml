@@ -26,6 +26,8 @@
              xmlns:card="clr-namespace:PlutoFramework.Components.Card;assembly=PlutoFramework"
              xmlns:loading="clr-namespace:PlutoFramework.Components.Loading;assembly=PlutoFramework"
              xmlns:animations="clr-namespace:PlutoFramework.Components.Animations;assembly=PlutoFramework"
+             xmlns:solanacomponents="clr-namespace:PlutoFramework.Components.Solana;assembly=PlutoFramework"
+             xmlns:solanatransfer="clr-namespace:PlutoFramework.Components.Solana.Transfer;assembly=PlutoFramework"
              BackgroundColor="{AppThemeBinding Light=White, Dark=#0a0a0a}"
              Shell.PresentationMode="NotAnimated"
              HideSoftInputOnTapped="True">
@@ -78,9 +80,20 @@
                                              Grid.Column="0"
                                              RollingTicker="True"/>
 
-                        <xcavatecells:BalanceCellView Grid.Column="1"
-                                                      x:Name="balanceCellView"/>
+                        <solanacomponents:SolanaBalanceCellView Grid.Column="1"
+                                                                x:Name="balanceCellView"/>
                     </Grid>
+
+                    <!--
+                        Headless on purpose. The Solana cell above replaced this one visually, but
+                        this is still the only view that populates AssetsModel.AssetsDict for
+                        existing Substrate users - the Substrate BalancePage, BuyPropertyTokensViewModel
+                        and AssetSelectButtonViewModel all read that dictionary. IsVisible="False"
+                        makes it Visibility.Collapsed, so VerticalStackLayout skips it for both
+                        measure and spacing: it loads, it does not lay out.
+                    -->
+                    <xcavatecells:BalanceCellView x:Name="substrateBalanceCellView"
+                                                  IsVisible="False" />
 
                     <VerticalStackLayout Spacing="5">
                         <Grid Margin="0,0,0,5" ColumnDefinitions="Auto,Auto,*,62" ColumnSpacing="10">
@@ -180,6 +193,10 @@
         <addressview:AddressQrCodeView />
 
         <transferview:TransferView />
+
+        <solanatransfer:SolanaTransferView />
+
+        <solanatransfer:SolanaTokenSelectView />
 
         <dappconnection:DAppConnectionRequestView />
 

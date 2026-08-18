@@ -1,19 +1,29 @@
+using CommunityToolkit.Maui.Alerts;
 using PlutoFramework.Components.Account;
-using PlutoFramework.Components.Mnemonics;
+using PlutoFramework.Components.Loading;
 using PlutoFramework.Components.Onboarding;
 using PlutoFramework.Components.Password;
+using PlutoFramework.Components.Solana;
 using PlutoFramework.Model;
-using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Xcavate;
-using PlutoFrameworkCore.Keys;
 using XcavateMobileApp.Pages;
 
 namespace XcavateMobileApp.Components.Account;
 
 public class ImportAccountCoordinator : IImportAccountCoordinator
 {
+    /// <summary>
+    /// The flow the user picked on the welcome page, stored next to the onboarding stage.
+    /// </summary>
+    /// <remarks>
+    /// Both flows sit at <see cref="OnboardingStage.SetupPassword"/> until onboarding finishes,
+    /// so the stage alone cannot tell them apart on resume. Without this, a user who chose
+    /// Import, set a password and was interrupted on the seed-phrase page came back to a
+    /// freshly generated wallet while believing their funded one had been imported.
+    /// </remarks>
+    private const string FLOW_MODE_KEY = "OnboardingImportAccountFlowMode";
+
     private readonly INavigationService _navigationService;
-    private ImportAccountFlowMode _flowMode;
 
     public ImportAccountCoordinator()
         : this(new MauiNavigationService())
@@ -60,22 +70,36 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
         return Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Resumes onboarding into the flow the user originally chose. Create re-runs the
+    /// password page; Import re-runs the method popup, which is where its password step now
+    /// lives - on the import page for a phrase, after the wallet for MWA.
+    /// </summary>
     private Task ContinueSetupPasswordAsync()
     {
+        if (GetSavedFlowMode() == ImportAccountFlowMode.Import)
+        {
+            return ShowImportMethodPopupAsync();
+        }
+
         return _navigationService.NavigateToAsync(new SetupPasswordPage
         {
-            Navigation = () =>
-            {
-                var mnemonics = MnemonicsModel.GenerateMnemonics();
-
-                return OnPasswordSetAsync(mnemonics);
-            },
+            Navigation = CreateSolanaAccountAsync,
         });
     }
 
+    /// <summary>
+    /// Defaults to <see cref="ImportAccountFlowMode.Create"/> so a stage written before this
+    /// preference existed resumes exactly as it used to. A stale value cannot be read: the
+    /// only reader runs at <see cref="OnboardingStage.SetupPassword"/>, and only
+    /// <see cref="StartAsync"/> sets that stage - after writing the preference.
+    /// </summary>
+    private static ImportAccountFlowMode GetSavedFlowMode() =>
+        (ImportAccountFlowMode)Preferences.Get(FLOW_MODE_KEY, (int)ImportAccountFlowMode.Create);
+
     public async Task StartAsync(ImportAccountFlowMode flowMode)
     {
-        _flowMode = flowMode;
+        Preferences.Set(FLOW_MODE_KEY, (int)flowMode);
 
         OnboardingModel.SetOnboardingStage(OnboardingStage.SetupPassword);
 
@@ -83,73 +107,130 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
         {
             ImportAccountFlowMode.Create => _navigationService.NavigateToAsync(new SetupPasswordPage
             {
-                Navigation = () =>
-                {
-                    var mnemonics = MnemonicsModel.GenerateMnemonics();
-
-                    return OnPasswordSetAsync(mnemonics);
-                },
+                Navigation = CreateSolanaAccountAsync,
             }),
-            ImportAccountFlowMode.Import => _navigationService.NavigateToAsync(new EnterMnemonicsPage(
-                new EnterMnemonicsViewModel
-                {
-                    Navigation = OnMnemonicsEnteredAsync,
-                })),
+            ImportAccountFlowMode.Import => ShowImportMethodPopupAsync(),
             _ => throw new Exception("Unsupported flow mode"),
         };
 
         await nextNavigation;
     }
 
-    private async Task OnMnemonicsEnteredAsync(string mnemonics)
+    /// <summary>
+    /// Asks how the account arrives, then continues into whichever flow can ask for a
+    /// password at the right moment for it.
+    /// </summary>
+    /// <remarks>
+    /// Saving any key - a phrase or an MWA auth token - reads the stored password to encrypt
+    /// it, so a password still has to exist before the save. What differs is where it is
+    /// asked for: a phrase import collects it on the same screen as the phrase, and a wallet
+    /// connection collects it after the wallet has approved.
+    /// </remarks>
+    private Task ShowImportMethodPopupAsync()
     {
-        var accountLocked = await KeysDatabase.GetAllKeysOfTypeAsync(KeyTypeEnum.PolkadotJson);
+        var popup = DependencyService.Get<ImportMethodPopupViewModel>();
 
-        var importWarningPopupViewModel = DependencyService.Get<ImportWarningPopupViewModel>();
-
-        if (accountLocked.Count() > 0)
+        popup.SeedPhraseChosen = () => _navigationService.NavigateToAsync(new ImportSolanaWalletPage
         {
-            importWarningPopupViewModel.WarningText = "JSON importing unfortunately does not support importing of DID and X25519 Encryption key that are derived from the account. New DID and Encryption key were created. If you wish to import your existing keys, you can do so later in the setting of the app.";
-            importWarningPopupViewModel.IsVisible = true;
+            // The page saves the password and the phrase itself, in that order, then hands
+            // the phrase back so the Substrate identity comes off the same backup.
+            Navigation = (mnemonics) => ContinueAfterAccountCreatedAsync(mnemonics),
+        });
 
-            await OnJsonImportedAsync(mnemonics);
+        popup.MwaChosen = ShowConnectMwaPopupAsync;
+
+        popup.IsVisible = true;
+
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Opens over whatever page raised the import-method popup - the page template hosts it,
+    /// and <see cref="WelcomePage"/> declares its own - so the wallet is connected before
+    /// anything is asked of the user.
+    /// </summary>
+    private Task ShowConnectMwaPopupAsync()
+    {
+        var popup = DependencyService.Get<ConnectMwaPopupViewModel>();
+
+        // The popup does not persist the authorization. It is held here, in memory only,
+        // until the password that encrypts it exists. Abandoning the flow at the password
+        // page therefore saves nothing, and the user reconnects on the next attempt.
+        popup.Completed = (key) => _navigationService.NavigateToAsync(new SetupPasswordPage
+        {
+            Navigation = async () =>
+            {
+                try
+                {
+                    // The save clears any existing Solana key before it can fail, so a silent
+                    // failure would leave no account at all.
+                    await KeysModel.SaveSolanaMwaKeyAsync(key);
+                }
+                catch (Exception ex)
+                {
+                    await Toast.Make($"Could not save your wallet: {ex.Message}").Show();
+
+                    return;
+                }
+
+                // No phrase to pass on: the wallet app keeps it. The Substrate identity is
+                // generated independently, as the X25519 key already is on this path.
+                await ContinueAfterAccountCreatedAsync();
+            },
+        });
+
+        popup.IsVisible = true;
+
+        return Task.CompletedTask;
+    }
+
+    private static async Task CreateSolanaAccountAsync()
+    {
+        // Generated after the password step, never before: SaveSolanaMnemonicKeyAsync reads
+        // the stored password to encrypt the phrase.
+        var mnemonics = SolanaMnemonicsModel.GenerateMnemonics();
+
+        await KeysModel.SaveSolanaMnemonicKeyAsync(mnemonics);
+
+        await ContinueAfterAccountCreatedAsync(mnemonics);
+    }
+
+    /// <summary>
+    /// Hands off from "the wallet exists" to the rest of onboarding: role, user details,
+    /// questionnaire, agreements, KYC and finally profile registration, which is what sets
+    /// <see cref="OnboardingStage.Finished"/>.
+    /// </summary>
+    /// <remarks>
+    /// The Substrate identity is written first because every step after this one is keyed to
+    /// it - the questionnaire submits an SS58 address, the Sumsub applicant is created under
+    /// one plus a DID, and roles are granted against one in the XcavatePaseo whitelist
+    /// pallet. Writing it before the stage advances also means a user interrupted here
+    /// resumes into a role selection that has the keys it needs.
+    /// </remarks>
+    private static async Task ContinueAfterAccountCreatedAsync(string? mnemonics = null)
+    {
+        var loadingViewModel = DependencyService.Get<FullPageLoadingViewModel>();
+
+        loadingViewModel.IsVisible = true;
+        loadingViewModel.Message = "Setting up your account";
+
+        try
+        {
+            await KeysModel.EnsureSubstrateIdentityAsync(mnemonics);
+        }
+        catch (Exception ex)
+        {
+            // The wallet is saved by this point, so this is recoverable - but silently
+            // continuing would strand the user at a questionnaire that throws on a key that
+            // is not there.
+            await Toast.Make($"Could not finish setting up your account: {ex.Message}").Show();
 
             return;
         }
-
-        importWarningPopupViewModel.WarningText = "DID and X25519 Encryption key were derived from the entered mnemonics. If you wish it import other keys, you can do so later in the setting of the app.";
-        importWarningPopupViewModel.IsVisible = true;
-
-        await _navigationService.NavigateToAsync(new SetupPasswordPage
+        finally
         {
-            Navigation = () => OnPasswordSetAsync(mnemonics),
-        });
-
-
-    }
-
-    private async Task OnJsonImportedAsync(string mnemonics)
-    {
-
-        string didMnemonics = $"{mnemonics}//did";
-        string x25519Mnemonics = $"{mnemonics}//x25519";
-        await KeysModel.SaveDidKeyAsync(didMnemonics);
-        await KeysModel.SaveEncryptionX25519KeyAsync(x25519Mnemonics);
-
-        OnboardingModel.SetOnboardingStage(OnboardingStage.SelectRole);
-
-        await NavigationModel.NavigateAfterAccountCreation.Invoke();
-    }
-
-    private async Task OnPasswordSetAsync(string mnemonics)
-    {
-        string didMnemonics = $"{mnemonics}//did";
-        string x25519Mnemonics = $"{mnemonics}//x25519";
-
-        await KeysModel.SaveSr25519KeyAsync(mnemonics);
-        await KeysModel.SaveDidKeyAsync(didMnemonics);
-        await KeysModel.SaveEncryptionX25519KeyAsync(x25519Mnemonics);
-
+            loadingViewModel.IsVisible = false;
+        }
 
         OnboardingModel.SetOnboardingStage(OnboardingStage.SelectRole);
 
