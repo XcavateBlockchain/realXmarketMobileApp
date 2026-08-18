@@ -1,0 +1,215 @@
+name: publish-development-ios
+
+# Builds the iOS app in Release mode, signs it with an Apple Distribution
+# certificate, uploads it to App Store Connect (TestFlight) and auto-increments
+# the app version in the .csproj.
+#
+# All required secrets live in the "appstore" repository environment.
+# See docs/publish-development-ios.md for what each secret is and how to get it.
+
+on:
+  push:
+    branches:
+      - publish-development
+  workflow_dispatch:
+
+permissions:
+  contents: write # needed to push the version bump commit back to the branch
+
+# Never run two publishes at once - the version bump commit and the
+# App Store build numbers must stay strictly sequential.
+concurrency:
+  group: publish-development-ios
+  cancel-in-progress: false
+
+jobs:
+  publish-ios:
+    runs-on: macos-latest
+    environment: appstore
+    timeout-minutes: 120
+
+    env:
+      DOTNET_NOLOGO: true
+      DOTNET_CLI_TELEMETRY_OPTOUT: true
+      PROJECT: XcavateMobileApp/XcavateMobileApp.csproj
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          # Always publish the tip of publish-development, also for manual runs.
+          ref: publish-development
+          submodules: recursive
+
+      - name: Select latest stable Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Install required .NET workloads
+        run: dotnet workload restore "$PROJECT"
+
+      # Fail fast on missing secrets, before a version number gets consumed.
+      - name: Check required secrets
+        env:
+          APPLE_DISTRIBUTION_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12_BASE64 }}
+          APPLE_DISTRIBUTION_CERT_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASSWORD }}
+          APPSTORE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPSTORE_PROVISIONING_PROFILE_BASE64 }}
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          APPSTORE_API_PRIVATE_KEY_BASE64: ${{ secrets.APPSTORE_API_PRIVATE_KEY_BASE64 }}
+          APPSETTINGS_JSON_BASE64: ${{ secrets.APPSETTINGS_JSON_BASE64 }}
+          GOOGLESERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLESERVICE_INFO_PLIST_BASE64 }}
+        run: |
+          missing=0
+          for name in APPLE_DISTRIBUTION_CERT_P12_BASE64 APPLE_DISTRIBUTION_CERT_PASSWORD \
+                      APPSTORE_PROVISIONING_PROFILE_BASE64 APPSTORE_API_KEY_ID \
+                      APPSTORE_API_ISSUER_ID APPSTORE_API_PRIVATE_KEY_BASE64 \
+                      APPSETTINGS_JSON_BASE64 GOOGLESERVICE_INFO_PLIST_BASE64; do
+            if [ -z "$(eval echo "\$$name")" ]; then
+              echo "::error::Secret $name is missing or empty. Add it to the 'appstore' environment (see docs/publish-development-ios.md)."
+              missing=1
+            fi
+          done
+          exit $missing
+
+      # Both files are gitignored (they contain API keys). appsettings.json is
+      # embedded as a resource so the build fails without it;
+      # GoogleService-Info.plist is the iOS Firebase config, staged here for
+      # the upcoming Firebase iOS integration.
+      - name: Create appsettings.json and GoogleService-Info.plist
+        env:
+          APPSETTINGS_JSON_BASE64: ${{ secrets.APPSETTINGS_JSON_BASE64 }}
+          GOOGLESERVICE_INFO_PLIST_BASE64: ${{ secrets.GOOGLESERVICE_INFO_PLIST_BASE64 }}
+        run: |
+          echo -n "$APPSETTINGS_JSON_BASE64" | base64 --decode > XcavateMobileApp/appsettings.json
+          echo -n "$GOOGLESERVICE_INFO_PLIST_BASE64" | base64 --decode > XcavateMobileApp/GoogleService-Info.plist
+
+      - name: Bump app version
+        id: bump
+        run: python3 .github/scripts/bump_ios_version.py "$PROJECT"
+
+      # The bump is committed and pushed BEFORE the build so that every run -
+      # even one that later fails - consumes its build number exactly once.
+      # App Store Connect rejects re-uploads of an already-used build number,
+      # so monotonic numbering matters more than a pretty history.
+      # "[skip ci]" prevents the push from re-triggering this workflow.
+      - name: Commit and push version bump
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898270+github-actions[bot]@users.noreply.github.com"
+          git add "$PROJECT"
+          git commit -m "Bump iOS version to ${{ steps.bump.outputs.display_version }} (build ${{ steps.bump.outputs.build_number }}) [skip ci]"
+          git pull --rebase origin publish-development
+          git push origin HEAD:publish-development
+
+      - name: Import distribution certificate and provisioning profile
+        env:
+          APPLE_DISTRIBUTION_CERT_P12_BASE64: ${{ secrets.APPLE_DISTRIBUTION_CERT_P12_BASE64 }}
+          APPLE_DISTRIBUTION_CERT_PASSWORD: ${{ secrets.APPLE_DISTRIBUTION_CERT_PASSWORD }}
+          APPSTORE_PROVISIONING_PROFILE_BASE64: ${{ secrets.APPSTORE_PROVISIONING_PROFILE_BASE64 }}
+        run: |
+          set -euo pipefail
+
+          KEYCHAIN_PATH="$RUNNER_TEMP/publish.keychain-db"
+          KEYCHAIN_PASSWORD="$(uuidgen)"
+          CERT_PATH="$RUNNER_TEMP/distribution.p12"
+          PROFILE_PATH="$RUNNER_TEMP/appstore.mobileprovision"
+
+          echo -n "$APPLE_DISTRIBUTION_CERT_P12_BASE64" | base64 --decode > "$CERT_PATH"
+          echo -n "$APPSTORE_PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PROFILE_PATH"
+
+          # Temporary keychain holding the signing certificate.
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -k "$KEYCHAIN_PATH" -P "$APPLE_DISTRIBUTION_CERT_PASSWORD" -A -t cert -f pkcs12
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH" > /dev/null
+          security list-keychains -d user -s "$KEYCHAIN_PATH" login.keychain-db
+
+          # Install the provisioning profile where the iOS build tasks look for
+          # it (classic path and the Xcode 16+ path).
+          security cms -D -i "$PROFILE_PATH" > "$RUNNER_TEMP/profile.plist"
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print UUID' "$RUNNER_TEMP/profile.plist")
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print Name' "$RUNNER_TEMP/profile.plist")
+          echo "Provisioning profile: $PROFILE_NAME ($PROFILE_UUID)"
+          mkdir -p "$HOME/Library/MobileDevice/Provisioning Profiles"
+          cp "$PROFILE_PATH" "$HOME/Library/MobileDevice/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
+          mkdir -p "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
+          cp "$PROFILE_PATH" "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/$PROFILE_UUID.mobileprovision"
+
+          # The signing identity name and the profile name are derived from the
+          # secrets themselves, so no extra secrets are needed for them.
+          IDENTITY=$(security find-identity -v -p codesigning "$KEYCHAIN_PATH" \
+            | sed -n 's/.*"\(Apple Distribution: [^"]*\)".*/\1/p; s/.*"\(iPhone Distribution: [^"]*\)".*/\1/p' \
+            | head -n 1)
+          if [ -z "$IDENTITY" ]; then
+            echo "::error::No 'Apple Distribution' identity found in the imported .p12. Export the certificate INCLUDING its private key (see docs/publish-development-ios.md)."
+            security find-identity -v -p codesigning "$KEYCHAIN_PATH" || true
+            exit 1
+          fi
+          echo "Signing identity: $IDENTITY"
+
+          {
+            echo "KEYCHAIN_PATH=$KEYCHAIN_PATH"
+            echo "CODESIGN_KEY=$IDENTITY"
+            echo "CODESIGN_PROVISION=$PROFILE_NAME"
+          } >> "$GITHUB_ENV"
+
+      - name: Publish iOS app (Release, signed)
+        run: |
+          dotnet publish "$PROJECT" \
+            -f net10.0-ios \
+            -c Release \
+            -p:RuntimeIdentifier=ios-arm64 \
+            -p:ArchiveOnBuild=true \
+            -p:CodesignKey="$CODESIGN_KEY" \
+            -p:CodesignProvision="$CODESIGN_PROVISION"
+
+      - name: Locate .ipa
+        id: ipa
+        run: |
+          IPA_PATH=$(find XcavateMobileApp/bin/Release/net10.0-ios -name '*.ipa' | head -n 1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "::error::No .ipa produced by the publish step."
+            exit 1
+          fi
+          echo "Found $IPA_PATH"
+          echo "ipa_path=$IPA_PATH" >> "$GITHUB_OUTPUT"
+
+      - name: Upload .ipa as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: realxmarket-ios-${{ steps.bump.outputs.display_version }}-build${{ steps.bump.outputs.build_number }}
+          path: ${{ steps.ipa.outputs.ipa_path }}
+          retention-days: 30
+
+      - name: Upload to App Store Connect
+        env:
+          APPSTORE_API_KEY_ID: ${{ secrets.APPSTORE_API_KEY_ID }}
+          APPSTORE_API_ISSUER_ID: ${{ secrets.APPSTORE_API_ISSUER_ID }}
+          APPSTORE_API_PRIVATE_KEY_BASE64: ${{ secrets.APPSTORE_API_PRIVATE_KEY_BASE64 }}
+        run: |
+          set -euo pipefail
+          # altool looks for the key in ~/private_keys/AuthKey_<KEY_ID>.p8
+          mkdir -p "$HOME/private_keys"
+          echo -n "$APPSTORE_API_PRIVATE_KEY_BASE64" | base64 --decode > "$HOME/private_keys/AuthKey_${APPSTORE_API_KEY_ID}.p8"
+          xcrun altool --upload-app --type ios \
+            -f "${{ steps.ipa.outputs.ipa_path }}" \
+            --apiKey "$APPSTORE_API_KEY_ID" \
+            --apiIssuer "$APPSTORE_API_ISSUER_ID"
+
+      - name: Clean up signing material
+        if: always()
+        run: |
+          if [ -n "${KEYCHAIN_PATH:-}" ] && [ -f "$KEYCHAIN_PATH" ]; then
+            security delete-keychain "$KEYCHAIN_PATH"
+          fi
+          rm -rf "$HOME/private_keys"
+          rm -f "$HOME/Library/MobileDevice/Provisioning Profiles/"*.mobileprovision
+          rm -f "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/"*.mobileprovision
