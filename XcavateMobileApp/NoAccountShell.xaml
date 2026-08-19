@@ -4,6 +4,7 @@
              xmlns:xcavateproperty="clr-namespace:PlutoFramework.Components.XcavateProperty;assembly=PlutoFramework"
              xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
             xmlns:pages="clr-namespace:XcavateMobileApp.Pages"
+             FlyoutBehavior="{OnPlatform iOS=Disabled, Default=Flyout}"
              x:Class="XcavateMobileApp.NoAccountShell">
     <ShellContent ContentTemplate="{DataTemplate xcavateproperty:XcavateIndexedPropertyMarketplacePage}" 
               Route="Marketplace">
