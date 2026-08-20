@@ -17,9 +17,11 @@ permissions:
   contents: write # needed to push the version bump commit back to the branch
 
 # Never run two publishes at once - the version bump commit and the
-# App Store build numbers must stay strictly sequential.
+# App Store build numbers must stay strictly sequential. The group is shared
+# with publish-development-android.yaml, which bumps the same csproj version:
+# the two publishes queue behind each other instead of racing to push.
 concurrency:
-  group: publish-development-ios
+  group: publish-development
   cancel-in-progress: false
 
 jobs:
@@ -92,7 +94,7 @@ jobs:
 
       - name: Bump app version
         id: bump
-        run: python3 .github/scripts/bump_ios_version.py "$PROJECT"
+        run: python3 .github/scripts/bump_app_version.py "$PROJECT"
 
       # The bump is committed and pushed BEFORE the build so that every run -
       # even one that later fails - consumes its build number exactly once.

@@ -1,0 +1,3228 @@
+{
+  "address": "FYysH5v23qtz4gK4H1yLDHneFwx6PSAT7oQwHcuRyRh",
+  "metadata": {
+    "name": "regions",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Region governance, operator seats, and locations for the realXmarket protocol"
+  },
+  "docs": [
+    "Region governance for the realXmarket protocol: a regional operator proposes",
+    "a region by bonding XCAV, holders vote, and on a pass the proposer claims it",
+    "and becomes the operator. A seat turns over at the end of the operator's term",
+    "(or earlier through resignation), after which any operator can claim the open",
+    "region by bonding and the incumbent can renew. On top of the seat governance",
+    "the region carries the marketplace's static data: registered locations",
+    "(postcodes), the property sale tax, and the listing duration."
+  ],
+  "instructions": [
+    {
+      "name": "accept_authority",
+      "docs": [
+        "Complete the authority handover. Signed by the pending authority."
+      ],
+      "discriminator": [
+        107,
+        86,
+        198,
+        91,
+        33,
+        12,
+        107,
+        160
+      ],
+      "accounts": [
+        {
+          "name": "new_authority",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "adjust_listing_duration",
+      "docs": [
+        "Change how long new listings in the region stay active. Region-operator-only."
+      ],
+      "discriminator": [
+        126,
+        202,
+        161,
+        247,
+        30,
+        44,
+        106,
+        87
+      ],
+      "accounts": [
+        {
+          "name": "operator",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "operator_role"
+        },
+        {
+          "name": "region",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "listing_duration",
+          "type": "i64"
+        }
+      ]
+    },
+    {
+      "name": "adjust_region_tax",
+      "docs": [
+        "Change the region's property sale tax. Region-operator-only."
+      ],
+      "discriminator": [
+        199,
+        105,
+        230,
+        191,
+        76,
+        22,
+        174,
+        100
+      ],
+      "accounts": [
+        {
+          "name": "operator",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "operator_role"
+        },
+        {
+          "name": "region",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "tax_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "claim_open_region",
+      "docs": [
+        "Claim an open region seat, bonding 0.1% of XCAV supply plus the region's",
+        "location deposits, capped by the caller's `max_deposit`. First-come and",
+        "RegionalOperator-only; the incumbent may also call this to renew, paying",
+        "only the difference if the bond has moved since they last bonded."
+      ],
+      "discriminator": [
+        207,
+        218,
+        1,
+        124,
+        8,
+        184,
+        146,
+        54
+      ],
+      "accounts": [
+        {
+          "name": "new_operator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "operator_role"
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked` and reading supply for the bond)."
+          ]
+        },
+        {
+          "name": "new_operator_token",
+          "docs": [
+            "The new operator's XCAV account the bond is pulled from."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "old_owner"
+        },
+        {
+          "name": "old_owner_token",
+          "docs": [
+            "returned collateral on a takeover. Created idempotently (the ATA",
+            "program verifies the derivation), so an outgoing operator closing their",
+            "account can't make the seat uncontestable. Unused when the incumbent",
+            "renews (they are refunded through `new_operator_token` instead)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "max_deposit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "clear_region_state",
+      "docs": [
+        "Close a rejected/empty region state so the region can be proposed again."
+      ],
+      "discriminator": [
+        201,
+        81,
+        255,
+        12,
+        240,
+        103,
+        88,
+        79
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "region_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposer"
+        },
+        {
+          "name": "proposer_token",
+          "docs": [
+            "bond when clearing a stale passed state. Created idempotently (the ATA",
+            "program verifies the derivation), so a closed account can't wedge the",
+            "crank and lock the region forever."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "create_new_location",
+      "docs": [
+        "Register a postcode as a listable location. Region-operator-only;",
+        "locks a location deposit (capped by `max_deposit`) that joins the",
+        "region's collateral."
+      ],
+      "discriminator": [
+        249,
+        10,
+        147,
+        55,
+        102,
+        73,
+        248,
+        87
+      ],
+      "accounts": [
+        {
+          "name": "operator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "operator_role"
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "operator_token",
+          "docs": [
+            "The operator's XCAV account the location deposit is pulled from."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "location",
+          "docs": [
+            "`init` doubles as the duplicate check: registering the same postcode",
+            "twice fails on the second create."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              },
+              {
+                "kind": "arg",
+                "path": "postcode"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "postcode",
+          "type": "bytes"
+        },
+        {
+          "name": "max_deposit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "create_region",
+      "docs": [
+        "Claim a region whose proposal passed, creating it with its initial",
+        "listing duration and sale tax. Proposer-only."
+      ],
+      "discriminator": [
+        108,
+        252,
+        183,
+        41,
+        46,
+        77,
+        84,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "creator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "creator_role"
+        },
+        {
+          "name": "region_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "listing_duration",
+          "type": "i64"
+        },
+        {
+          "name": "tax_bps",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "finalize_region_proposal",
+      "docs": [
+        "Finalize an expired proposal (permissionless crank)."
+      ],
+      "discriminator": [
+        219,
+        13,
+        96,
+        83,
+        3,
+        10,
+        208,
+        148
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "docs": [
+            "Pays the transaction fee; no authority required."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "region_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "region_state.proposal_id",
+                "account": "RegionState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposer",
+          "docs": [
+            "closed proposal's rent."
+          ],
+          "writable": true,
+          "relations": [
+            "proposal"
+          ]
+        },
+        {
+          "name": "proposer_token",
+          "docs": [
+            "bond on a rejection. Created idempotently (the ATA program verifies the",
+            "derivation), so a proposer closing their account can't wedge the crank."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "initialize_config",
+      "docs": [
+        "Initialize the singleton config with governance parameters."
+      ],
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "program",
+          "docs": [
+            "This program's executable account, tying `program_data` to it."
+          ],
+          "address": "FYysH5v23qtz4gK4H1yLDHneFwx6PSAT7oQwHcuRyRh"
+        },
+        {
+          "name": "program_data",
+          "docs": [
+            "The program's upgrade authority must be the initializing signer."
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV governance mint the protocol stakes."
+          ]
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault, owned by the config PDA."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "initiate_resignation",
+      "docs": [
+        "Schedule the caller's own departure as a region's operator."
+      ],
+      "discriminator": [
+        138,
+        35,
+        62,
+        155,
+        92,
+        227,
+        9,
+        75
+      ],
+      "accounts": [
+        {
+          "name": "operator",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        }
+      ]
+    },
+    {
+      "name": "propose_new_region",
+      "docs": [
+        "Propose a new region. RegionalOperator-only; bonds 0.1% of XCAV supply,",
+        "capped by the caller's `max_deposit`."
+      ],
+      "discriminator": [
+        28,
+        215,
+        150,
+        74,
+        54,
+        158,
+        83,
+        146
+      ],
+      "accounts": [
+        {
+          "name": "proposer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "proposer_token",
+          "docs": [
+            "The proposer's XCAV account the deposit is pulled from."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "operator_role",
+          "docs": [
+            "The caller's RegionalOperator role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "region",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "region_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.proposal_counter",
+                "account": "Config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "max_deposit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "remove_location",
+      "docs": [
+        "Deregister a postcode and release its recorded deposit. Region-operator-only."
+      ],
+      "discriminator": [
+        85,
+        2,
+        35,
+        12,
+        215,
+        19,
+        137,
+        25
+      ],
+      "accounts": [
+        {
+          "name": "operator",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "operator_role"
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "operator_token",
+          "docs": [
+            "The operator's XCAV account the deposit is returned to."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "location",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              },
+              {
+                "kind": "arg",
+                "path": "postcode"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "postcode",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "unlock_voting_token",
+      "docs": [
+        "Reclaim locked voting XCAV after a proposal's voting window ends."
+      ],
+      "discriminator": [
+        233,
+        209,
+        249,
+        84,
+        45,
+        175,
+        9,
+        167
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "voter_token",
+          "docs": [
+            "The voter's XCAV account the locked power is returned to."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "proposal_id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "proposal_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_authority",
+      "docs": [
+        "Propose a new config authority (two-step handover). Current-authority-only."
+      ],
+      "discriminator": [
+        32,
+        46,
+        64,
+        28,
+        149,
+        75,
+        243,
+        88
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_authority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "update_config",
+      "docs": [
+        "Update the governance parameters. Authority-only."
+      ],
+      "discriminator": [
+        29,
+        158,
+        252,
+        191,
+        10,
+        83,
+        219,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "vote_on_region_proposal",
+      "docs": [
+        "Vote on an open proposal. Anyone may vote; the amount is locked."
+      ],
+      "discriminator": [
+        251,
+        85,
+        224,
+        64,
+        182,
+        4,
+        38,
+        11
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "voter_token",
+          "docs": [
+            "The voter's XCAV account the lock is pulled from / refunded to."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "region_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "region_state.proposal_id",
+                "account": "RegionState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "region_state.proposal_id",
+                "account": "RegionState"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "vote",
+          "type": {
+            "defined": {
+              "name": "Vote"
+            }
+          }
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "Location",
+      "discriminator": [
+        73,
+        140,
+        105,
+        78,
+        215,
+        159,
+        92,
+        234
+      ]
+    },
+    {
+      "name": "Region",
+      "discriminator": [
+        80,
+        47,
+        23,
+        41,
+        58,
+        147,
+        227,
+        165
+      ]
+    },
+    {
+      "name": "RegionProposal",
+      "discriminator": [
+        200,
+        76,
+        47,
+        82,
+        93,
+        209,
+        25,
+        156
+      ]
+    },
+    {
+      "name": "RegionState",
+      "discriminator": [
+        162,
+        44,
+        80,
+        218,
+        132,
+        187,
+        63,
+        87
+      ]
+    },
+    {
+      "name": "VoteRecord",
+      "discriminator": [
+        112,
+        9,
+        123,
+        165,
+        234,
+        9,
+        157,
+        167
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AuthorityUpdateProposed",
+      "discriminator": [
+        238,
+        208,
+        182,
+        30,
+        132,
+        56,
+        128,
+        252
+      ]
+    },
+    {
+      "name": "AuthorityUpdated",
+      "discriminator": [
+        133,
+        207,
+        24,
+        122,
+        14,
+        234,
+        91,
+        34
+      ]
+    },
+    {
+      "name": "ConfigInitialized",
+      "discriminator": [
+        181,
+        49,
+        200,
+        156,
+        19,
+        167,
+        178,
+        91
+      ]
+    },
+    {
+      "name": "ConfigUpdated",
+      "discriminator": [
+        40,
+        241,
+        230,
+        122,
+        11,
+        19,
+        198,
+        194
+      ]
+    },
+    {
+      "name": "ListingDurationChanged",
+      "discriminator": [
+        199,
+        199,
+        184,
+        135,
+        207,
+        118,
+        236,
+        32
+      ]
+    },
+    {
+      "name": "LocationCreated",
+      "discriminator": [
+        63,
+        4,
+        184,
+        49,
+        42,
+        86,
+        207,
+        142
+      ]
+    },
+    {
+      "name": "LocationRemoved",
+      "discriminator": [
+        204,
+        145,
+        67,
+        119,
+        176,
+        137,
+        100,
+        59
+      ]
+    },
+    {
+      "name": "RegionClaimed",
+      "discriminator": [
+        94,
+        244,
+        180,
+        89,
+        97,
+        153,
+        212,
+        5
+      ]
+    },
+    {
+      "name": "RegionCreated",
+      "discriminator": [
+        50,
+        77,
+        64,
+        125,
+        190,
+        202,
+        81,
+        165
+      ]
+    },
+    {
+      "name": "RegionProposalPassed",
+      "discriminator": [
+        195,
+        166,
+        46,
+        58,
+        113,
+        140,
+        224,
+        76
+      ]
+    },
+    {
+      "name": "RegionProposalRejected",
+      "discriminator": [
+        178,
+        13,
+        101,
+        115,
+        128,
+        223,
+        180,
+        213
+      ]
+    },
+    {
+      "name": "RegionProposed",
+      "discriminator": [
+        195,
+        98,
+        232,
+        244,
+        36,
+        145,
+        235,
+        191
+      ]
+    },
+    {
+      "name": "RegionStateCleared",
+      "discriminator": [
+        130,
+        220,
+        251,
+        55,
+        229,
+        41,
+        152,
+        6
+      ]
+    },
+    {
+      "name": "RegionTaxChanged",
+      "discriminator": [
+        247,
+        186,
+        117,
+        159,
+        57,
+        40,
+        228,
+        24
+      ]
+    },
+    {
+      "name": "ResignationInitiated",
+      "discriminator": [
+        215,
+        243,
+        240,
+        151,
+        12,
+        181,
+        51,
+        129
+      ]
+    },
+    {
+      "name": "VotedOnRegionProposal",
+      "discriminator": [
+        191,
+        54,
+        47,
+        41,
+        95,
+        239,
+        110,
+        122
+      ]
+    },
+    {
+      "name": "VotingTokenUnlocked",
+      "discriminator": [
+        250,
+        133,
+        179,
+        240,
+        27,
+        12,
+        237,
+        249
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NotAuthority",
+      "msg": "Signer is not the authority"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidConfig",
+      "msg": "Invalid governance parameters"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidMint",
+      "msg": "Invalid XCAV mint"
+    },
+    {
+      "code": 6003,
+      "name": "InvalidRegion",
+      "msg": "Unknown region"
+    },
+    {
+      "code": 6004,
+      "name": "RegionAlreadyCreated",
+      "msg": "Region already created"
+    },
+    {
+      "code": 6005,
+      "name": "BelowMinimumVotingAmount",
+      "msg": "Voting amount is below the minimum"
+    },
+    {
+      "code": 6006,
+      "name": "ProposalExpired",
+      "msg": "Voting window has closed"
+    },
+    {
+      "code": 6007,
+      "name": "NotProposing",
+      "msg": "Region is not in the proposing phase"
+    },
+    {
+      "code": 6008,
+      "name": "VotingStillOngoing",
+      "msg": "Voting is still ongoing"
+    },
+    {
+      "code": 6009,
+      "name": "BondTooSmall",
+      "msg": "XCAV supply too small to bond"
+    },
+    {
+      "code": 6010,
+      "name": "RegionNotPassed",
+      "msg": "Region proposal has not passed"
+    },
+    {
+      "code": 6011,
+      "name": "ClaimWindowClosed",
+      "msg": "Claim window has closed"
+    },
+    {
+      "code": 6012,
+      "name": "NotProposer",
+      "msg": "Caller is not the region proposer"
+    },
+    {
+      "code": 6013,
+      "name": "NotClearable",
+      "msg": "Region state is not clearable"
+    },
+    {
+      "code": 6014,
+      "name": "NotRegionOwner",
+      "msg": "Caller is not the region operator"
+    },
+    {
+      "code": 6015,
+      "name": "RegionOwnerCantBeChanged",
+      "msg": "Region operator cannot be changed yet"
+    },
+    {
+      "code": 6016,
+      "name": "OwnerChangeAlreadyScheduled",
+      "msg": "An owner change is already scheduled"
+    },
+    {
+      "code": 6017,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6018,
+      "name": "UnsupportedMintExtension",
+      "msg": "Unsupported token extension on mint"
+    },
+    {
+      "code": 6019,
+      "name": "NotUpgradeAuthority",
+      "msg": "Signer is not the program upgrade authority"
+    },
+    {
+      "code": 6020,
+      "name": "NotPendingAuthority",
+      "msg": "Signer is not the pending authority"
+    },
+    {
+      "code": 6021,
+      "name": "InvalidListingDuration",
+      "msg": "Invalid listing duration"
+    },
+    {
+      "code": 6022,
+      "name": "TaxTooHigh",
+      "msg": "Tax is above the maximum"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidPostcode",
+      "msg": "Invalid postcode"
+    },
+    {
+      "code": 6024,
+      "name": "UnsupportedMintAuthority",
+      "msg": "Unsupported mint authority"
+    },
+    {
+      "code": 6025,
+      "name": "DepositTooHigh",
+      "msg": "Deposit exceeds the caller's maximum"
+    },
+    {
+      "code": 6026,
+      "name": "SeatOpen",
+      "msg": "Operator seat is open"
+    },
+    {
+      "code": 6027,
+      "name": "VoteTooLate",
+      "msg": "Too close to the proposal expiry to vote"
+    }
+  ],
+  "types": [
+    {
+      "name": "AccessPermission",
+      "docs": [
+        "Compliance status for a (user, role) assignment, set by an admin after",
+        "off-chain KYC/AML. Only the marketplace's investor-fund calls (listing,",
+        "buying, offers, share transfers, lawyer case work) require this flag on",
+        "top of the role; every other instruction checks role possession alone.",
+        "Later it'll be driven by a SAS attestation instead of a manual toggle.",
+        "",
+        "Do not reorder the variants: the serialized `RoleAccount.permission`",
+        "stores the variant index, so a reorder flips every stored status."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Compliant"
+          },
+          {
+            "name": "Revoked"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityUpdateProposed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "old_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "docs": [
+        "Singleton config holding governance parameters and the authority."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Authority allowed to update parameters."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "docs": [
+              "Proposed replacement authority; takes over via `accept_authority`.",
+              "Two-step so a typo'd address can't brick parameter management."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "xcav_mint",
+            "docs": [
+              "The XCAV governance mint staked for proposals, votes, and operator bonds."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "minimum_voting_amount",
+            "docs": [
+              "Minimum XCAV a voter must lock to vote."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "voting_period",
+            "docs": [
+              "Seconds a proposal stays open for voting."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "owner_change_period",
+            "docs": [
+              "The operator's term: minimum time before a region's seat can be claimed",
+              "by someone else, and how long a passed proposal has to be claimed."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "threshold_bps",
+            "docs": [
+              "Approval threshold in basis points (yes / (yes + no))."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "quorum",
+            "docs": [
+              "Minimum total voting power for a proposal to be valid."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "notice_period",
+            "docs": [
+              "Notice an operator must give before resigning (seconds)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "min_vote_hold",
+            "docs": [
+              "Seconds before a proposal's expiry after which new votes are rejected,",
+              "so every vote's lock lasts at least this long."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "max_listing_duration",
+            "docs": [
+              "Longest listing duration an operator may set for their region (seconds)."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "max_tax_bps",
+            "docs": [
+              "Highest property tax an operator may set, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "location_deposit",
+            "docs": [
+              "XCAV an operator locks per registered location, on top of their bond."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "proposal_counter",
+            "docs": [
+              "Monotonic id for the next proposal."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "xcav_mint",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigParams",
+      "docs": [
+        "Governance parameters for the regions program."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "minimum_voting_amount",
+            "type": "u64"
+          },
+          {
+            "name": "voting_period",
+            "type": "i64"
+          },
+          {
+            "name": "owner_change_period",
+            "type": "i64"
+          },
+          {
+            "name": "threshold_bps",
+            "type": "u16"
+          },
+          {
+            "name": "quorum",
+            "type": "u64"
+          },
+          {
+            "name": "notice_period",
+            "type": "i64"
+          },
+          {
+            "name": "min_vote_hold",
+            "type": "i64"
+          },
+          {
+            "name": "max_listing_duration",
+            "type": "i64"
+          },
+          {
+            "name": "max_tax_bps",
+            "type": "u16"
+          },
+          {
+            "name": "location_deposit",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "minimum_voting_amount",
+            "type": "u64"
+          },
+          {
+            "name": "quorum",
+            "type": "u64"
+          },
+          {
+            "name": "threshold_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ListingDurationChanged",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "listing_duration",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Location",
+      "docs": [
+        "A registered postcode within a region. Existence is the point: the",
+        "marketplace requires a listing's location PDA to exist for its region."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "postcode",
+            "docs": [
+              "The postcode, as seeded (uppercase ASCII, no spaces)."
+            ],
+            "type": "bytes"
+          },
+          {
+            "name": "deposit",
+            "docs": [
+              "The XCAV locked when the location was registered. Released on removal,",
+              "even if the configured deposit has changed since."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LocationCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "postcode",
+            "type": "bytes"
+          },
+          {
+            "name": "new_collateral",
+            "type": "u64"
+          },
+          {
+            "name": "location_count",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LocationRemoved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "postcode",
+            "type": "bytes"
+          },
+          {
+            "name": "new_collateral",
+            "type": "u64"
+          },
+          {
+            "name": "location_count",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Region",
+      "docs": [
+        "A created region and its operator."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral",
+            "docs": [
+              "The operator's bonded XCAV plus the location deposits, held in the",
+              "vault. Returned when the seat changes hands."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "location_collateral",
+            "docs": [
+              "The part of `collateral` backing the registered locations: the sum of",
+              "every `Location.deposit`. Takeovers and removals move these recorded",
+              "amounts, so the seat's bond stays exactly what was locked no matter",
+              "how the configured deposit changes in between."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "next_owner_change",
+            "type": "i64"
+          },
+          {
+            "name": "listing_duration",
+            "docs": [
+              "Seconds a property listing in this region stays active."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "tax_bps",
+            "docs": [
+              "Property sale tax for this region, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "location_count",
+            "docs": [
+              "Number of registered locations (each backed by a location deposit)."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "new_owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral",
+            "type": "u64"
+          },
+          {
+            "name": "next_owner_change",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral",
+            "type": "u64"
+          },
+          {
+            "name": "listing_duration",
+            "type": "i64"
+          },
+          {
+            "name": "tax_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionProposal",
+      "docs": [
+        "An open proposal to create a region, with its running vote tally. The",
+        "proposer's bond is held in the vault and tracked on the region's",
+        "`RegionState`; this account only carries the vote."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "proposer",
+            "type": "pubkey"
+          },
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
+          },
+          {
+            "name": "expiry",
+            "type": "i64"
+          },
+          {
+            "name": "vote_cutoff",
+            "docs": [
+              "Votes are rejected from this moment on, so every vote's lock lasts at",
+              "least the configured minimum hold. Snapshotted at propose time; a",
+              "config change never shrinks an open proposal's window."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "yes_power",
+            "type": "u64"
+          },
+          {
+            "name": "no_power",
+            "type": "u64"
+          },
+          {
+            "name": "abstain_power",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionProposalPassed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionProposalRejected",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "refunded",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionProposed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "proposer",
+            "type": "pubkey"
+          },
+          {
+            "name": "expiry",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionState",
+      "docs": [
+        "One account per region tracking its pre-creation lifecycle. Created when a",
+        "region is proposed and kept (transitioning Proposing -> Passed/Rejected)",
+        "until the region is created or the state is cleared. Having exactly one of",
+        "these per region is what enforces a single in-flight proposal at a time."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "RegionStatus"
+              }
+            }
+          },
+          {
+            "name": "proposal_id",
+            "docs": [
+              "The proposal this region is voting on."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "proposer",
+            "docs": [
+              "The proposer; on a pass they claim the region, on a stale pass they are",
+              "refunded the bond."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "deposit",
+            "docs": [
+              "The proposer's bonded XCAV, held in the vault. Becomes the region's",
+              "collateral on claim, or is refunded on reject / stale pass."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "claim_deadline",
+            "docs": [
+              "Once `Passed`, the deadline for the proposer to claim; after it anyone",
+              "can clear the state and the bond is returned."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionStateCleared",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "RegionStatus"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionStatus",
+      "docs": [
+        "Where a region is in its lifecycle before it is created."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Proposing"
+          },
+          {
+            "name": "Passed"
+          },
+          {
+            "name": "Rejected"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RegionTaxChanged",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "tax_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ResignationInitiated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "operator",
+            "type": "pubkey"
+          },
+          {
+            "name": "next_owner_change",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Role",
+      "docs": [
+        "All roles recognised across the realXmarket protocol.",
+        "",
+        "A role is app-level authorization, separate from KYC/compliance. Compliance",
+        "lives in [`AccessPermission`], and will eventually be driven by SAS",
+        "attestations rather than a manually set flag.",
+        "",
+        "Do not reorder the variants: the serialized `RoleAccount.role` stores the",
+        "variant index, so a reorder reinterprets every existing assignment."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "RegionalOperator"
+          },
+          {
+            "name": "RealEstateInvestor"
+          },
+          {
+            "name": "RealEstateDeveloper"
+          },
+          {
+            "name": "Lawyer"
+          },
+          {
+            "name": "LettingAgent"
+          },
+          {
+            "name": "SpvConfirmation"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoleAccount",
+      "docs": [
+        "One (user, role) assignment together with its compliance status."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": {
+                "name": "Role"
+              }
+            }
+          },
+          {
+            "name": "permission",
+            "type": {
+              "defined": {
+                "name": "AccessPermission"
+              }
+            }
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "Who paid the account's rent (the assigning admin); every teardown",
+              "refunds them, whoever triggers it."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Vote",
+      "docs": [
+        "How a voter can vote on a proposal."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Yes"
+          },
+          {
+            "name": "No"
+          },
+          {
+            "name": "Abstain"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteRecord",
+      "docs": [
+        "One voter's vote on a proposal. The locked voting power (XCAV) is held in the",
+        "vault and returned when the voter unlocks. `expiry` is copied from the",
+        "proposal so unlocking never needs the proposal account (which may already be",
+        "closed by finalization)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "vote",
+            "type": {
+              "defined": {
+                "name": "Vote"
+              }
+            }
+          },
+          {
+            "name": "power",
+            "type": "u64"
+          },
+          {
+            "name": "expiry",
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VotedOnRegionProposal",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "vote",
+            "type": {
+              "defined": {
+                "name": "Vote"
+              }
+            }
+          },
+          {
+            "name": "power",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VotingTokenUnlocked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_id",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "power",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "CONFIG_SEED",
+      "docs": [
+        "PDA seed for the singleton config."
+      ],
+      "type": "bytes",
+      "value": "[99, 111, 110, 102, 105, 103]"
+    },
+    {
+      "name": "LOCATION_SEED",
+      "docs": [
+        "PDA seed for a registered location (postcode) within a region."
+      ],
+      "type": "bytes",
+      "value": "[108, 111, 99, 97, 116, 105, 111, 110]"
+    },
+    {
+      "name": "PROPOSAL_SEED",
+      "docs": [
+        "PDA seed for a region proposal."
+      ],
+      "type": "bytes",
+      "value": "[112, 114, 111, 112, 111, 115, 97, 108]"
+    },
+    {
+      "name": "REGION_SEED",
+      "docs": [
+        "PDA seed for a created region."
+      ],
+      "type": "bytes",
+      "value": "[114, 101, 103, 105, 111, 110]"
+    },
+    {
+      "name": "REGION_STATE_SEED",
+      "docs": [
+        "PDA seed for a region's lifecycle state (enforces one in-flight at a time)."
+      ],
+      "type": "bytes",
+      "value": "[114, 101, 103, 105, 111, 110, 95, 115, 116, 97, 116, 101]"
+    },
+    {
+      "name": "VAULT_SEED",
+      "docs": [
+        "PDA seed for the protocol's XCAV vault (holds all staked governance",
+        "tokens: proposal bonds, vote locks, and region collateral)."
+      ],
+      "type": "bytes",
+      "value": "[118, 97, 117, 108, 116]"
+    },
+    {
+      "name": "VOTE_SEED",
+      "docs": [
+        "PDA seed for a single voter's vote on a proposal."
+      ],
+      "type": "bytes",
+      "value": "[118, 111, 116, 101]"
+    }
+  ]
+}
