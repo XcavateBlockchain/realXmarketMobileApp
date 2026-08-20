@@ -1,0 +1,8528 @@
+{
+  "address": "B6YRVAmjmhN28smZxNfCnuKc19CamBbAEMXsp5KTfWog",
+  "metadata": {
+    "name": "marketplace",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Property listings, fractional share sales, and legal settlement for the realXmarket protocol"
+  },
+  "instructions": [
+    {
+      "name": "accept_authority",
+      "discriminator": [
+        107,
+        86,
+        198,
+        91,
+        33,
+        12,
+        107,
+        160
+      ],
+      "accounts": [
+        {
+          "name": "new_authority",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "assign_developer_lawyer",
+      "discriminator": [
+        197,
+        167,
+        242,
+        89,
+        235,
+        9,
+        169,
+        65
+      ],
+      "accounts": [
+        {
+          "name": "developer",
+          "signer": true
+        },
+        {
+          "name": "developer_role",
+          "docs": [
+            "The caller's RealEstateDeveloper role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "lawyer_role",
+          "docs": [
+            "The named lawyer's role; they carry the legal responsibility, so the",
+            "compliance flag is checked even though they aren't the signer."
+          ]
+        },
+        {
+          "name": "registry",
+          "docs": [
+            "The named lawyer's registry entry; takes the case."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "lawyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "lawyer",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "buy_property_shares",
+      "discriminator": [
+        4,
+        160,
+        53,
+        28,
+        202,
+        98,
+        234,
+        11
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "The sponsor wallet fronting rent for the investor's accounts. Fixed to",
+            "the configured rent collector, so the wallet paying the rent is also",
+            "the one refunded when the accounts close."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "investor_role",
+          "docs": [
+            "The caller's RealEstateInvestor role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint",
+          "docs": [
+            "The mint the investor pays in; must be on the accepted list."
+          ]
+        },
+        {
+          "name": "investor_payment",
+          "docs": [
+            "The investor's payment account the funds are pulled from."
+          ],
+          "writable": true
+        },
+        {
+          "name": "listing_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_payment_account",
+          "docs": [
+            "idempotently, so the ATA program verifies the derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "share_mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101,
+                  45,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_share_account",
+          "docs": [
+            "The vault's share account the delivery is pulled from."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "property_vault"
+              },
+              {
+                "kind": "account",
+                "path": "share_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "share_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "investor_share_account",
+          "docs": [
+            "so the ATA program verifies the derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "payment_token_program",
+          "docs": [
+            "The payment mint's token program (classic or Token-2022)."
+          ]
+        },
+        {
+          "name": "share_token_program",
+          "docs": [
+            "The share mint's program is always Token-2022."
+          ],
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u32"
+        },
+        {
+          "name": "max_total_cost",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "claim_shares",
+      "discriminator": [
+        130,
+        131,
+        29,
+        237,
+        134,
+        20,
+        110,
+        245
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "The sponsor wallet fronting rent for the investor's accounts."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "investor_role",
+          "docs": [
+            "The caller's RealEstateInvestor role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint",
+          "docs": [
+            "untyped to spare `try_accounts` stack, the reserve already vetted it."
+          ]
+        },
+        {
+          "name": "investor_payment",
+          "docs": [
+            "by address; the token program rules on it during the transfer."
+          ],
+          "writable": true
+        },
+        {
+          "name": "reservation",
+          "docs": [
+            "The reservation being spent down."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  115,
+                  101,
+                  114,
+                  118,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "investor_payment"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_vault",
+          "docs": [
+            "token accounts."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_payment_account",
+          "docs": [
+            "idempotently, so the ATA program verifies the derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "share_mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101,
+                  45,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_share_account",
+          "docs": [
+            "to its derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "investor_share_account",
+          "docs": [
+            "so the ATA program verifies the derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "payment_token_program",
+          "docs": [
+            "The payment mint's token program (classic or Token-2022)."
+          ]
+        },
+        {
+          "name": "share_token_program",
+          "docs": [
+            "The share mint's program is always Token-2022."
+          ],
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "claim_spv_case",
+      "discriminator": [
+        175,
+        185,
+        102,
+        63,
+        166,
+        39,
+        168,
+        56
+      ],
+      "accounts": [
+        {
+          "name": "lawyer",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the candidacy's rent: the sponsor on the default path,",
+            "or any willing wallet, so one protocol key can never block a",
+            "candidacy. The record remembers who to refund."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "lawyer_role",
+          "docs": [
+            "The caller's Lawyer role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "registry",
+          "docs": [
+            "The caller's registry entry; proves registration and carries the region."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "lawyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "candidacy",
+          "docs": [
+            "The candidacy, one per lawyer per round; `init` rejects standing twice."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114,
+                  45,
+                  99,
+                  97,
+                  110,
+                  100,
+                  105,
+                  100,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "arg",
+                "path": "round"
+              },
+              {
+                "kind": "account",
+                "path": "lawyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "round",
+          "type": "u64"
+        },
+        {
+          "name": "costs",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "close_cancelled_position",
+      "discriminator": [
+        165,
+        241,
+        53,
+        73,
+        152,
+        29,
+        198,
+        117
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_collector",
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "arg",
+                "path": "investor"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "investor",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "close_candidacy",
+      "discriminator": [
+        219,
+        28,
+        41,
+        13,
+        28,
+        103,
+        134,
+        84
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "the candidacy closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "docs": [
+            "already be torn down; a candidacy must stay closable after that."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "candidacy",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114,
+                  45,
+                  99,
+                  97,
+                  110,
+                  100,
+                  105,
+                  100,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "arg",
+                "path": "round"
+              },
+              {
+                "kind": "arg",
+                "path": "lawyer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "round",
+          "type": "u64"
+        },
+        {
+          "name": "lawyer",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "close_case",
+      "discriminator": [
+        188,
+        7,
+        71,
+        62,
+        186,
+        245,
+        29,
+        55
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "registry",
+          "docs": [
+            "The released lawyer's registry entry."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "lawyer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "lawyer",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "close_dead_listing",
+      "discriminator": [
+        31,
+        51,
+        57,
+        243,
+        31,
+        253,
+        19,
+        186
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_collector",
+          "writable": true
+        },
+        {
+          "name": "developer",
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "share_mint",
+          "docs": [
+            "before the mint existed."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "mint_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_share_account",
+          "docs": [
+            "burn and close. Absent together with the mint."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "listing_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "share_token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "payment_token_program",
+          "docs": [
+            "The token program owning the remaining payment accounts."
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "close_reservation",
+      "discriminator": [
+        171,
+        96,
+        8,
+        85,
+        100,
+        252,
+        173,
+        204
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_collector",
+          "writable": true
+        },
+        {
+          "name": "reservation",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  115,
+                  101,
+                  114,
+                  118,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reservation.token_account",
+                "account": "Reservation"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "create_spv",
+      "discriminator": [
+        155,
+        147,
+        106,
+        185,
+        120,
+        239,
+        157,
+        204
+      ],
+      "accounts": [
+        {
+          "name": "confirmer",
+          "signer": true
+        },
+        {
+          "name": "confirmer_role",
+          "docs": [
+            "The caller's SpvConfirmation role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "execute_deal",
+      "discriminator": [
+        107,
+        92,
+        176,
+        235,
+        53,
+        80,
+        14,
+        94
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "region",
+          "docs": [
+            "The property's region, owned by the regions program; its operator",
+            "takes half the leftover fees."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "property.region_id",
+                "account": "PropertyAsset"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                3,
+                186,
+                74,
+                176,
+                62,
+                143,
+                45,
+                60,
+                174,
+                40,
+                31,
+                39,
+                117,
+                142,
+                247,
+                136,
+                230,
+                147,
+                13,
+                189,
+                6,
+                65,
+                154,
+                36,
+                140,
+                139,
+                245,
+                17,
+                234,
+                15,
+                171,
+                88
+              ]
+            }
+          }
+        },
+        {
+          "name": "developer_lawyer_registry",
+          "docs": [
+            "The developer's lawyer's registry entry; their case closes here."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "listing.developer_lawyer.lawyer",
+                "account": "Listing"
+              }
+            ]
+          }
+        },
+        {
+          "name": "spv_lawyer_registry",
+          "docs": [
+            "The SPV lawyer's registry entry; their case closes here."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "listing.spv_lawyer.lawyer",
+                "account": "Listing"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for the deposit release)."
+          ]
+        },
+        {
+          "name": "developer_token",
+          "docs": [
+            "The developer's XCAV account the deposit returns to."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "docs": [
+            "The XCAV mint's token program."
+          ]
+        },
+        {
+          "name": "payment_token_program",
+          "docs": [
+            "The payment mints' token program; a second one when they differ."
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "finalize_spv_election",
+      "discriminator": [
+        2,
+        249,
+        39,
+        73,
+        224,
+        169,
+        145,
+        100
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "winner_registry",
+          "docs": [
+            "expected address once the winner is known and inspects it directly, so",
+            "a vanished registry fails the election instead of the transaction."
+          ],
+          "writable": true,
+          "optional": true
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "init_property_assets",
+      "discriminator": [
+        86,
+        217,
+        248,
+        184,
+        33,
+        187,
+        144,
+        253
+      ],
+      "accounts": [
+        {
+          "name": "developer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "developer_role",
+          "docs": [
+            "The caller's RealEstateDeveloper role. The whole two-step listing is",
+            "one compliance-gated flow, so the second step re-checks the flag; a",
+            "developer revoked between the steps can't open the sale."
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "share_mint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101,
+                  45,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint_auth",
+          "docs": [
+            "mint; a bare PDA the program signs with."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property_vault",
+          "docs": [
+            "property's token accounts."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_share_account",
+          "docs": [
+            "associated-token program verifies the derivation when creating it."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_config",
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "program",
+          "docs": [
+            "This program's executable account, tying `program_data` to it."
+          ],
+          "address": "B6YRVAmjmhN28smZxNfCnuKc19CamBbAEMXsp5KTfWog"
+        },
+        {
+          "name": "program_data",
+          "docs": [
+            "The program's upgrade authority must be the initializing signer."
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint deposits are paid in."
+          ]
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault, owned by the config PDA. Holds",
+            "listing and lawyer deposits."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "lawyer_confirm_documents",
+      "discriminator": [
+        218,
+        145,
+        193,
+        157,
+        127,
+        110,
+        10,
+        94
+      ],
+      "accounts": [
+        {
+          "name": "lawyer",
+          "signer": true
+        },
+        {
+          "name": "lawyer_role",
+          "docs": [
+            "The caller's Lawyer role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "approve",
+          "type": "bool"
+        },
+        {
+          "name": "documents_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "list_property",
+      "discriminator": [
+        254,
+        101,
+        42,
+        174,
+        220,
+        160,
+        42,
+        82
+      ],
+      "accounts": [
+        {
+          "name": "developer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "developer_role",
+          "docs": [
+            "The caller's RealEstateDeveloper role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "region",
+          "docs": [
+            "The region the property sits in, owned by the regions program. Read for",
+            "the tax and listing-duration snapshot."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                3,
+                186,
+                74,
+                176,
+                62,
+                143,
+                45,
+                60,
+                174,
+                40,
+                31,
+                39,
+                117,
+                142,
+                247,
+                136,
+                230,
+                147,
+                13,
+                189,
+                6,
+                65,
+                154,
+                36,
+                140,
+                139,
+                245,
+                17,
+                234,
+                15,
+                171,
+                88
+              ]
+            }
+          }
+        },
+        {
+          "name": "location",
+          "docs": [
+            "The property's location, owned by the regions program. Its existence is",
+            "what makes the postcode valid to list under."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              },
+              {
+                "kind": "arg",
+                "path": "postcode"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                3,
+                186,
+                74,
+                176,
+                62,
+                143,
+                45,
+                60,
+                174,
+                40,
+                31,
+                39,
+                117,
+                142,
+                247,
+                136,
+                230,
+                147,
+                13,
+                189,
+                6,
+                65,
+                154,
+                36,
+                140,
+                139,
+                245,
+                17,
+                234,
+                15,
+                171,
+                88
+              ]
+            }
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.next_listing_id",
+                "account": "Config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "config.next_listing_id",
+                "account": "Config"
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "developer_token",
+          "docs": [
+            "The developer's XCAV account the listing deposit is pulled from."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "postcode",
+          "type": "bytes"
+        },
+        {
+          "name": "share_price",
+          "type": "u64"
+        },
+        {
+          "name": "share_amount",
+          "type": "u32"
+        },
+        {
+          "name": "tax_paid_by_developer",
+          "type": "bool"
+        },
+        {
+          "name": "max_deposit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "lock_shares",
+      "discriminator": [
+        22,
+        197,
+        217,
+        24,
+        91,
+        91,
+        177,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "property_signer",
+          "docs": [
+            "The property program's CPI signer."
+          ],
+          "signer": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  112,
+                  105,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                113,
+                193,
+                175,
+                178,
+                64,
+                52,
+                32,
+                91,
+                211,
+                190,
+                65,
+                47,
+                189,
+                44,
+                19,
+                206,
+                124,
+                97,
+                8,
+                114,
+                73,
+                160,
+                136,
+                254,
+                231,
+                70,
+                138,
+                33,
+                85,
+                209,
+                4,
+                114
+              ]
+            }
+          }
+        },
+        {
+          "name": "holding",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "owner"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "owner",
+          "type": "pubkey"
+        },
+        {
+          "name": "amount",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "register_lawyer",
+      "discriminator": [
+        165,
+        135,
+        154,
+        240,
+        244,
+        159,
+        91,
+        255
+      ],
+      "accounts": [
+        {
+          "name": "lawyer",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "The sponsor wallet fronting the registry entry's rent."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "lawyer_role",
+          "docs": [
+            "The caller's Lawyer role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "region",
+          "docs": [
+            "The region the lawyer registers for, owned by the regions program."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  103,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                3,
+                186,
+                74,
+                176,
+                62,
+                143,
+                45,
+                60,
+                174,
+                40,
+                31,
+                39,
+                117,
+                142,
+                247,
+                136,
+                230,
+                147,
+                13,
+                189,
+                6,
+                65,
+                154,
+                36,
+                140,
+                139,
+                245,
+                17,
+                234,
+                15,
+                171,
+                88
+              ]
+            }
+          }
+        },
+        {
+          "name": "lawyer_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "lawyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "lawyer_token",
+          "docs": [
+            "The lawyer's XCAV account the deposit is pulled from."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "max_deposit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "release_reservation",
+      "discriminator": [
+        57,
+        15,
+        101,
+        135,
+        113,
+        21,
+        168,
+        247
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_collector",
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "arg",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reservation",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  115,
+                  101,
+                  114,
+                  118,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position.payment_account",
+                "account": "InvestorPosition"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "investor",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "reserve_shares",
+      "discriminator": [
+        137,
+        47,
+        218,
+        50,
+        106,
+        149,
+        133,
+        110
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "The sponsor wallet fronting rent for the investor's accounts."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "investor_role",
+          "docs": [
+            "The caller's RealEstateInvestor role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint",
+          "docs": [
+            "The mint the investor will pay in; must be on the accepted list."
+          ]
+        },
+        {
+          "name": "investor_payment",
+          "docs": [
+            "The investor's payment account the reservation binds."
+          ],
+          "writable": true
+        },
+        {
+          "name": "reservation",
+          "docs": [
+            "The running record of how much of the payment account is promised;",
+            "shared across every listing this account reserves into."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  115,
+                  101,
+                  114,
+                  118,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "investor_payment"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u32"
+        },
+        {
+          "name": "max_total_cost",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "resign_from_case",
+      "discriminator": [
+        158,
+        242,
+        127,
+        206,
+        24,
+        126,
+        203,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "lawyer",
+          "signer": true
+        },
+        {
+          "name": "registry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "lawyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "resolve_silent_verdict",
+      "discriminator": [
+        229,
+        121,
+        58,
+        51,
+        193,
+        189,
+        164,
+        60
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "settle_cancelled_fees",
+      "discriminator": [
+        59,
+        23,
+        54,
+        138,
+        245,
+        25,
+        51,
+        86
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint",
+          "docs": [
+            "Must be on the accepted list: a stray mint would draw down the debt",
+            "with worthless units."
+          ]
+        },
+        {
+          "name": "listing_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_payment_account",
+          "docs": [
+            "The vault account holding the retained fees for this mint."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "listing_vault"
+              },
+              {
+                "kind": "account",
+                "path": "payment_token_program"
+              },
+              {
+                "kind": "account",
+                "path": "payment_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "lawyer_payment_account",
+          "docs": [
+            "The lawyer's account for this mint; where their costs land."
+          ],
+          "writable": true
+        },
+        {
+          "name": "treasury"
+        },
+        {
+          "name": "treasury_payment_account",
+          "docs": [
+            "exist yet; the ATA program verifies the derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "payment_token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "unlock_shares",
+      "discriminator": [
+        66,
+        248,
+        156,
+        242,
+        54,
+        2,
+        176,
+        160
+      ],
+      "accounts": [
+        {
+          "name": "property_signer",
+          "docs": [
+            "The property program's CPI signer."
+          ],
+          "signer": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  112,
+                  105,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                113,
+                193,
+                175,
+                178,
+                64,
+                52,
+                32,
+                91,
+                211,
+                190,
+                65,
+                47,
+                189,
+                44,
+                19,
+                206,
+                124,
+                97,
+                8,
+                114,
+                73,
+                160,
+                136,
+                254,
+                231,
+                70,
+                138,
+                33,
+                85,
+                209,
+                4,
+                114
+              ]
+            }
+          }
+        },
+        {
+          "name": "holding",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "owner"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "owner",
+          "type": "pubkey"
+        },
+        {
+          "name": "amount",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "unlock_voting_shares",
+      "discriminator": [
+        240,
+        57,
+        147,
+        49,
+        219,
+        95,
+        189,
+        64
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "record closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114,
+                  45,
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "arg",
+                "path": "round"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "round",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "unregister_lawyer",
+      "discriminator": [
+        184,
+        26,
+        138,
+        218,
+        96,
+        199,
+        142,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "lawyer",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_collector",
+          "docs": [
+            "as the entry closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "lawyer_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "lawyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "lawyer_token",
+          "docs": [
+            "The lawyer's XCAV account the deposit is returned to."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "unreserve_shares",
+      "discriminator": [
+        142,
+        74,
+        199,
+        174,
+        245,
+        11,
+        172,
+        40
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "signer": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reservation",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  115,
+                  101,
+                  114,
+                  118,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position.payment_account",
+                "account": "InvestorPosition"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_authority",
+      "discriminator": [
+        32,
+        46,
+        64,
+        28,
+        149,
+        75,
+        243,
+        88
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_authority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "update_config",
+      "discriminator": [
+        29,
+        158,
+        252,
+        191,
+        10,
+        83,
+        219,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "upgrade_object",
+      "discriminator": [
+        136,
+        87,
+        52,
+        75,
+        55,
+        16,
+        83,
+        112
+      ],
+      "accounts": [
+        {
+          "name": "developer",
+          "signer": true
+        },
+        {
+          "name": "developer_role",
+          "docs": [
+            "The caller's RealEstateDeveloper role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "new_price",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "vote_on_spv_lawyer",
+      "discriminator": [
+        245,
+        181,
+        143,
+        227,
+        83,
+        159,
+        141,
+        147
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the vote record's rent: the sponsor on the default",
+            "path, or any willing wallet, so one protocol key can never decide the",
+            "election by withholding its signature. The record remembers who to",
+            "refund."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "voter_role",
+          "docs": [
+            "The caller's RealEstateInvestor role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "The voter's share ledger; the vote locks part of it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vote_record",
+          "docs": [
+            "This round's vote record; revoting reuses it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  97,
+                  119,
+                  121,
+                  101,
+                  114,
+                  45,
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "listing.spv_election.round",
+                "account": "Listing"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "candidacy",
+          "docs": [
+            "The candidacy voted for."
+          ],
+          "writable": true
+        },
+        {
+          "name": "previous_candidacy",
+          "docs": [
+            "The candidacy a revote moves power away from; required only when the",
+            "previous vote backed a different candidate."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_cancelled",
+      "discriminator": [
+        211,
+        39,
+        47,
+        234,
+        73,
+        113,
+        193,
+        59
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_collector",
+          "docs": [
+            "back as they close."
+          ],
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint",
+          "docs": [
+            "untyped to spare `try_accounts` stack, the reserve already vetted it."
+          ]
+        },
+        {
+          "name": "investor_payment",
+          "docs": [
+            "untyped to spare `try_accounts` stack, the handler checks its mint",
+            "and owner. Deliberately not pinned to the recorded account: that one",
+            "may be closed, and a refund must never depend on it."
+          ],
+          "writable": true
+        },
+        {
+          "name": "listing_vault",
+          "docs": [
+            "token accounts."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_payment_account",
+          "docs": [
+            "pinned to its derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "share_mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101,
+                  45,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_share_account",
+          "docs": [
+            "derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "investor_share_account",
+          "docs": [
+            "pinned to its derivation; the token program rules on the balance."
+          ],
+          "writable": true
+        },
+        {
+          "name": "payment_token_program",
+          "docs": [
+            "The payment mint's token program (classic or Token-2022)."
+          ]
+        },
+        {
+          "name": "share_token_program",
+          "docs": [
+            "The share mint's program is always Token-2022."
+          ],
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_deposit_unsold",
+      "discriminator": [
+        60,
+        151,
+        102,
+        247,
+        98,
+        52,
+        54,
+        161
+      ],
+      "accounts": [
+        {
+          "name": "developer",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint (for `transfer_checked`)."
+          ]
+        },
+        {
+          "name": "developer_token",
+          "docs": [
+            "The developer's XCAV account the deposit is returned to."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The protocol's XCAV vault."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury_token",
+          "docs": [
+            "when one applies, and pinned to the derivation then."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_expired",
+      "discriminator": [
+        58,
+        40,
+        206,
+        163,
+        80,
+        59,
+        31,
+        1
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_collector",
+          "docs": [
+            "back as they close."
+          ],
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint",
+          "docs": [
+            "untyped to spare `try_accounts` stack, the reserve already vetted it."
+          ]
+        },
+        {
+          "name": "investor_payment",
+          "docs": [
+            "untyped to spare `try_accounts` stack, the handler checks its mint",
+            "and owner. Deliberately not pinned to the recorded account: that one",
+            "may be closed, and a refund must never depend on it."
+          ],
+          "writable": true
+        },
+        {
+          "name": "listing_vault",
+          "docs": [
+            "token accounts."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_payment_account",
+          "docs": [
+            "pinned to its derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "share_mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101,
+                  45,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_share_account",
+          "docs": [
+            "derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "investor_share_account",
+          "docs": [
+            "pinned to its derivation; the token program rules on the balance."
+          ],
+          "writable": true
+        },
+        {
+          "name": "payment_token_program",
+          "docs": [
+            "The payment mint's token program (classic or Token-2022)."
+          ]
+        },
+        {
+          "name": "share_token_program",
+          "docs": [
+            "The share mint's program is always Token-2022."
+          ],
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "withdraw_legal_process_expired",
+      "discriminator": [
+        64,
+        222,
+        8,
+        241,
+        156,
+        43,
+        91,
+        129
+      ],
+      "accounts": [
+        {
+          "name": "investor",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_collector",
+          "docs": [
+            "back as they close."
+          ],
+          "writable": true
+        },
+        {
+          "name": "listing",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "position",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  111,
+                  115,
+                  105,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              },
+              {
+                "kind": "account",
+                "path": "investor"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint",
+          "docs": [
+            "untyped to spare `try_accounts` stack, the reserve already vetted it."
+          ]
+        },
+        {
+          "name": "investor_payment",
+          "docs": [
+            "untyped to spare `try_accounts` stack, the handler checks its mint",
+            "and owner. Deliberately not pinned to the recorded account: that one",
+            "may be closed, and a refund must never depend on it."
+          ],
+          "writable": true
+        },
+        {
+          "name": "listing_vault",
+          "docs": [
+            "token accounts."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  105,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "listing_payment_account",
+          "docs": [
+            "pinned to its derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "share_mint",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101,
+                  45,
+                  109,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "mint_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  105,
+                  110,
+                  116,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property_vault",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "listing_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_share_account",
+          "docs": [
+            "derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "investor_share_account",
+          "docs": [
+            "pinned to its derivation; the token program rules on the balance."
+          ],
+          "writable": true
+        },
+        {
+          "name": "payment_token_program",
+          "docs": [
+            "The payment mint's token program (classic or Token-2022)."
+          ]
+        },
+        {
+          "name": "share_token_program",
+          "docs": [
+            "The share mint's program is always Token-2022."
+          ],
+          "address": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb"
+        }
+      ],
+      "args": [
+        {
+          "name": "listing_id",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "InvestorPosition",
+      "discriminator": [
+        145,
+        143,
+        236,
+        150,
+        229,
+        40,
+        195,
+        88
+      ]
+    },
+    {
+      "name": "Lawyer",
+      "discriminator": [
+        63,
+        67,
+        124,
+        26,
+        111,
+        128,
+        66,
+        106
+      ]
+    },
+    {
+      "name": "LawyerCandidacy",
+      "discriminator": [
+        0,
+        24,
+        177,
+        111,
+        30,
+        125,
+        174,
+        207
+      ]
+    },
+    {
+      "name": "LawyerVote",
+      "discriminator": [
+        43,
+        42,
+        99,
+        183,
+        122,
+        205,
+        96,
+        179
+      ]
+    },
+    {
+      "name": "Listing",
+      "discriminator": [
+        218,
+        32,
+        50,
+        73,
+        43,
+        134,
+        26,
+        58
+      ]
+    },
+    {
+      "name": "PropertyAsset",
+      "discriminator": [
+        214,
+        19,
+        51,
+        205,
+        216,
+        85,
+        134,
+        173
+      ]
+    },
+    {
+      "name": "Reservation",
+      "discriminator": [
+        188,
+        235,
+        0,
+        111,
+        208,
+        253,
+        247,
+        212
+      ]
+    },
+    {
+      "name": "ShareHolding",
+      "discriminator": [
+        164,
+        112,
+        99,
+        229,
+        217,
+        98,
+        136,
+        78
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AuthorityUpdateProposed",
+      "discriminator": [
+        238,
+        208,
+        182,
+        30,
+        132,
+        56,
+        128,
+        252
+      ]
+    },
+    {
+      "name": "AuthorityUpdated",
+      "discriminator": [
+        133,
+        207,
+        24,
+        122,
+        14,
+        234,
+        91,
+        34
+      ]
+    },
+    {
+      "name": "CancelledFeesSettled",
+      "discriminator": [
+        96,
+        66,
+        29,
+        235,
+        212,
+        66,
+        211,
+        127
+      ]
+    },
+    {
+      "name": "CancelledPositionClosed",
+      "discriminator": [
+        43,
+        141,
+        73,
+        5,
+        57,
+        138,
+        163,
+        214
+      ]
+    },
+    {
+      "name": "CancelledSharesWithdrawn",
+      "discriminator": [
+        64,
+        248,
+        82,
+        52,
+        67,
+        74,
+        16,
+        196
+      ]
+    },
+    {
+      "name": "CandidacyClosed",
+      "discriminator": [
+        100,
+        179,
+        97,
+        65,
+        115,
+        175,
+        78,
+        12
+      ]
+    },
+    {
+      "name": "CaseClosed",
+      "discriminator": [
+        155,
+        33,
+        190,
+        254,
+        254,
+        55,
+        184,
+        117
+      ]
+    },
+    {
+      "name": "ConfigInitialized",
+      "discriminator": [
+        181,
+        49,
+        200,
+        156,
+        19,
+        167,
+        178,
+        91
+      ]
+    },
+    {
+      "name": "ConfigUpdated",
+      "discriminator": [
+        40,
+        241,
+        230,
+        122,
+        11,
+        19,
+        198,
+        194
+      ]
+    },
+    {
+      "name": "DeadListingClosed",
+      "discriminator": [
+        197,
+        93,
+        248,
+        149,
+        73,
+        2,
+        15,
+        35
+      ]
+    },
+    {
+      "name": "DealExecuted",
+      "discriminator": [
+        253,
+        6,
+        141,
+        59,
+        245,
+        221,
+        20,
+        202
+      ]
+    },
+    {
+      "name": "DealPayout",
+      "discriminator": [
+        73,
+        80,
+        95,
+        135,
+        222,
+        93,
+        39,
+        246
+      ]
+    },
+    {
+      "name": "DeveloperLawyerAssigned",
+      "discriminator": [
+        74,
+        165,
+        131,
+        120,
+        22,
+        8,
+        19,
+        6
+      ]
+    },
+    {
+      "name": "DocumentsConfirmed",
+      "discriminator": [
+        87,
+        82,
+        112,
+        130,
+        170,
+        46,
+        231,
+        98
+      ]
+    },
+    {
+      "name": "ExpiredSharesWithdrawn",
+      "discriminator": [
+        86,
+        50,
+        244,
+        20,
+        143,
+        106,
+        182,
+        116
+      ]
+    },
+    {
+      "name": "LawyerRegistered",
+      "discriminator": [
+        56,
+        68,
+        223,
+        135,
+        26,
+        6,
+        174,
+        209
+      ]
+    },
+    {
+      "name": "LawyerResigned",
+      "discriminator": [
+        172,
+        87,
+        248,
+        16,
+        135,
+        78,
+        129,
+        201
+      ]
+    },
+    {
+      "name": "LawyerUnregistered",
+      "discriminator": [
+        200,
+        120,
+        190,
+        244,
+        178,
+        162,
+        130,
+        229
+      ]
+    },
+    {
+      "name": "LegalTimeoutSharesWithdrawn",
+      "discriminator": [
+        243,
+        8,
+        42,
+        43,
+        144,
+        19,
+        207,
+        200
+      ]
+    },
+    {
+      "name": "ListingDepositWithdrawn",
+      "discriminator": [
+        112,
+        29,
+        159,
+        204,
+        113,
+        141,
+        8,
+        132
+      ]
+    },
+    {
+      "name": "ObjectUpdated",
+      "discriminator": [
+        123,
+        164,
+        192,
+        244,
+        95,
+        55,
+        225,
+        12
+      ]
+    },
+    {
+      "name": "PropertyAssetsInitialized",
+      "discriminator": [
+        98,
+        148,
+        65,
+        233,
+        207,
+        89,
+        65,
+        191
+      ]
+    },
+    {
+      "name": "PropertyListed",
+      "discriminator": [
+        33,
+        100,
+        200,
+        151,
+        150,
+        150,
+        33,
+        145
+      ]
+    },
+    {
+      "name": "PropertySharesBought",
+      "discriminator": [
+        220,
+        46,
+        6,
+        69,
+        97,
+        185,
+        104,
+        14
+      ]
+    },
+    {
+      "name": "ReservationReleased",
+      "discriminator": [
+        5,
+        1,
+        49,
+        16,
+        180,
+        43,
+        183,
+        198
+      ]
+    },
+    {
+      "name": "SharesClaimed",
+      "discriminator": [
+        135,
+        17,
+        55,
+        130,
+        218,
+        208,
+        153,
+        101
+      ]
+    },
+    {
+      "name": "SharesReserved",
+      "discriminator": [
+        87,
+        0,
+        127,
+        238,
+        234,
+        16,
+        6,
+        148
+      ]
+    },
+    {
+      "name": "SharesUnreserved",
+      "discriminator": [
+        50,
+        57,
+        248,
+        239,
+        0,
+        63,
+        225,
+        31
+      ]
+    },
+    {
+      "name": "SilentVerdictResolved",
+      "discriminator": [
+        38,
+        207,
+        172,
+        140,
+        96,
+        182,
+        207,
+        115
+      ]
+    },
+    {
+      "name": "SpvCaseClaimed",
+      "discriminator": [
+        255,
+        46,
+        215,
+        58,
+        112,
+        45,
+        193,
+        170
+      ]
+    },
+    {
+      "name": "SpvCreated",
+      "discriminator": [
+        130,
+        82,
+        181,
+        66,
+        104,
+        45,
+        143,
+        138
+      ]
+    },
+    {
+      "name": "SpvElectionFinalized",
+      "discriminator": [
+        190,
+        31,
+        196,
+        178,
+        137,
+        1,
+        15,
+        205
+      ]
+    },
+    {
+      "name": "SpvLawyerVoteCast",
+      "discriminator": [
+        196,
+        55,
+        213,
+        39,
+        202,
+        185,
+        80,
+        136
+      ]
+    },
+    {
+      "name": "VotingSharesUnlocked",
+      "discriminator": [
+        100,
+        180,
+        72,
+        88,
+        141,
+        223,
+        239,
+        133
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NotAuthority",
+      "msg": "Signer is not the authority"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidConfig",
+      "msg": "Invalid config parameters"
+    },
+    {
+      "code": 6002,
+      "name": "NotUpgradeAuthority",
+      "msg": "Signer is not the program upgrade authority"
+    },
+    {
+      "code": 6003,
+      "name": "NotPendingAuthority",
+      "msg": "Signer is not the pending authority"
+    },
+    {
+      "code": 6004,
+      "name": "UnsupportedMintExtension",
+      "msg": "Unsupported token extension on mint"
+    },
+    {
+      "code": 6005,
+      "name": "InvalidMint",
+      "msg": "Invalid XCAV mint"
+    },
+    {
+      "code": 6006,
+      "name": "LawyerStillActive",
+      "msg": "Lawyer still has active cases"
+    },
+    {
+      "code": 6007,
+      "name": "NotCompliant",
+      "msg": "Role is not compliant"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidShareAmount",
+      "msg": "Invalid share amount"
+    },
+    {
+      "code": 6009,
+      "name": "InvalidSharePrice",
+      "msg": "Invalid share price"
+    },
+    {
+      "code": 6010,
+      "name": "ListingExpired",
+      "msg": "Listing has expired"
+    },
+    {
+      "code": 6011,
+      "name": "NotListingDeveloper",
+      "msg": "Signer is not the listing developer"
+    },
+    {
+      "code": 6012,
+      "name": "PropertyAlreadySold",
+      "msg": "Property is already sold"
+    },
+    {
+      "code": 6013,
+      "name": "ListingNotActive",
+      "msg": "Listing is not active"
+    },
+    {
+      "code": 6014,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6015,
+      "name": "UnsupportedMintAuthority",
+      "msg": "Unsupported mint authority"
+    },
+    {
+      "code": 6016,
+      "name": "DepositTooHigh",
+      "msg": "Deposit exceeds the caller's maximum"
+    },
+    {
+      "code": 6017,
+      "name": "MintNotAccepted",
+      "msg": "Payment mint is not accepted"
+    },
+    {
+      "code": 6018,
+      "name": "PositionCancelled",
+      "msg": "Position was cancelled and cannot buy again"
+    },
+    {
+      "code": 6019,
+      "name": "MaxOwnershipExceeded",
+      "msg": "Purchase exceeds the ownership cap"
+    },
+    {
+      "code": 6020,
+      "name": "CostTooHigh",
+      "msg": "Cost exceeds the caller's maximum"
+    },
+    {
+      "code": 6021,
+      "name": "PaymentMintMismatch",
+      "msg": "Position uses a different payment mint"
+    },
+    {
+      "code": 6022,
+      "name": "NotRentCollector",
+      "msg": "Payer is not the rent collector"
+    },
+    {
+      "code": 6023,
+      "name": "NothingToUnreserve",
+      "msg": "Nothing to unreserve"
+    },
+    {
+      "code": 6024,
+      "name": "PositionNotCancelled",
+      "msg": "Position is not cancelled"
+    },
+    {
+      "code": 6025,
+      "name": "ListingStillActive",
+      "msg": "Listing is still active"
+    },
+    {
+      "code": 6026,
+      "name": "NotFullyReserved",
+      "msg": "Not every share is reserved"
+    },
+    {
+      "code": 6027,
+      "name": "SpvAlreadyCreated",
+      "msg": "SPV already created"
+    },
+    {
+      "code": 6028,
+      "name": "ListingNotExpired",
+      "msg": "Listing is not expired"
+    },
+    {
+      "code": 6029,
+      "name": "SharesOutstanding",
+      "msg": "Shares are still outstanding"
+    },
+    {
+      "code": 6030,
+      "name": "DepositAlreadyWithdrawn",
+      "msg": "Deposit already withdrawn"
+    },
+    {
+      "code": 6031,
+      "name": "OwnershipCapTooTight",
+      "msg": "Ownership cap admits no purchase"
+    },
+    {
+      "code": 6032,
+      "name": "LedgerMismatch",
+      "msg": "Share ledger does not match the position"
+    },
+    {
+      "code": 6033,
+      "name": "SharesLocked",
+      "msg": "Shares are locked"
+    },
+    {
+      "code": 6034,
+      "name": "LegalProcessNotExpired",
+      "msg": "Legal process has not expired"
+    },
+    {
+      "code": 6035,
+      "name": "DepositStillHeld",
+      "msg": "Deposit still held"
+    },
+    {
+      "code": 6036,
+      "name": "PositionsOutstanding",
+      "msg": "Positions still open"
+    },
+    {
+      "code": 6037,
+      "name": "WrongVaultAccount",
+      "msg": "Wrong vault account"
+    },
+    {
+      "code": 6038,
+      "name": "LegalProcessExpired",
+      "msg": "Legal process has expired"
+    },
+    {
+      "code": 6039,
+      "name": "LawyerJobTaken",
+      "msg": "Case already has a lawyer for this side"
+    },
+    {
+      "code": 6040,
+      "name": "ConflictOfInterest",
+      "msg": "Lawyer cannot represent both sides"
+    },
+    {
+      "code": 6041,
+      "name": "CostsExceedFees",
+      "msg": "Lawyer costs exceed the collected fees"
+    },
+    {
+      "code": 6042,
+      "name": "WrongRegion",
+      "msg": "Lawyer is registered for a different region"
+    },
+    {
+      "code": 6043,
+      "name": "NoLawyerProposed",
+      "msg": "No lawyer proposed"
+    },
+    {
+      "code": 6044,
+      "name": "SpvNotCreated",
+      "msg": "SPV has not been created"
+    },
+    {
+      "code": 6045,
+      "name": "InvalidVoteAmount",
+      "msg": "Invalid vote amount"
+    },
+    {
+      "code": 6046,
+      "name": "NotEnoughShares",
+      "msg": "Not enough unlocked shares"
+    },
+    {
+      "code": 6047,
+      "name": "VotingStillOngoing",
+      "msg": "Voting is still ongoing"
+    },
+    {
+      "code": 6048,
+      "name": "VotingClosed",
+      "msg": "Voting has closed"
+    },
+    {
+      "code": 6049,
+      "name": "NotCaseLawyer",
+      "msg": "Signer is not a lawyer on this case"
+    },
+    {
+      "code": 6050,
+      "name": "AlreadyConfirmed",
+      "msg": "Documents already confirmed"
+    },
+    {
+      "code": 6051,
+      "name": "WrongElectionRound",
+      "msg": "Wrong election round"
+    },
+    {
+      "code": 6052,
+      "name": "TooManyCandidates",
+      "msg": "Too many candidates"
+    },
+    {
+      "code": 6053,
+      "name": "CandidacyMismatch",
+      "msg": "Candidacy does not match the election"
+    },
+    {
+      "code": 6054,
+      "name": "WrongLawyer",
+      "msg": "Wrong lawyer account"
+    },
+    {
+      "code": 6055,
+      "name": "LawyerStillEngaged",
+      "msg": "Lawyer still engaged on the case"
+    },
+    {
+      "code": 6056,
+      "name": "ClaimWindowClosed",
+      "msg": "Claim window has closed"
+    },
+    {
+      "code": 6057,
+      "name": "DirectBuyNotOpen",
+      "msg": "Direct purchase is not open yet"
+    },
+    {
+      "code": 6058,
+      "name": "NothingReserved",
+      "msg": "Nothing reserved"
+    },
+    {
+      "code": 6059,
+      "name": "BalanceTooLow",
+      "msg": "Balance too low to reserve"
+    },
+    {
+      "code": 6060,
+      "name": "ReservationOutstanding",
+      "msg": "Reservation outstanding"
+    },
+    {
+      "code": 6061,
+      "name": "SaleLocked",
+      "msg": "The sale is locked in"
+    },
+    {
+      "code": 6062,
+      "name": "CaseStillOpen",
+      "msg": "The case is still open"
+    },
+    {
+      "code": 6063,
+      "name": "EmptyDocumentsHash",
+      "msg": "Empty documents hash"
+    },
+    {
+      "code": 6064,
+      "name": "DocumentsMismatch",
+      "msg": "Documents hash does not match the other side's"
+    },
+    {
+      "code": 6065,
+      "name": "NothingToSettle",
+      "msg": "Nothing to settle"
+    },
+    {
+      "code": 6066,
+      "name": "WrongRentPayer",
+      "msg": "Not the wallet that fronted the rent"
+    },
+    {
+      "code": 6067,
+      "name": "VerdictWindowOpen",
+      "msg": "The silent side still has time to rule"
+    },
+    {
+      "code": 6068,
+      "name": "NoVerdictPassed",
+      "msg": "No side has ruled yet"
+    },
+    {
+      "code": 6069,
+      "name": "CostsStillDue",
+      "msg": "The SPV lawyer's costs are still unpaid"
+    },
+    {
+      "code": 6070,
+      "name": "TooManyMints",
+      "msg": "Too many payment mints on this listing"
+    },
+    {
+      "code": 6071,
+      "name": "WrongPayee",
+      "msg": "Payout account not owned by the payee"
+    },
+    {
+      "code": 6072,
+      "name": "TaxExceedsProceeds",
+      "msg": "Tax and marketplace fee together exceed the sale proceeds"
+    }
+  ],
+  "types": [
+    {
+      "name": "AccessPermission",
+      "docs": [
+        "Compliance status for a (user, role) assignment, set by an admin after",
+        "off-chain KYC/AML. Only the marketplace's investor-fund calls (listing,",
+        "buying, offers, share transfers, lawyer case work) require this flag on",
+        "top of the role; every other instruction checks role possession alone.",
+        "Later it'll be driven by a SAS attestation instead of a manual toggle.",
+        "",
+        "Do not reorder the variants: the serialized `RoleAccount.permission`",
+        "stores the variant index, so a reorder flips every stored status."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Compliant"
+          },
+          {
+            "name": "Revoked"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityUpdateProposed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "old_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CancelledFeesSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "lawyer_paid",
+            "type": "u64"
+          },
+          {
+            "name": "treasury_paid",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CancelledPositionClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CancelledSharesWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "refunded",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CandidacyClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CaseClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CollectedPerMint",
+      "docs": [
+        "One payment mint's totals across the primary sale, in that mint's units."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "funds",
+            "type": "u64"
+          },
+          {
+            "name": "fee",
+            "type": "u64"
+          },
+          {
+            "name": "tax",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "docs": [
+        "Singleton config holding protocol parameters and the authority."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Authority allowed to update parameters."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "docs": [
+              "Proposed replacement authority; takes over via `accept_authority`.",
+              "Two-step so a typo'd address can't brick parameter management."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "xcav_mint",
+            "docs": [
+              "The XCAV mint listing and lawyer deposits are paid in."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "docs": [
+              "Owner of the shared protocol treasury (a multisig on mainnet). Fees are",
+              "paid to this key's token accounts; the program never holds them."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "rent_collector",
+            "docs": [
+              "The sponsor wallet that fronts account rent for investors. Every",
+              "position close sends its lamports here, not to the investor."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "accepted_payment_mints",
+            "docs": [
+              "Mints a property can be priced and paid in. Every entry must be a",
+              "same-value GBP stablecoin: prices convert between them by decimal",
+              "count alone, so adding a mint of different value would misprice every",
+              "open listing."
+            ],
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "listing_deposit",
+            "docs": [
+              "XCAV a developer locks to list a property."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "lawyer_deposit",
+            "docs": [
+              "XCAV a lawyer locks to join the registry."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "min_property_shares",
+            "docs": [
+              "Fewest shares a property may be split into."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "max_property_shares",
+            "docs": [
+              "Most shares a property may be split into."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "marketplace_fee_bps",
+            "docs": [
+              "Protocol fee taken from the developer's proceeds, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "investor_fee_bps",
+            "docs": [
+              "Fee an investor pays on top of the share price, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "max_ownership_bps",
+            "docs": [
+              "Largest slice of a property one investor may hold, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "claiming_time",
+            "docs": [
+              "Seconds the claim window stays open once the SPV exists."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "legal_process_time",
+            "docs": [
+              "Seconds the legal process may run before it expires."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "lawyer_voting_time",
+            "docs": [
+              "Seconds the SPV lawyer election stays open once the first lawyer claims."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "min_voting_quorum_bps",
+            "docs": [
+              "Share of a property's supply that must vote for the SPV lawyer election",
+              "to be valid, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "next_listing_id",
+            "docs": [
+              "Monotonic id for the next listing."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "xcav_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigParams",
+      "docs": [
+        "Protocol parameters for the marketplace program."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "rent_collector",
+            "type": "pubkey"
+          },
+          {
+            "name": "accepted_payment_mints",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "listing_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "lawyer_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "min_property_shares",
+            "type": "u32"
+          },
+          {
+            "name": "max_property_shares",
+            "type": "u32"
+          },
+          {
+            "name": "marketplace_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "investor_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "max_ownership_bps",
+            "type": "u16"
+          },
+          {
+            "name": "claiming_time",
+            "type": "i64"
+          },
+          {
+            "name": "legal_process_time",
+            "type": "i64"
+          },
+          {
+            "name": "lawyer_voting_time",
+            "type": "i64"
+          },
+          {
+            "name": "min_voting_quorum_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "marketplace_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "investor_fee_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DeadListingClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "developer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealExecuted",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "developer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DealPayout",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "developer",
+            "type": "u64"
+          },
+          {
+            "name": "developer_lawyer",
+            "type": "u64"
+          },
+          {
+            "name": "spv_lawyer",
+            "type": "u64"
+          },
+          {
+            "name": "region_owner",
+            "type": "u64"
+          },
+          {
+            "name": "treasury",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DeveloperLawyerAssigned",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DocumentStatus",
+      "docs": [
+        "Where a lawyer's document review stands."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pending"
+          },
+          {
+            "name": "Approved"
+          },
+          {
+            "name": "Rejected"
+          }
+        ]
+      }
+    },
+    {
+      "name": "DocumentsConfirmed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "approve",
+            "type": "bool"
+          },
+          {
+            "name": "documents_hash",
+            "docs": [
+              "The document set the verdict rules on."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "status",
+            "docs": [
+              "Where the verdict left the sale."
+            ],
+            "type": {
+              "defined": {
+                "name": "ListingStatus"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ExpiredSharesWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "refunded",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "InvestorPosition",
+      "docs": [
+        "One investor's stake in a primary listing: what they paid, per component,",
+        "so refunds and settlement can be exact. The shares themselves are already",
+        "delivered; this is the accounting."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "payment_mint",
+            "docs": [
+              "The mint the investor paid in. One mint per position: later buys must",
+              "use the same one, so every refund is a single transfer."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "payment_account",
+            "docs": [
+              "The investor's token account the reservation is recorded against and",
+              "the claim later pays from."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "share_amount",
+            "docs": [
+              "Shares paid for and delivered."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "reserved_share_amount",
+            "docs": [
+              "Shares reserved and not yet claimed; a claim converts all of them at",
+              "once, so a position is only ever reserved or paid, not both."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "paid_funds",
+            "docs": [
+              "Paid toward the property price, in payment-mint base units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "paid_tax",
+            "docs": [
+              "Paid as sale tax on top, in payment-mint base units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "paid_fee",
+            "docs": [
+              "Paid as the investor fee on top, in payment-mint base units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "reserved_funds",
+            "docs": [
+              "Reserved toward the property price, still in the investor's wallet."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "reserved_tax",
+            "docs": [
+              "Reserved for the sale tax, still in the investor's wallet."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "reserved_fee",
+            "docs": [
+              "Reserved for the investor fee, still in the investor's wallet."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "cancelled",
+            "docs": [
+              "Set when the investor unreserved. The position stays open as the",
+              "one-way re-buy bar: `buy` rejects a cancelled position forever."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Lawyer",
+      "docs": [
+        "A lawyer registered to take cases in a region. One registration per wallet;",
+        "only registered lawyers can be assigned to a sale."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "region_id",
+            "docs": [
+              "The region the lawyer serves; cases must match it."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "deposit",
+            "docs": [
+              "The XCAV locked at registration, held in the vault. Returned on",
+              "unregister, even if the configured deposit has changed since."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "active_cases",
+            "docs": [
+              "Cases currently assigned; must be zero to unregister."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LawyerAssignment",
+      "docs": [
+        "One side's engaged lawyer on a sold-out sale."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lawyer",
+            "docs": [
+              "The lawyer on this side; default until one is engaged."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "costs",
+            "docs": [
+              "What they charge, quoted at `PRICE_DECIMALS`. Only the SPV side is",
+              "paid from the collected fees; the developer's lawyer is a private",
+              "arrangement, so their side stays zero."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "doc_status",
+            "type": {
+              "defined": {
+                "name": "DocumentStatus"
+              }
+            }
+          },
+          {
+            "name": "documents_hash",
+            "docs": [
+              "Hash of the document set the verdict was passed on; zero while",
+              "pending. Both sides must rule on the same hash."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "LawyerCandidacy",
+      "docs": [
+        "One lawyer standing in one SPV election round; carries their own tally.",
+        "Whoever fronts the rent (the sponsor by default) takes it back with",
+        "`close_candidacy` once the round is over."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "docs": [
+              "The election round the candidacy belongs to."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "costs",
+            "docs": [
+              "What the candidate would charge, quoted at `PRICE_DECIMALS`."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "vote_power",
+            "docs": [
+              "Share-weighted votes cast for this candidate."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the account's rent; refunded at close."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LawyerRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "deposit",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LawyerResigned",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LawyerUnregistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LawyerVote",
+      "docs": [
+        "One investor's vote in one SPV lawyer election round. Locks the voting",
+        "shares until the record is closed again by `unlock_voting_shares`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "docs": [
+              "The election round the vote belongs to."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "choice",
+            "docs": [
+              "The candidate voted for."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "power",
+            "docs": [
+              "The shares this vote locked and counts for."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the record's rent; refunded at close."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegalTimeoutSharesWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "refunded",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Listing",
+      "docs": [
+        "A primary property listing. Prices and windows are snapshotted here at",
+        "listing time, so config or region changes never reprice a sale underway."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "developer",
+            "type": "pubkey"
+          },
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "share_price",
+            "docs": [
+              "Price per share, in payment-mint base units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "listed_share_amount",
+            "docs": [
+              "Shares put up for sale."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "sold_share_amount",
+            "docs": [
+              "Shares sold (paid for) so far."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "reserved_share_amount",
+            "docs": [
+              "Shares reserved but not yet claimed. Reserved money stays in the",
+              "investors' own wallets until the claim pays for them."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "tax_paid_by_developer",
+            "docs": [
+              "Whether the developer covers the region's sale tax themselves."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "tax_bps",
+            "docs": [
+              "The region's sale tax at listing time, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "marketplace_fee_bps",
+            "docs": [
+              "Protocol fee at listing time, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "investor_fee_bps",
+            "docs": [
+              "Investor fee at listing time, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "max_ownership_bps",
+            "docs": [
+              "Ownership cap at listing time, in basis points. Holdings must stay",
+              "strictly below it, so even 10_000 requires at least two holders."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "listing_expiry",
+            "type": "i64"
+          },
+          {
+            "name": "claiming_time",
+            "docs": [
+              "Seconds the claim window runs once the SPV exists, taken from config",
+              "at listing time."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "claim_deadline",
+            "docs": [
+              "When the claim window closes and direct purchases open. Zero until",
+              "the SPV attestation stamps it."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "legal_process_time",
+            "docs": [
+              "Seconds the legal process may run once the listing sells out, taken",
+              "from config at listing time."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "lawyer_voting_time",
+            "docs": [
+              "Seconds the SPV-lawyer election stays open, taken from config at",
+              "listing time."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "min_voting_quorum_bps",
+            "docs": [
+              "Quorum for the SPV-lawyer election, taken from config at listing time."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "position_count",
+            "docs": [
+              "Open `InvestorPosition` accounts, cancelled ones included. Teardown",
+              "waits for zero, so a position can never outlive the listing it needs",
+              "to close against."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "legal_deadline",
+            "docs": [
+              "Set when the last share sells: the moment the legal process runs out",
+              "and the timeout exit opens. Zero until then."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "deposit",
+            "docs": [
+              "The XCAV locked by the developer at listing, held in the vault. Zero",
+              "doubles as \"already withdrawn\", which is unambiguous because config",
+              "validation never accepts a zero deposit."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "developer_lawyer",
+            "docs": [
+              "The developer's lawyer on the sale, allocated by the developer."
+            ],
+            "type": {
+              "defined": {
+                "name": "LawyerAssignment"
+              }
+            }
+          },
+          {
+            "name": "spv_lawyer",
+            "docs": [
+              "The SPV's lawyer on the sale, chosen by investor vote."
+            ],
+            "type": {
+              "defined": {
+                "name": "LawyerAssignment"
+              }
+            }
+          },
+          {
+            "name": "second_attempt",
+            "docs": [
+              "Set when a split document verdict sends the papers back for revision.",
+              "The revised set is the last chance: a second split cancels the sale."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "developer_engaged",
+            "docs": [
+              "Whether the developer ever appointed their lawyer. Sticky: a sale that",
+              "times out without this costs the developer 1% of the bond, but a",
+              "lawyer resigning later doesn't."
+            ],
+            "type": "bool"
+          },
+          {
+            "name": "spv_costs_due",
+            "docs": [
+              "Stamped at cancellation: what the SPV lawyer is still owed from the",
+              "retained fees, and who collects it. Kept on the listing because",
+              "`close_case` clears the assignment before the fees settle."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "spv_costs_payee",
+            "type": "pubkey"
+          },
+          {
+            "name": "collected",
+            "docs": [
+              "What each payment mint collected across the sale, split the way",
+              "settlement pays it out. Written by every claim and direct buy."
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CollectedPerMint"
+                }
+              }
+            }
+          },
+          {
+            "name": "spv_election",
+            "type": {
+              "defined": {
+                "name": "SpvElection"
+              }
+            }
+          },
+          {
+            "name": "status",
+            "type": {
+              "defined": {
+                "name": "ListingStatus"
+              }
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ListingDepositWithdrawn",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "developer",
+            "type": "pubkey"
+          },
+          {
+            "name": "deposit",
+            "type": "u64"
+          },
+          {
+            "name": "slashed",
+            "docs": [
+              "The abandonment slash the treasury kept, if one applied."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ListingStatus",
+      "docs": [
+        "Where a primary listing is in its lifecycle."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "PendingAssets"
+          },
+          {
+            "name": "Listed"
+          },
+          {
+            "name": "SoldOut"
+          },
+          {
+            "name": "Legal"
+          },
+          {
+            "name": "Finalized"
+          },
+          {
+            "name": "Expired"
+          },
+          {
+            "name": "Cancelled"
+          },
+          {
+            "name": "Refunding"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Location",
+      "docs": [
+        "A registered postcode within a region. Existence is the point: the",
+        "marketplace requires a listing's location PDA to exist for its region."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "postcode",
+            "docs": [
+              "The postcode, as seeded (uppercase ASCII, no spaces)."
+            ],
+            "type": "bytes"
+          },
+          {
+            "name": "deposit",
+            "docs": [
+              "The XCAV locked when the location was registered. Released on removal,",
+              "even if the configured deposit has changed since."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ObjectUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "new_price",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PropertyAsset",
+      "docs": [
+        "A fractionalized property. Created when it is listed and kept for the",
+        "asset's whole life; the Core asset and share mint are attached by",
+        "`init_property_assets`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "core_asset",
+            "docs": [
+              "The Metaplex Core asset held in the property vault. Default until the",
+              "assets are initialized."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "share_mint",
+            "docs": [
+              "The Token-2022 share mint. Default until the assets are initialized."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "location",
+            "docs": [
+              "The registered location (postcode) the property sits in."
+            ],
+            "type": "bytes"
+          },
+          {
+            "name": "share_amount",
+            "type": "u32"
+          },
+          {
+            "name": "spv_created",
+            "type": "bool"
+          },
+          {
+            "name": "finalized",
+            "type": "bool"
+          },
+          {
+            "name": "holder_count",
+            "docs": [
+              "Wallets currently holding shares; teardown completes when it reaches",
+              "zero again."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PropertyAssetsInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "share_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "share_amount",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PropertyListed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "developer",
+            "type": "pubkey"
+          },
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "share_price",
+            "type": "u64"
+          },
+          {
+            "name": "share_amount",
+            "type": "u32"
+          },
+          {
+            "name": "listing_expiry",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PropertySharesBought",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "paid_funds",
+            "type": "u64"
+          },
+          {
+            "name": "paid_fee",
+            "type": "u64"
+          },
+          {
+            "name": "paid_tax",
+            "type": "u64"
+          },
+          {
+            "name": "sold_out",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Region",
+      "docs": [
+        "A created region and its operator."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral",
+            "docs": [
+              "The operator's bonded XCAV plus the location deposits, held in the",
+              "vault. Returned when the seat changes hands."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "location_collateral",
+            "docs": [
+              "The part of `collateral` backing the registered locations: the sum of",
+              "every `Location.deposit`. Takeovers and removals move these recorded",
+              "amounts, so the seat's bond stays exactly what was locked no matter",
+              "how the configured deposit changes in between."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "next_owner_change",
+            "type": "i64"
+          },
+          {
+            "name": "listing_duration",
+            "docs": [
+              "Seconds a property listing in this region stays active."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "tax_bps",
+            "docs": [
+              "Property sale tax for this region, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "location_count",
+            "docs": [
+              "Number of registered locations (each backed by a location deposit)."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reservation",
+      "docs": [
+        "Payment money promised to unclaimed reservations, one record per token",
+        "account, summed across every listing the owner reserved into. Reserving",
+        "checks the balance covers it; only the claim actually collects."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "token_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ReservationReleased",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Role",
+      "docs": [
+        "All roles recognised across the realXmarket protocol.",
+        "",
+        "A role is app-level authorization, separate from KYC/compliance. Compliance",
+        "lives in [`AccessPermission`], and will eventually be driven by SAS",
+        "attestations rather than a manually set flag.",
+        "",
+        "Do not reorder the variants: the serialized `RoleAccount.role` stores the",
+        "variant index, so a reorder reinterprets every existing assignment."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "RegionalOperator"
+          },
+          {
+            "name": "RealEstateInvestor"
+          },
+          {
+            "name": "RealEstateDeveloper"
+          },
+          {
+            "name": "Lawyer"
+          },
+          {
+            "name": "LettingAgent"
+          },
+          {
+            "name": "SpvConfirmation"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoleAccount",
+      "docs": [
+        "One (user, role) assignment together with its compliance status."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": {
+                "name": "Role"
+              }
+            }
+          },
+          {
+            "name": "permission",
+            "type": {
+              "defined": {
+                "name": "AccessPermission"
+              }
+            }
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "Who paid the account's rent (the assigning admin); every teardown",
+              "refunds them, whoever triggers it."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShareHolding",
+      "docs": [
+        "The canonical share ledger for one holder of one property. The Token-2022",
+        "accounts mirror this; they never lead it."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          },
+          {
+            "name": "locked_amount",
+            "docs": [
+              "Shares locked by votes; blocked from transfer until unlocked."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SharesClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "paid",
+            "type": "u64"
+          },
+          {
+            "name": "sold_out",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SharesReserved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          },
+          {
+            "name": "payment_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "reserved",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SharesUnreserved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "investor",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SilentVerdictResolved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "silent_lawyer",
+            "docs": [
+              "The lawyer who never ruled; default if that side was never engaged."
+            ],
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SpvCaseClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "lawyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "costs",
+            "type": "u64"
+          },
+          {
+            "name": "expiry",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SpvCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "confirmer",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SpvElection",
+      "docs": [
+        "The running SPV lawyer election. Any eligible lawyer may stand; the first",
+        "candidacy opens the voting window and shareholders vote among the",
+        "candidates. A round that elects nobody simply reopens: rounds repeat",
+        "until a lawyer is engaged or the legal process expires into its timeout",
+        "exit. One round at a time per listing."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "expiry",
+            "docs": [
+              "When voting closes; zero while no round is running."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "candidate_count",
+            "docs": [
+              "Candidates standing in the current round."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "round",
+            "docs": [
+              "Round number, monotonic per listing. Candidacies and vote records are",
+              "keyed by it, so nothing stale can count toward a later round."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SpvElectionFinalized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "winner",
+            "type": "pubkey"
+          },
+          {
+            "name": "assigned",
+            "type": "bool"
+          },
+          {
+            "name": "top_power",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SpvLawyerVoteCast",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "choice",
+            "type": "pubkey"
+          },
+          {
+            "name": "power",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VotingSharesUnlocked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "listing_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "power",
+            "type": "u32"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "CONFIG_SEED",
+      "type": "bytes",
+      "value": "[99, 111, 110, 102, 105, 103]"
+    },
+    {
+      "name": "CPI_AUTH_SEED",
+      "type": "bytes",
+      "value": "[99, 112, 105, 45, 97, 117, 116, 104]"
+    },
+    {
+      "name": "LAWYER_CANDIDATE_SEED",
+      "type": "bytes",
+      "value": "[108, 97, 119, 121, 101, 114, 45, 99, 97, 110, 100, 105, 100, 97, 116, 101]"
+    },
+    {
+      "name": "LAWYER_SEED",
+      "type": "bytes",
+      "value": "[108, 97, 119, 121, 101, 114]"
+    },
+    {
+      "name": "LAWYER_VOTE_SEED",
+      "type": "bytes",
+      "value": "[108, 97, 119, 121, 101, 114, 45, 118, 111, 116, 101]"
+    },
+    {
+      "name": "LISTING_SEED",
+      "type": "bytes",
+      "value": "[108, 105, 115, 116, 105, 110, 103]"
+    },
+    {
+      "name": "LISTING_VAULT_SEED",
+      "type": "bytes",
+      "value": "[108, 105, 115, 116, 105, 110, 103, 45, 118, 97, 117, 108, 116]"
+    },
+    {
+      "name": "MINT_AUTH_SEED",
+      "type": "bytes",
+      "value": "[109, 105, 110, 116, 45, 97, 117, 116, 104]"
+    },
+    {
+      "name": "POSITION_SEED",
+      "type": "bytes",
+      "value": "[112, 111, 115, 105, 116, 105, 111, 110]"
+    },
+    {
+      "name": "PROPERTY_SEED",
+      "type": "bytes",
+      "value": "[112, 114, 111, 112, 101, 114, 116, 121]"
+    },
+    {
+      "name": "PROPERTY_VAULT_SEED",
+      "type": "bytes",
+      "value": "[112, 114, 111, 112, 101, 114, 116, 121, 45, 118, 97, 117, 108, 116]"
+    },
+    {
+      "name": "RESERVATION_SEED",
+      "type": "bytes",
+      "value": "[114, 101, 115, 101, 114, 118, 97, 116, 105, 111, 110]"
+    },
+    {
+      "name": "SHARE_MINT_SEED",
+      "type": "bytes",
+      "value": "[115, 104, 97, 114, 101, 45, 109, 105, 110, 116]"
+    },
+    {
+      "name": "SHARE_SEED",
+      "type": "bytes",
+      "value": "[115, 104, 97, 114, 101]"
+    },
+    {
+      "name": "VAULT_SEED",
+      "type": "bytes",
+      "value": "[118, 97, 117, 108, 116]"
+    }
+  ]
+}

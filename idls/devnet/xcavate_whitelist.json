@@ -1,0 +1,1054 @@
+{
+  "address": "2vVARM46pPD4rcHdbXHnYA4vTGN14q6skQAzsQWcHUxn",
+  "metadata": {
+    "name": "xcavate_whitelist",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Roles and compliance registry for the realXmarket protocol"
+  },
+  "docs": [
+    "Roles and compliance registry for the realXmarket protocol.",
+    "",
+    "Tracks which addresses hold which roles and whether each assignment is",
+    "KYC-compliant. Other programs gate actions by loading the `RoleAccount`",
+    "PDA (`[\"role\", user, role.seed_byte()]`), which requires the role to be",
+    "assigned."
+  ],
+  "instructions": [
+    {
+      "name": "accept_authority",
+      "docs": [
+        "Complete the authority handover. Signed by the pending authority."
+      ],
+      "discriminator": [
+        107,
+        86,
+        198,
+        91,
+        33,
+        12,
+        107,
+        160
+      ],
+      "accounts": [
+        {
+          "name": "new_authority",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "add_admin",
+      "docs": [
+        "Register a whitelist admin. Sudo-only."
+      ],
+      "discriminator": [
+        177,
+        236,
+        33,
+        205,
+        124,
+        152,
+        55,
+        186
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "new_admin"
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "new_admin"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "assign_role",
+      "docs": [
+        "Assign a role to a user (default Compliant). Admin-only."
+      ],
+      "discriminator": [
+        255,
+        174,
+        125,
+        180,
+        203,
+        155,
+        202,
+        131
+      ],
+      "accounts": [
+        {
+          "name": "admin_signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "admin",
+          "docs": [
+            "Proves `admin_signer` is a registered admin (PDA must exist)."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "admin_signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user"
+        },
+        {
+          "name": "role_account",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "role",
+          "type": {
+            "defined": {
+              "name": "Role"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "initialize_config",
+      "docs": [
+        "Initialize the singleton config; sets sudo authority to the signer."
+      ],
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "program",
+          "docs": [
+            "This program's executable account, tying `program_data` to it."
+          ],
+          "address": "2vVARM46pPD4rcHdbXHnYA4vTGN14q6skQAzsQWcHUxn"
+        },
+        {
+          "name": "program_data",
+          "docs": [
+            "The program's upgrade authority must be the initializing signer."
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "remove_admin",
+      "docs": [
+        "Remove a whitelist admin. Sudo-only."
+      ],
+      "discriminator": [
+        74,
+        202,
+        71,
+        106,
+        252,
+        31,
+        72,
+        183
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "admin_key"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "admin_key",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "remove_role",
+      "docs": [
+        "Remove a role from a user. Admin-only."
+      ],
+      "discriminator": [
+        74,
+        69,
+        168,
+        163,
+        248,
+        3,
+        130,
+        0
+      ],
+      "accounts": [
+        {
+          "name": "admin_signer",
+          "signer": true
+        },
+        {
+          "name": "admin",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "admin_signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user"
+        },
+        {
+          "name": "rent_payer",
+          "writable": true
+        },
+        {
+          "name": "role_account",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "role",
+          "type": {
+            "defined": {
+              "name": "Role"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "renounce_role",
+      "docs": [
+        "Give up one's own role. Signed by the role holder."
+      ],
+      "discriminator": [
+        21,
+        253,
+        233,
+        162,
+        186,
+        216,
+        217,
+        26
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "writable": true
+        },
+        {
+          "name": "role_account",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "role",
+          "type": {
+            "defined": {
+              "name": "Role"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "set_permission",
+      "docs": [
+        "Update a user's compliance status for a role. Admin-only."
+      ],
+      "discriminator": [
+        70,
+        126,
+        41,
+        194,
+        245,
+        189,
+        128,
+        8
+      ],
+      "accounts": [
+        {
+          "name": "admin_signer",
+          "signer": true
+        },
+        {
+          "name": "admin",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  109,
+                  105,
+                  110
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "admin_signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user"
+        },
+        {
+          "name": "role_account",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "role",
+          "type": {
+            "defined": {
+              "name": "Role"
+            }
+          }
+        },
+        {
+          "name": "permission",
+          "type": {
+            "defined": {
+              "name": "AccessPermission"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_authority",
+      "docs": [
+        "Propose a new sudo authority (two-step handover). Current-authority-only."
+      ],
+      "discriminator": [
+        32,
+        46,
+        64,
+        28,
+        149,
+        75,
+        243,
+        88
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_authority",
+          "type": "pubkey"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Admin",
+      "discriminator": [
+        244,
+        158,
+        220,
+        65,
+        8,
+        73,
+        4,
+        65
+      ]
+    },
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "RoleAccount",
+      "discriminator": [
+        142,
+        236,
+        135,
+        197,
+        214,
+        3,
+        244,
+        226
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AdminRegistered",
+      "discriminator": [
+        147,
+        108,
+        44,
+        209,
+        10,
+        13,
+        4,
+        0
+      ]
+    },
+    {
+      "name": "AdminRemoved",
+      "discriminator": [
+        59,
+        133,
+        36,
+        27,
+        156,
+        79,
+        75,
+        146
+      ]
+    },
+    {
+      "name": "AuthorityUpdateProposed",
+      "discriminator": [
+        238,
+        208,
+        182,
+        30,
+        132,
+        56,
+        128,
+        252
+      ]
+    },
+    {
+      "name": "AuthorityUpdated",
+      "discriminator": [
+        133,
+        207,
+        24,
+        122,
+        14,
+        234,
+        91,
+        34
+      ]
+    },
+    {
+      "name": "ConfigInitialized",
+      "discriminator": [
+        181,
+        49,
+        200,
+        156,
+        19,
+        167,
+        178,
+        91
+      ]
+    },
+    {
+      "name": "PermissionUpdated",
+      "discriminator": [
+        82,
+        173,
+        224,
+        81,
+        165,
+        91,
+        56,
+        31
+      ]
+    },
+    {
+      "name": "RoleAssigned",
+      "discriminator": [
+        15,
+        207,
+        225,
+        171,
+        169,
+        117,
+        98,
+        131
+      ]
+    },
+    {
+      "name": "RoleRemoved",
+      "discriminator": [
+        133,
+        35,
+        214,
+        234,
+        203,
+        157,
+        203,
+        53
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NotAuthority",
+      "msg": "Signer is not the sudo authority"
+    },
+    {
+      "code": 6001,
+      "name": "PermissionAlreadySet",
+      "msg": "Permission is already set to this value"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidAuthority",
+      "msg": "Invalid authority address"
+    },
+    {
+      "code": 6003,
+      "name": "NotUpgradeAuthority",
+      "msg": "Signer is not the program upgrade authority"
+    },
+    {
+      "code": 6004,
+      "name": "NotPendingAuthority",
+      "msg": "Signer is not the pending authority"
+    },
+    {
+      "code": 6005,
+      "name": "WrongRentPayer",
+      "msg": "Wrong rent payer"
+    }
+  ],
+  "types": [
+    {
+      "name": "AccessPermission",
+      "docs": [
+        "Compliance status for a (user, role) assignment, set by an admin after",
+        "off-chain KYC/AML. Only the marketplace's investor-fund calls (listing,",
+        "buying, offers, share transfers, lawyer case work) require this flag on",
+        "top of the role; every other instruction checks role possession alone.",
+        "Later it'll be driven by a SAS attestation instead of a manual toggle.",
+        "",
+        "Do not reorder the variants: the serialized `RoleAccount.permission`",
+        "stores the variant index, so a reorder flips every stored status."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Compliant"
+          },
+          {
+            "name": "Revoked"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Admin",
+      "docs": [
+        "Marks an address as a whitelist admin."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdminRegistered",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdminRemoved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityUpdateProposed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "old_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "docs": [
+        "Singleton config holding the sudo authority that manages admins."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Sudo authority allowed to add/remove admins."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "docs": [
+              "Proposed replacement authority; takes over via `accept_authority`.",
+              "Two-step so a typo'd address can't brick admin management."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PermissionUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": {
+                "name": "Role"
+              }
+            }
+          },
+          {
+            "name": "permission",
+            "type": {
+              "defined": {
+                "name": "AccessPermission"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Role",
+      "docs": [
+        "All roles recognised across the realXmarket protocol.",
+        "",
+        "A role is app-level authorization, separate from KYC/compliance. Compliance",
+        "lives in [`AccessPermission`], and will eventually be driven by SAS",
+        "attestations rather than a manually set flag.",
+        "",
+        "Do not reorder the variants: the serialized `RoleAccount.role` stores the",
+        "variant index, so a reorder reinterprets every existing assignment."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "RegionalOperator"
+          },
+          {
+            "name": "RealEstateInvestor"
+          },
+          {
+            "name": "RealEstateDeveloper"
+          },
+          {
+            "name": "Lawyer"
+          },
+          {
+            "name": "LettingAgent"
+          },
+          {
+            "name": "SpvConfirmation"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoleAccount",
+      "docs": [
+        "One (user, role) assignment together with its compliance status."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": {
+                "name": "Role"
+              }
+            }
+          },
+          {
+            "name": "permission",
+            "type": {
+              "defined": {
+                "name": "AccessPermission"
+              }
+            }
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "Who paid the account's rent (the assigning admin); every teardown",
+              "refunds them, whoever triggers it."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoleAssigned",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": {
+                "name": "Role"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoleRemoved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": {
+                "name": "Role"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "ADMIN_SEED",
+      "docs": [
+        "PDA seed for an admin marker account."
+      ],
+      "type": "bytes",
+      "value": "[97, 100, 109, 105, 110]"
+    },
+    {
+      "name": "CONFIG_SEED",
+      "docs": [
+        "PDA seed for the singleton program config (sudo authority)."
+      ],
+      "type": "bytes",
+      "value": "[99, 111, 110, 102, 105, 103]"
+    },
+    {
+      "name": "ROLE_SEED",
+      "docs": [
+        "PDA seed for a per-(user, role) assignment account."
+      ],
+      "type": "bytes",
+      "value": "[114, 111, 108, 101]"
+    }
+  ]
+}

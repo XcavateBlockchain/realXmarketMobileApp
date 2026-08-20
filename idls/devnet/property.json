@@ -1,0 +1,3033 @@
+{
+  "address": "8f4NHc1wGBM1BAufDFd9dNechLW8pxmStSfxfuJfDzob",
+  "metadata": {
+    "name": "property",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Letting agents, rental income distribution, and property governance for the realXmarket protocol"
+  },
+  "instructions": [
+    {
+      "name": "accept_authority",
+      "discriminator": [
+        107,
+        86,
+        198,
+        91,
+        33,
+        12,
+        107,
+        160
+      ],
+      "accounts": [
+        {
+          "name": "new_authority",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "add_letting_agent",
+      "discriminator": [
+        87,
+        192,
+        88,
+        110,
+        185,
+        58,
+        165,
+        147
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_role",
+          "docs": [
+            "The caller's LettingAgent role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "location",
+          "docs": [
+            "The location, owned by the regions program. Its seeds carry the",
+            "region, so this one account proves both exist."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  111,
+                  99,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "region_id"
+              },
+              {
+                "kind": "arg",
+                "path": "postcode"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                3,
+                186,
+                74,
+                176,
+                62,
+                143,
+                45,
+                60,
+                174,
+                40,
+                31,
+                39,
+                117,
+                142,
+                247,
+                136,
+                230,
+                147,
+                13,
+                189,
+                6,
+                65,
+                154,
+                36,
+                140,
+                139,
+                245,
+                17,
+                234,
+                15,
+                171,
+                88
+              ]
+            }
+          }
+        },
+        {
+          "name": "agent_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint"
+        },
+        {
+          "name": "agent_token",
+          "docs": [
+            "The agent's XCAV account the deposit leaves."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "region_id",
+          "type": "u16"
+        },
+        {
+          "name": "postcode",
+          "type": "bytes"
+        },
+        {
+          "name": "max_deposit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "claim_property",
+      "discriminator": [
+        32,
+        173,
+        214,
+        197,
+        6,
+        43,
+        249,
+        5
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the rent: the agent on the default path, or any",
+            "willing wallet. The records remember who to refund."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_role",
+          "docs": [
+            "The caller's LettingAgent role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "agent_entry",
+          "docs": [
+            "The caller's registry entry; proves registration and carries the",
+            "locations they cover."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "docs": [
+            "The property, owned by the marketplace."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                150,
+                0,
+                77,
+                110,
+                104,
+                156,
+                109,
+                243,
+                34,
+                193,
+                39,
+                38,
+                28,
+                210,
+                18,
+                120,
+                216,
+                155,
+                252,
+                2,
+                25,
+                179,
+                209,
+                171,
+                6,
+                162,
+                152,
+                223,
+                111,
+                151,
+                206,
+                247
+              ]
+            }
+          }
+        },
+        {
+          "name": "letting",
+          "docs": [
+            "The property's letting seat; the first candidacy ever creates it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "candidacy",
+          "docs": [
+            "The candidacy, one per agent per round; `init` rejects standing twice."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  45,
+                  99,
+                  97,
+                  110,
+                  100,
+                  105,
+                  100,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "round"
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "round",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "close_agent_candidacy",
+      "discriminator": [
+        132,
+        244,
+        12,
+        120,
+        167,
+        9,
+        182,
+        34
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "the candidacy closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "letting",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "candidacy",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  45,
+                  99,
+                  97,
+                  110,
+                  100,
+                  105,
+                  100,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "round"
+              },
+              {
+                "kind": "arg",
+                "path": "agent"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "round",
+          "type": "u64"
+        },
+        {
+          "name": "agent",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "finalize_agent_election",
+      "discriminator": [
+        48,
+        143,
+        199,
+        27,
+        97,
+        168,
+        117,
+        123
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "letting",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "docs": [
+            "The property, owned by the marketplace; supplies the share supply the",
+            "quorum is measured against."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                150,
+                0,
+                77,
+                110,
+                104,
+                156,
+                109,
+                243,
+                34,
+                193,
+                39,
+                38,
+                28,
+                210,
+                18,
+                120,
+                216,
+                155,
+                252,
+                2,
+                25,
+                179,
+                209,
+                171,
+                6,
+                162,
+                152,
+                223,
+                111,
+                151,
+                206,
+                247
+              ]
+            }
+          }
+        },
+        {
+          "name": "winner_entry",
+          "docs": [
+            "expected address once the winner is known and inspects it directly, so",
+            "a vanished registry fails the election instead of the transaction."
+          ],
+          "writable": true,
+          "optional": true
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "finalize_resignation",
+      "discriminator": [
+        73,
+        32,
+        57,
+        218,
+        46,
+        230,
+        159,
+        28
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "notice closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "letting",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "docs": [
+            "The property, owned by the marketplace; names the location whose",
+            "assignment count drops."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                150,
+                0,
+                77,
+                110,
+                104,
+                156,
+                109,
+                243,
+                34,
+                193,
+                39,
+                38,
+                28,
+                210,
+                18,
+                120,
+                216,
+                155,
+                252,
+                2,
+                25,
+                179,
+                209,
+                171,
+                6,
+                162,
+                152,
+                223,
+                111,
+                151,
+                206,
+                247
+              ]
+            }
+          }
+        },
+        {
+          "name": "agent_entry",
+          "docs": [
+            "The resigning agent's registry entry. It must still exist: the",
+            "assignment blocks the agent from leaving the location until this",
+            "crank releases it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "notice.agent",
+                "account": "ResignationNotice"
+              }
+            ]
+          }
+        },
+        {
+          "name": "notice",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  115,
+                  105,
+                  103,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initialize_config",
+      "discriminator": [
+        208,
+        127,
+        21,
+        1,
+        194,
+        190,
+        196,
+        70
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "program",
+          "docs": [
+            "This program's executable account, tying `program_data` to it."
+          ],
+          "address": "8f4NHc1wGBM1BAufDFd9dNechLW8pxmStSfxfuJfDzob"
+        },
+        {
+          "name": "program_data",
+          "docs": [
+            "The program's upgrade authority must be the initializing signer."
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint",
+          "docs": [
+            "The XCAV mint agent deposits are paid in."
+          ]
+        },
+        {
+          "name": "vault",
+          "docs": [
+            "The program's XCAV vault, owned by the config PDA. Holds agent",
+            "deposits."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "remove_letting_agent",
+      "discriminator": [
+        182,
+        25,
+        229,
+        250,
+        10,
+        26,
+        241,
+        235
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_entry",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "agent"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_receiver",
+          "docs": [
+            "entry; pinned to whoever funded it."
+          ],
+          "writable": true
+        },
+        {
+          "name": "xcav_mint"
+        },
+        {
+          "name": "agent_token",
+          "docs": [
+            "The agent's XCAV account the deposit returns to."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "postcode",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "resign",
+      "discriminator": [
+        177,
+        177,
+        153,
+        96,
+        88,
+        149,
+        206,
+        225
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "letting",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "notice",
+          "docs": [
+            "The notice, one per property; `init` rejects resigning twice."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  114,
+                  101,
+                  115,
+                  105,
+                  103,
+                  110,
+                  97,
+                  116,
+                  105,
+                  111,
+                  110
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "unlock_agent_votes",
+      "discriminator": [
+        181,
+        212,
+        17,
+        222,
+        41,
+        184,
+        97,
+        159
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "record closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "letting",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "The voter's share ledger, owned by the marketplace; the unlock CPI",
+            "releases the vote's shares from it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                150,
+                0,
+                77,
+                110,
+                104,
+                156,
+                109,
+                243,
+                34,
+                193,
+                39,
+                38,
+                28,
+                210,
+                18,
+                120,
+                216,
+                155,
+                252,
+                2,
+                25,
+                179,
+                209,
+                171,
+                6,
+                162,
+                152,
+                223,
+                111,
+                151,
+                206,
+                247
+              ]
+            }
+          }
+        },
+        {
+          "name": "vote_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  45,
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "round"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "cpi_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  112,
+                  105,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "marketplace_program",
+          "address": "B6YRVAmjmhN28smZxNfCnuKc19CamBbAEMXsp5KTfWog"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "round",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "update_authority",
+      "discriminator": [
+        32,
+        46,
+        64,
+        28,
+        149,
+        75,
+        243,
+        88
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_authority",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "update_config",
+      "discriminator": [
+        29,
+        158,
+        252,
+        191,
+        10,
+        83,
+        219,
+        99
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "ConfigParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "vote_on_agent",
+      "discriminator": [
+        203,
+        127,
+        40,
+        102,
+        254,
+        243,
+        11,
+        244
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the vote record's rent: the sponsor on the default",
+            "path, or any willing wallet, so one protocol key can never decide the",
+            "election by withholding its signature. The record remembers who to",
+            "refund."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "voter_role",
+          "docs": [
+            "The caller's RealEstateInvestor role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "letting",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "The voter's share ledger, owned by the marketplace; the vote locks",
+            "part of it through the CPI."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                150,
+                0,
+                77,
+                110,
+                104,
+                156,
+                109,
+                243,
+                34,
+                193,
+                39,
+                38,
+                28,
+                210,
+                18,
+                120,
+                216,
+                155,
+                252,
+                2,
+                25,
+                179,
+                209,
+                171,
+                6,
+                162,
+                152,
+                223,
+                111,
+                151,
+                206,
+                247
+              ]
+            }
+          }
+        },
+        {
+          "name": "vote_record",
+          "docs": [
+            "This round's vote record; revoting reuses it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  103,
+                  101,
+                  110,
+                  116,
+                  45,
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "letting.election.round",
+                "account": "PropertyLetting"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "candidacy",
+          "docs": [
+            "The candidacy voted for."
+          ],
+          "writable": true
+        },
+        {
+          "name": "previous_candidacy",
+          "docs": [
+            "The candidacy a revote moves power away from; required only when the",
+            "previous vote backed a different candidate."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "cpi_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  112,
+                  105,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "marketplace_program",
+          "address": "B6YRVAmjmhN28smZxNfCnuKc19CamBbAEMXsp5KTfWog"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u32"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AgentCandidacy",
+      "discriminator": [
+        61,
+        234,
+        139,
+        230,
+        5,
+        246,
+        53,
+        3
+      ]
+    },
+    {
+      "name": "AgentVote",
+      "discriminator": [
+        220,
+        51,
+        114,
+        184,
+        194,
+        29,
+        176,
+        108
+      ]
+    },
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "LettingAgent",
+      "discriminator": [
+        122,
+        214,
+        27,
+        146,
+        118,
+        167,
+        22,
+        185
+      ]
+    },
+    {
+      "name": "PropertyLetting",
+      "discriminator": [
+        72,
+        52,
+        34,
+        169,
+        213,
+        87,
+        231,
+        124
+      ]
+    },
+    {
+      "name": "ResignationNotice",
+      "discriminator": [
+        66,
+        158,
+        24,
+        126,
+        100,
+        85,
+        78,
+        78
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AgentCandidacyClaimed",
+      "discriminator": [
+        100,
+        100,
+        82,
+        130,
+        142,
+        39,
+        138,
+        60
+      ]
+    },
+    {
+      "name": "AgentCandidacyClosed",
+      "discriminator": [
+        250,
+        237,
+        17,
+        177,
+        143,
+        71,
+        15,
+        129
+      ]
+    },
+    {
+      "name": "AgentElectionFinalized",
+      "discriminator": [
+        91,
+        34,
+        81,
+        135,
+        220,
+        140,
+        60,
+        176
+      ]
+    },
+    {
+      "name": "AgentResignationFinalized",
+      "discriminator": [
+        23,
+        39,
+        92,
+        193,
+        223,
+        205,
+        189,
+        211
+      ]
+    },
+    {
+      "name": "AgentResignationInitiated",
+      "discriminator": [
+        76,
+        80,
+        203,
+        106,
+        183,
+        248,
+        174,
+        157
+      ]
+    },
+    {
+      "name": "AgentVoteCast",
+      "discriminator": [
+        206,
+        180,
+        88,
+        234,
+        67,
+        36,
+        135,
+        221
+      ]
+    },
+    {
+      "name": "AgentVotesUnlocked",
+      "discriminator": [
+        252,
+        118,
+        138,
+        62,
+        128,
+        151,
+        234,
+        113
+      ]
+    },
+    {
+      "name": "AuthorityUpdateProposed",
+      "discriminator": [
+        238,
+        208,
+        182,
+        30,
+        132,
+        56,
+        128,
+        252
+      ]
+    },
+    {
+      "name": "AuthorityUpdated",
+      "discriminator": [
+        133,
+        207,
+        24,
+        122,
+        14,
+        234,
+        91,
+        34
+      ]
+    },
+    {
+      "name": "ConfigInitialized",
+      "discriminator": [
+        181,
+        49,
+        200,
+        156,
+        19,
+        167,
+        178,
+        91
+      ]
+    },
+    {
+      "name": "ConfigUpdated",
+      "discriminator": [
+        40,
+        241,
+        230,
+        122,
+        11,
+        19,
+        198,
+        194
+      ]
+    },
+    {
+      "name": "LettingAgentAdded",
+      "discriminator": [
+        11,
+        189,
+        78,
+        50,
+        240,
+        234,
+        99,
+        176
+      ]
+    },
+    {
+      "name": "LettingAgentRemoved",
+      "discriminator": [
+        184,
+        76,
+        227,
+        43,
+        49,
+        174,
+        249,
+        153
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidConfig",
+      "msg": "Invalid config parameters"
+    },
+    {
+      "code": 6001,
+      "name": "NotAuthority",
+      "msg": "Signer is not the config authority"
+    },
+    {
+      "code": 6002,
+      "name": "NotPendingAuthority",
+      "msg": "Signer is not the pending authority"
+    },
+    {
+      "code": 6003,
+      "name": "NotUpgradeAuthority",
+      "msg": "Signer is not the program upgrade authority"
+    },
+    {
+      "code": 6004,
+      "name": "Overflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6005,
+      "name": "UnsupportedMintAuthority",
+      "msg": "Mint carries an unsupported authority"
+    },
+    {
+      "code": 6006,
+      "name": "UnsupportedMintExtension",
+      "msg": "Mint carries an unsupported extension"
+    },
+    {
+      "code": 6007,
+      "name": "InvalidMint",
+      "msg": "Account is not a supported mint"
+    },
+    {
+      "code": 6008,
+      "name": "DepositTooHigh",
+      "msg": "Deposit exceeds the caller's cap"
+    },
+    {
+      "code": 6009,
+      "name": "WrongRegion",
+      "msg": "Agent is registered in a different region"
+    },
+    {
+      "code": 6010,
+      "name": "AlreadyInLocation",
+      "msg": "Agent already covers this location"
+    },
+    {
+      "code": 6011,
+      "name": "NotInLocation",
+      "msg": "Agent does not cover this location"
+    },
+    {
+      "code": 6012,
+      "name": "TooManyLocations",
+      "msg": "Too many locations for one agent"
+    },
+    {
+      "code": 6013,
+      "name": "PostcodeTooLong",
+      "msg": "Postcode is too long"
+    },
+    {
+      "code": 6014,
+      "name": "AgentStillAssigned",
+      "msg": "Agent still manages properties in this location"
+    },
+    {
+      "code": 6015,
+      "name": "PropertyNotFinalized",
+      "msg": "Property is not finalized"
+    },
+    {
+      "code": 6016,
+      "name": "SeatTaken",
+      "msg": "The property already has an assigned agent"
+    },
+    {
+      "code": 6017,
+      "name": "NoElectionRunning",
+      "msg": "No election is running for this property"
+    },
+    {
+      "code": 6018,
+      "name": "VotingClosed",
+      "msg": "The voting window has closed"
+    },
+    {
+      "code": 6019,
+      "name": "VotingStillOngoing",
+      "msg": "The voting window is still open"
+    },
+    {
+      "code": 6020,
+      "name": "WrongElectionRound",
+      "msg": "Wrong election round"
+    },
+    {
+      "code": 6021,
+      "name": "TooManyCandidates",
+      "msg": "Too many candidates in this round"
+    },
+    {
+      "code": 6022,
+      "name": "CandidacyMismatch",
+      "msg": "Candidacy does not match the election"
+    },
+    {
+      "code": 6023,
+      "name": "InvalidVoteAmount",
+      "msg": "Vote amount must be greater than zero"
+    },
+    {
+      "code": 6024,
+      "name": "WrongAgent",
+      "msg": "Wrong or missing agent registry entry"
+    },
+    {
+      "code": 6025,
+      "name": "WrongRentPayer",
+      "msg": "Wrong rent payer"
+    },
+    {
+      "code": 6026,
+      "name": "NotAssignedAgent",
+      "msg": "Signer is not the property's assigned agent"
+    },
+    {
+      "code": 6027,
+      "name": "NoticePeriodRunning",
+      "msg": "The resignation notice period is still running"
+    }
+  ],
+  "types": [
+    {
+      "name": "AccessPermission",
+      "docs": [
+        "Compliance status for a (user, role) assignment, set by an admin after",
+        "off-chain KYC/AML. Only the marketplace's investor-fund calls (listing,",
+        "buying, offers, share transfers, lawyer case work) require this flag on",
+        "top of the role; every other instruction checks role possession alone.",
+        "Later it'll be driven by a SAS attestation instead of a manual toggle.",
+        "",
+        "Do not reorder the variants: the serialized `RoleAccount.permission`",
+        "stores the variant index, so a reorder flips every stored status."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Compliant"
+          },
+          {
+            "name": "Revoked"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentCandidacy",
+      "docs": [
+        "One agent standing in one election round; carries their own tally."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "docs": [
+              "The election round the candidacy belongs to."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "vote_power",
+            "docs": [
+              "Share-weighted votes cast for this candidate."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the account's rent; refunded at close."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentCandidacyClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "expiry",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentCandidacyClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentElection",
+      "docs": [
+        "The running agent election. Any eligible agent may stand; the first",
+        "candidacy opens the voting window and shareholders vote among the",
+        "candidates. A round that elects nobody simply reopens: rounds repeat",
+        "until an agent is engaged. One round at a time per property."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "expiry",
+            "docs": [
+              "When voting closes; zero while no round is running."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "candidate_count",
+            "docs": [
+              "Candidates standing in the current round."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "round",
+            "docs": [
+              "Round number, monotonic per property. Candidacies and vote records",
+              "are keyed by it, so nothing stale can count toward a later round."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "quorum_bps",
+            "docs": [
+              "Quorum at the moment the round opened, so a config change can't move",
+              "the goalposts mid-vote."
+            ],
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentElectionFinalized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "winner",
+            "type": "pubkey"
+          },
+          {
+            "name": "assigned",
+            "type": "bool"
+          },
+          {
+            "name": "top_power",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentLocation",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "postcode",
+            "type": "bytes"
+          },
+          {
+            "name": "assigned_count",
+            "docs": [
+              "Properties currently assigned to the agent in this location. Leaving",
+              "the location requires zero."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "deposit",
+            "docs": [
+              "The deposit locked when this location was registered, recorded so a",
+              "later config change can't reprice the refund."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentResignationFinalized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentResignationInitiated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "due_ts",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentVote",
+      "docs": [
+        "One investor's vote in one agent election round. The voting shares stay",
+        "locked in the marketplace ShareHolding until the record is closed again",
+        "by `unlock_agent_votes`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "docs": [
+              "The election round the vote belongs to."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "choice",
+            "docs": [
+              "The candidate voted for."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "power",
+            "docs": [
+              "The shares this vote locked and counts for."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the record's rent; refunded at close."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentVoteCast",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "choice",
+            "type": "pubkey"
+          },
+          {
+            "name": "power",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AgentVotesUnlocked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "round",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "power",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityUpdateProposed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AuthorityUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "old_authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "new_authority",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Authority allowed to update parameters."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "docs": [
+              "Proposed replacement authority; takes over via `accept_authority`.",
+              "Two-step so a typo'd address can't brick parameter management."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "xcav_mint",
+            "docs": [
+              "The XCAV mint agent deposits are paid in."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "docs": [
+              "Owner of the shared protocol treasury (a multisig on mainnet).",
+              "Slashes are paid to this key's token accounts; the program never",
+              "holds them."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "rent_collector",
+            "docs": [
+              "The sponsor wallet that fronts account rent for holders. Sponsored",
+              "closes send their lamports here, not to the holder."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "agent_deposit",
+            "docs": [
+              "XCAV an agent locks per location they register in."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "agent_voting_time",
+            "docs": [
+              "Seconds an agent election stays open once the first candidacy claims."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "min_voting_quorum_bps",
+            "docs": [
+              "Share of a property's supply that must vote for an agent election to",
+              "be valid, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "agent_notice_period",
+            "docs": [
+              "Seconds between an agent's resignation notice and the seat opening."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigInitialized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "type": "pubkey"
+          },
+          {
+            "name": "xcav_mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigParams",
+      "docs": [
+        "Protocol parameters for the property program."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "rent_collector",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "agent_voting_time",
+            "type": "i64"
+          },
+          {
+            "name": "min_voting_quorum_bps",
+            "type": "u16"
+          },
+          {
+            "name": "agent_notice_period",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ConfigUpdated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "treasury",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent_deposit",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LettingAgent",
+      "docs": [
+        "A letting agent's registry entry, one per wallet. Agents work one region",
+        "and any number of its locations up to the cap; each location holds its",
+        "own deposit and counts the properties assigned there."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "region_id",
+            "docs": [
+              "The one region this agent covers."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "locations",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "AgentLocation"
+                }
+              }
+            }
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "Who funded the account's rent and gets it back at close."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LettingAgentAdded",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "postcode",
+            "type": "bytes"
+          },
+          {
+            "name": "deposit",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LettingAgentRemoved",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "postcode",
+            "type": "bytes"
+          },
+          {
+            "name": "deposit",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Location",
+      "docs": [
+        "A registered postcode within a region. Existence is the point: the",
+        "marketplace requires a listing's location PDA to exist for its region."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "postcode",
+            "docs": [
+              "The postcode, as seeded (uppercase ASCII, no spaces)."
+            ],
+            "type": "bytes"
+          },
+          {
+            "name": "deposit",
+            "docs": [
+              "The XCAV locked when the location was registered. Released on removal,",
+              "even if the configured deposit has changed since."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PropertyAsset",
+      "docs": [
+        "A fractionalized property. Created when it is listed and kept for the",
+        "asset's whole life; the Core asset and share mint are attached by",
+        "`init_property_assets`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "core_asset",
+            "docs": [
+              "The Metaplex Core asset held in the property vault. Default until the",
+              "assets are initialized."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "share_mint",
+            "docs": [
+              "The Token-2022 share mint. Default until the assets are initialized."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "region_id",
+            "type": "u16"
+          },
+          {
+            "name": "location",
+            "docs": [
+              "The registered location (postcode) the property sits in."
+            ],
+            "type": "bytes"
+          },
+          {
+            "name": "share_amount",
+            "type": "u32"
+          },
+          {
+            "name": "spv_created",
+            "type": "bool"
+          },
+          {
+            "name": "finalized",
+            "type": "bool"
+          },
+          {
+            "name": "holder_count",
+            "docs": [
+              "Wallets currently holding shares; teardown completes when it reaches",
+              "zero again."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PropertyLetting",
+      "docs": [
+        "A property's letting seat: who manages it and the election that fills the",
+        "seat. Created by the first candidacy and kept for the property's life."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "docs": [
+              "The assigned agent; default while the seat is vacant."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "election",
+            "type": {
+              "defined": {
+                "name": "AgentElection"
+              }
+            }
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the account's rent."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ResignationNotice",
+      "docs": [
+        "An assigned agent's notice that they are stepping down. The seat opens",
+        "once the notice period has run, via the `finalize_resignation` crank."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "agent",
+            "docs": [
+              "The resigning agent, recorded so the crank can release their",
+              "assignment even if the seat's state moves on."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "due_ts",
+            "docs": [
+              "When the resignation takes effect."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the account's rent; refunded at close."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Role",
+      "docs": [
+        "All roles recognised across the realXmarket protocol.",
+        "",
+        "A role is app-level authorization, separate from KYC/compliance. Compliance",
+        "lives in [`AccessPermission`], and will eventually be driven by SAS",
+        "attestations rather than a manually set flag.",
+        "",
+        "Do not reorder the variants: the serialized `RoleAccount.role` stores the",
+        "variant index, so a reorder reinterprets every existing assignment."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "RegionalOperator"
+          },
+          {
+            "name": "RealEstateInvestor"
+          },
+          {
+            "name": "RealEstateDeveloper"
+          },
+          {
+            "name": "Lawyer"
+          },
+          {
+            "name": "LettingAgent"
+          },
+          {
+            "name": "SpvConfirmation"
+          }
+        ]
+      }
+    },
+    {
+      "name": "RoleAccount",
+      "docs": [
+        "One (user, role) assignment together with its compliance status."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "role",
+            "type": {
+              "defined": {
+                "name": "Role"
+              }
+            }
+          },
+          {
+            "name": "permission",
+            "type": {
+              "defined": {
+                "name": "AccessPermission"
+              }
+            }
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "Who paid the account's rent (the assigning admin); every teardown",
+              "refunds them, whoever triggers it."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ShareHolding",
+      "docs": [
+        "The canonical share ledger for one holder of one property. The Token-2022",
+        "accounts mirror this; they never lead it."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u32"
+          },
+          {
+            "name": "locked_amount",
+            "docs": [
+              "Shares locked by votes; blocked from transfer until unlocked."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "AGENT_CANDIDATE_SEED",
+      "type": "bytes",
+      "value": "[97, 103, 101, 110, 116, 45, 99, 97, 110, 100, 105, 100, 97, 116, 101]"
+    },
+    {
+      "name": "AGENT_SEED",
+      "type": "bytes",
+      "value": "[97, 103, 101, 110, 116]"
+    },
+    {
+      "name": "AGENT_VOTE_SEED",
+      "type": "bytes",
+      "value": "[97, 103, 101, 110, 116, 45, 118, 111, 116, 101]"
+    },
+    {
+      "name": "CONFIG_SEED",
+      "type": "bytes",
+      "value": "[99, 111, 110, 102, 105, 103]"
+    },
+    {
+      "name": "CPI_AUTH_SEED",
+      "docs": [
+        "Signer PDA for CPIs into the marketplace; carries no account data."
+      ],
+      "type": "bytes",
+      "value": "[99, 112, 105, 45, 97, 117, 116, 104]"
+    },
+    {
+      "name": "LETTING_SEED",
+      "type": "bytes",
+      "value": "[108, 101, 116, 116, 105, 110, 103]"
+    },
+    {
+      "name": "RESIGNATION_SEED",
+      "type": "bytes",
+      "value": "[114, 101, 115, 105, 103, 110, 97, 116, 105, 111, 110]"
+    },
+    {
+      "name": "VAULT_SEED",
+      "type": "bytes",
+      "value": "[118, 97, 117, 108, 116]"
+    }
+  ]
+}
