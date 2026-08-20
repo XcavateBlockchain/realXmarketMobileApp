@@ -12,7 +12,7 @@ preserved byte-for-byte and the diff stays limited to the three version lines.
 When run inside GitHub Actions (GITHUB_OUTPUT is set), the new values are
 exported as step outputs `display_version` and `build_number`.
 
-Usage: bump_ios_version.py <path-to-csproj>
+Usage: bump_app_version.py <path-to-csproj>
 """
 
 import os

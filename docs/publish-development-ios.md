@@ -50,7 +50,7 @@ consumes its build number exactly once — numbers stay monotonic and a re-run
 can never collide with an already-uploaded build. A failed run therefore
 "wastes" one build number, which is harmless.
 
-The logic lives in `.github/scripts/bump_ios_version.py`. To jump to a
+The logic lives in `.github/scripts/bump_app_version.py`. To jump to a
 different version train (e.g. `1.0`), just edit the values in the csproj and
 push — the incrementer continues from whatever is there. If you ever want only
 the build number to increment (keeping the display version fixed), remove the
@@ -59,6 +59,16 @@ the build number to increment (keeping the display version fixed), remove the
 Note: pull the branch after a publish (`git pull`) so your local checkout picks
 up the bump commit. And if you ever protect the `publish-development` branch,
 allow GitHub Actions to push to it, otherwise the bump step fails.
+
+### Shared with the Android workflow
+
+`.github/workflows/publish-development-android.yaml` bumps the same two csproj
+properties (`ApplicationVersion` is the Android version code,
+`ApplicationDisplayVersion` the version name) and declares the same
+`concurrency: group: publish-development`, so an iOS and an Android publish
+queue behind each other instead of racing to push the bump commit. Each run
+consumes one version number, so the two platforms end up one version apart for
+the same source - see `docs/publish-development-android.md`.
 
 ## One-time setup: the `appstore` environment
 
