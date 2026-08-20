@@ -16,8 +16,8 @@ What one run does, in order:
    does not re-trigger the workflow.
 4. Recreates the gitignored `XcavateMobileApp/appsettings.json` (the csproj
    embeds it as a resource, so the build fails without it) and
-   `XcavateMobileApp/GoogleService-Info.plist` (iOS Firebase config, staged for
-   the upcoming Firebase iOS integration) from secrets.
+   `XcavateMobileApp/GoogleService-Info.plist` (iOS Firebase config, bundled
+   into the app by the csproj) from secrets.
 5. Imports the Apple Distribution certificate into a temporary keychain and
    installs the App Store provisioning profile. The signing identity name and
    the profile name are read from the uploaded files themselves — you do not
@@ -179,9 +179,10 @@ locally, re-encode and update the secret, or CI builds will ship without it.
 ### iOS Firebase config (`GOOGLESERVICE_INFO_PLIST_BASE64`)
 
 Base64 of your local `P:\programming\realXmarketMobileApp\XcavateMobileApp\GoogleService-Info.plist`.
-Nothing references the file yet, but it is staged for the upcoming Firebase iOS
-integration so the pipeline will not silently ship builds without it once the
-integration lands. To re-download it: [Firebase console](https://console.firebase.google.com/)
+The csproj bundles it into the app as a `BundleResource` and
+`Firebase.Core.App.Configure()` reads it from the bundle root at startup, so a build
+missing this secret ships an app whose push notifications never initialize.
+To re-download it: [Firebase console](https://console.firebase.google.com/)
 → the `realxmarket-notifications` project → Project settings → Your apps → the
 iOS app → `GoogleService-Info.plist`.
 
@@ -217,6 +218,17 @@ iOS app → `GoogleService-Info.plist`.
   later") — the runner's latest-stable Xcode and the .NET 10 iOS workload have
   drifted apart. Pin an explicit version in the workflow's *Select latest
   stable Xcode* step (`xcode-version: '26.0'` style) until images catch up.
+- **"The app requests the entitlement 'aps-environment' ... but the provisioning
+  profile doesn't contain this entitlement"** - the App Store profile predates push
+  notifications. Enable the **Push Notifications** capability on the
+  `com.xcavate.realxmarket` App ID, regenerate the App Store profile and update
+  `APPSTORE_PROVISIONING_PROFILE_BASE64`. The csproj adds `aps-environment`
+  (`development` for Debug, `production` for Release) through `CustomEntitlements`,
+  and the iOS SDK validates it against the profile.
+- **Builds install but never receive push notifications** - check that the APNs
+  authentication key is uploaded to the `realxmarket-notifications` Firebase project
+  (Project settings -> Cloud Messaging -> Apple app configuration). That is a
+  separate `.p8` from the App Store Connect API key in the repo root.
 - **If Apple ever removes `altool` uploads** — replace the *Upload to App Store
   Connect* step with `xcrun iTMSTransporter`, the
   [Transporter app](https://apps.apple.com/app/transporter/id1450874784)

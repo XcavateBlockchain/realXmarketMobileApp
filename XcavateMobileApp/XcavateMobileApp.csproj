@@ -85,6 +85,25 @@
     <MauiIcon Include="Resources\AppIcon\appicon.png" Color="#3B4F74" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)'=='net10.0-ios'">
+    <!-- iOS counterpart of GoogleServicesJson above. Firebase.Core.App.Configure()
+         reads this from the bundle root and throws without it, taking the whole
+         notification startup down with it. The file is gitignored - obtain it from
+         the realxmarket-notifications Firebase project. -->
+    <BundleResource Include="GoogleService-Info.plist" />
+
+    <!-- Push notifications capability. Without it RegisterForRemoteNotifications()
+         fails with "no valid aps-environment entitlement string found", the device
+         never receives an APNs token and FCM has nothing to deliver to. The value has
+         to match the provisioning profile the build is signed with: the development
+         profile for Debug, the App Store profile CI publishes with for Release.
+         It lives here rather than in Platforms\iOS\Entitlements.plist because that
+         file is not part of the build - no CodesignEntitlements property points at
+         it - and because the value differs per configuration. -->
+    <CustomEntitlements Condition="'$(Configuration)'=='Debug'" Include="aps-environment" Type="String" Value="development" />
+    <CustomEntitlements Condition="'$(Configuration)'!='Debug'" Include="aps-environment" Type="String" Value="production" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <!-- Splash Screen -->
