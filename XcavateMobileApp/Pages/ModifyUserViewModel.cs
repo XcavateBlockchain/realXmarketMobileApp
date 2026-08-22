@@ -164,6 +164,9 @@ namespace XcavateMobileApp.Pages
             }
         }
 
-        public ButtonStateEnum SaveButtonState => (FirstName != "" && LastName != "" && FormModel.IsValidEmail(Email) && PhoneNumber != "") ? ButtonStateEnum.Enabled : ButtonStateEnum.Disabled;
+        // The phone field only ever writes out a full international number, or an empty string
+        // while what is typed is not one yet, so asking for a valid E.164 string is the same
+        // question as asking whether the field is happy - and says so out loud.
+        public ButtonStateEnum SaveButtonState => (FirstName != "" && LastName != "" && FormModel.IsValidEmail(Email) && PhoneNumberModel.IsValidE164(PhoneNumber)) ? ButtonStateEnum.Enabled : ButtonStateEnum.Disabled;
     }
 }

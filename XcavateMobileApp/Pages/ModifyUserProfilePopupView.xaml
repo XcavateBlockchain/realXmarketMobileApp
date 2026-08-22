@@ -20,17 +20,26 @@
                                      Padding="10, 10, 10, 10"
                      >
 
+                    <!--
+                      The Enter key walks down these four in order and stops on the phone
+                      number. Wired in the code-behind rather than here, because x:Reference
+                      cannot point at an element declared further down the file.
+                    -->
                     <form:FormInputView Placeholder="First name"
+                        x:Name="firstNameInput"
                         Text="{Binding FirstName}" />
 
                     <form:FormInputView Placeholder="Last name"
+                        x:Name="lastNameInput"
                         Text="{Binding LastName}" />
 
                     <form:FormInputView Placeholder="Email"
+                        x:Name="emailInput"
                         ValidateEmail="True"
                         Text="{Binding Email}" />
 
-                    <form:FormInputView Placeholder="Phone Number"
+                    <form:FormPhoneInputView Placeholder="Phone number"
+                        x:Name="phoneInput"
                         Text="{Binding PhoneNumber}"/>
                 </VerticalStackLayout>
                 
