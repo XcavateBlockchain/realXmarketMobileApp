@@ -105,6 +105,13 @@
                                         CardWidth="{Binding Source={x:Reference verticalStackLayout}, Path=Width}"
                                         Text="{Binding Nickname}" />
 
+                    <!-- Pulled up against the field it is about, out of the stack's 15 spacing. -->
+                    <Label Text="{Binding NicknameStatusMessage}"
+                           IsVisible="{Binding NicknameStatusIsVisible}"
+                           TextColor="{Binding NicknameStatusColor}"
+                           FontSize="12"
+                           Margin="10, -9, 10, 0" />
+
                     <Label Text="Bio" FontSize="14" TextColor="{AppThemeBinding Light=#9ca3af, Dark=#d1d5db}" />
                     <form:FormLargeInputView Placeholder="Enter your bio (optional)" Text="{Binding Bio}" />
                 </VerticalStackLayout>
