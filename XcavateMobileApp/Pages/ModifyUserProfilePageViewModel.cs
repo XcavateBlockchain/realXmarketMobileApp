@@ -161,7 +161,15 @@ namespace XcavateMobileApp.Pages
             finally
             {
                 // Disposed here rather than where it is cancelled: this is the only code that
-                // knows the request holding the token has finished with it.
+                // knows the request holding the token has finished with it. The field is
+                // released first - Cancel on an already-disposed source throws, and that
+                // throw out of the next keystroke's setter is what used to freeze the status
+                // on whatever the last completed check said, keeping "taken" up forever.
+                if (ReferenceEquals(nicknameCheckCancellation, cancellation))
+                {
+                    nicknameCheckCancellation = null;
+                }
+
                 cancellation.Dispose();
             }
         }
