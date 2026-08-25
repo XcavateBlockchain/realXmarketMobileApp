@@ -1,5 +1,5 @@
 {
-  "address": "8f4NHc1wGBM1BAufDFd9dNechLW8pxmStSfxfuJfDzob",
+  "address": "deCp9srk9C6P4BXJaFpjR5H6Jsm6DCq8AL2kk338dVq",
   "metadata": {
     "name": "property",
     "version": "0.1.0",
@@ -121,38 +121,38 @@
             "program": {
               "kind": "const",
               "value": [
-                3,
-                186,
-                74,
-                176,
-                62,
-                143,
-                45,
-                60,
-                174,
-                40,
-                31,
+                70,
+                43,
+                73,
+                219,
+                220,
+                131,
+                35,
+                160,
+                98,
+                225,
+                10,
+                109,
                 39,
-                117,
-                142,
-                247,
-                136,
-                230,
-                147,
-                13,
-                189,
-                6,
-                65,
-                154,
-                36,
-                140,
-                139,
-                245,
-                17,
-                234,
-                15,
-                171,
-                88
+                180,
+                166,
+                187,
+                128,
+                222,
+                86,
+                153,
+                149,
+                224,
+                194,
+                122,
+                73,
+                210,
+                128,
+                208,
+                94,
+                108,
+                148,
+                159
               ]
             }
           }
@@ -226,6 +226,384 @@
         },
         {
           "name": "max_deposit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "challenge_agent",
+      "discriminator": [
+        226,
+        82,
+        175,
+        103,
+        200,
+        89,
+        147,
+        176
+      ],
+      "accounts": [
+        {
+          "name": "challenger",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the rent; the challenger on the default path. The",
+            "challenge remembers who to refund."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "challenger_role",
+          "docs": [
+            "The caller's RealEstateInvestor role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "The caller's share ledger, owned by the marketplace; only holders",
+            "challenge."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "challenger"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "letting",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "challenge",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  99,
+                  104,
+                  97,
+                  108,
+                  108,
+                  101,
+                  110,
+                  103,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "xcav_mint"
+        },
+        {
+          "name": "challenger_token",
+          "docs": [
+            "The challenger's XCAV account the stake leaves."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "id",
+          "type": "u64"
+        },
+        {
+          "name": "max_deposit",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "claim_income",
+      "discriminator": [
+        6,
+        24,
+        199,
+        191,
+        118,
+        141,
+        95,
+        123
+      ],
+      "accounts": [
+        {
+          "name": "holder",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the checkpoint's rent: the sponsor on the default",
+            "path, or any willing wallet. The record remembers who to refund."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "income",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  99,
+                  111,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "checkpoint",
+          "docs": [
+            "The holder's claim state; the first claim creates it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  101,
+                  99,
+                  107,
+                  112,
+                  111,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "holder"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "expected address and inspects it directly. A ledger already closed by",
+            "a teardown reads as zero shares, leaving banked income claimable."
+          ]
+        },
+        {
+          "name": "payment_mint"
+        },
+        {
+          "name": "income_vault",
+          "docs": [
+            "token accounts."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  99,
+                  111,
+                  109,
+                  101,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_payment_account",
+          "docs": [
+            "its derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "holder_payment",
+          "docs": [
+            "Where the income goes: any token account of the holder's carrying the",
+            "paid mint, so a closed original can't strand the claim."
+          ],
+          "writable": true
+        },
+        {
+          "name": "payment_token_program"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
           "type": "u64"
         }
       ]
@@ -333,38 +711,38 @@
             "program": {
               "kind": "const",
               "value": [
-                150,
-                0,
-                77,
-                110,
+                9,
                 104,
-                156,
-                109,
-                243,
-                34,
-                193,
-                39,
-                38,
-                28,
-                210,
-                18,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
                 120,
+                227,
+                91,
+                27,
                 216,
-                155,
-                252,
-                2,
-                25,
-                179,
-                209,
-                171,
-                6,
-                162,
-                152,
-                223,
-                111,
-                151,
-                206,
-                247
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
               ]
             }
           }
@@ -559,6 +937,356 @@
       ]
     },
     {
+      "name": "close_income_checkpoint",
+      "discriminator": [
+        178,
+        97,
+        236,
+        81,
+        222,
+        159,
+        104,
+        227
+      ],
+      "accounts": [
+        {
+          "name": "holder",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "the checkpoint closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "checkpoint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  101,
+                  99,
+                  107,
+                  112,
+                  111,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "holder"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "expected address and inspects it directly. Must be closed or empty:",
+            "a live balance would re-earn from zero if the checkpoint were",
+            "recreated later."
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "distribute_income",
+      "discriminator": [
+        81,
+        17,
+        61,
+        96,
+        242,
+        93,
+        210,
+        51
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the rent for accounts created along the way; the agent",
+            "on the default path."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "agent_role",
+          "docs": [
+            "The caller's LettingAgent role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "letting",
+          "docs": [
+            "The property's letting seat; only its assigned agent distributes."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "docs": [
+            "The property, owned by the marketplace; supplies the share supply the",
+            "income is split over."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "market_config",
+          "docs": [
+            "The marketplace config; income arrives in its accepted payment mints,",
+            "which its mint guard already vetted."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "income",
+          "docs": [
+            "The property's income ledger; the first distribution creates it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  99,
+                  111,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "payment_mint"
+        },
+        {
+          "name": "agent_payment",
+          "docs": [
+            "The agent's token account the income is paid from."
+          ],
+          "writable": true
+        },
+        {
+          "name": "income_vault",
+          "docs": [
+            "token accounts."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  99,
+                  111,
+                  109,
+                  101,
+                  45,
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "vault_payment_account",
+          "docs": [
+            "idempotently, so the ATA program verifies the derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "payment_token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "finalize_agent_election",
       "discriminator": [
         48,
@@ -628,38 +1356,38 @@
             "program": {
               "kind": "const",
               "value": [
-                150,
-                0,
-                77,
-                110,
+                9,
                 104,
-                156,
-                109,
-                243,
-                34,
-                193,
-                39,
-                38,
-                28,
-                210,
-                18,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
                 120,
+                227,
+                91,
+                27,
                 216,
-                155,
-                252,
-                2,
-                25,
-                179,
-                209,
-                171,
-                6,
-                162,
-                152,
-                223,
-                111,
-                151,
-                206,
-                247
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
               ]
             }
           }
@@ -672,6 +1400,409 @@
           ],
           "writable": true,
           "optional": true
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "finalize_challenge",
+      "discriminator": [
+        184,
+        38,
+        132,
+        51,
+        103,
+        143,
+        203,
+        9
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "docs": [
+            "The cranker also fronts rent for any payout account created along the",
+            "way."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "the challenge closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "letting",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "docs": [
+            "The property, owned by the marketplace; supplies the share supply the",
+            "quorum is measured against and the location whose deposit is slashed."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "challenge",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  99,
+                  104,
+                  97,
+                  108,
+                  108,
+                  101,
+                  110,
+                  103,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "letting.governance.active_challenge",
+                "account": "PropertyLetting"
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_entry",
+          "docs": [
+            "The struck agent's registry entry, carrying the deposit to slash.",
+            "Required while they still hold the seat; an agent already gone is",
+            "left alone. The handler derives the expected address and checks it,",
+            "since the account is only needed on that path."
+          ],
+          "writable": true,
+          "optional": true
+        },
+        {
+          "name": "xcav_mint"
+        },
+        {
+          "name": "vault",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  118,
+                  97,
+                  117,
+                  108,
+                  116
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "treasury",
+          "docs": [
+            "below."
+          ]
+        },
+        {
+          "name": "treasury_token",
+          "docs": [
+            "the ATA program verifies the derivation."
+          ],
+          "writable": true
+        },
+        {
+          "name": "challenger",
+          "docs": [
+            "ATA below."
+          ]
+        },
+        {
+          "name": "challenger_token",
+          "docs": [
+            "yet, so a closed account can't strand the refund."
+          ],
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "finalize_proposal",
+      "discriminator": [
+        23,
+        68,
+        51,
+        167,
+        109,
+        173,
+        187,
+        164
+      ],
+      "accounts": [
+        {
+          "name": "cranker",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "the proposal closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "letting",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "property",
+          "docs": [
+            "The property, owned by the marketplace; supplies the share supply the",
+            "quorum is measured against."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  101,
+                  114,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "letting.governance.active_proposal",
+                "account": "PropertyLetting"
+              }
+            ]
+          }
         }
       ],
       "args": [
@@ -758,38 +1889,38 @@
             "program": {
               "kind": "const",
               "value": [
-                150,
-                0,
-                77,
-                110,
+                9,
                 104,
-                156,
-                109,
-                243,
-                34,
-                193,
-                39,
-                38,
-                28,
-                210,
-                18,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
                 120,
+                227,
+                91,
+                27,
                 216,
-                155,
-                252,
-                2,
-                25,
-                179,
-                209,
-                171,
-                6,
-                162,
-                152,
-                223,
-                111,
-                151,
-                206,
-                247
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
               ]
             }
           }
@@ -797,11 +1928,12 @@
         {
           "name": "agent_entry",
           "docs": [
-            "The resigning agent's registry entry. It must still exist: the",
-            "assignment blocks the agent from leaving the location until this",
-            "crank releases it."
+            "The resigning agent's registry entry, whose assignment count drops.",
+            "Required while they still hold the seat; a governance removal can",
+            "vacate it first, leaving a stale notice that closes without it."
           ],
           "writable": true,
+          "optional": true,
           "pda": {
             "seeds": [
               {
@@ -881,7 +2013,7 @@
           "docs": [
             "This program's executable account, tying `program_data` to it."
           ],
-          "address": "8f4NHc1wGBM1BAufDFd9dNechLW8pxmStSfxfuJfDzob"
+          "address": "deCp9srk9C6P4BXJaFpjR5H6Jsm6DCq8AL2kk338dVq"
         },
         {
           "name": "program_data",
@@ -951,6 +2083,145 @@
             "defined": {
               "name": "ConfigParams"
             }
+          }
+        }
+      ]
+    },
+    {
+      "name": "propose",
+      "discriminator": [
+        93,
+        253,
+        82,
+        168,
+        118,
+        33,
+        102,
+        90
+      ],
+      "accounts": [
+        {
+          "name": "agent",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the rent: the agent on the default path, or any",
+            "willing wallet. The proposal remembers who to refund."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "agent_role",
+          "docs": [
+            "The caller's LettingAgent role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "letting",
+          "docs": [
+            "The property's letting seat; only its assigned agent proposes."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "id",
+          "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "details_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
           }
         }
       ]
@@ -1161,6 +2432,224 @@
       ]
     },
     {
+      "name": "settle_income",
+      "discriminator": [
+        228,
+        147,
+        202,
+        250,
+        235,
+        75,
+        170,
+        119
+      ],
+      "accounts": [
+        {
+          "name": "marketplace_signer",
+          "docs": [
+            "The marketplace's CPI signer PDA; carries no data, only proves the",
+            "caller."
+          ],
+          "signer": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  112,
+                  105,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the checkpoint's rent, forwarded through the CPI."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "income",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  105,
+                  110,
+                  99,
+                  111,
+                  109,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "The holder's share ledger, owned by the marketplace; settles at its",
+            "balance before the transfer touches it."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "owner"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "checkpoint",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  104,
+                  101,
+                  99,
+                  107,
+                  112,
+                  111,
+                  105,
+                  110,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "owner"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "owner",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
       "name": "unlock_agent_votes",
       "discriminator": [
         181,
@@ -1238,38 +2727,38 @@
             "program": {
               "kind": "const",
               "value": [
-                150,
-                0,
-                77,
-                110,
+                9,
                 104,
-                156,
-                109,
-                243,
-                34,
-                193,
-                39,
-                38,
-                28,
-                210,
-                18,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
                 120,
+                227,
+                91,
+                27,
                 216,
-                155,
-                252,
-                2,
-                25,
-                179,
-                209,
-                171,
-                6,
-                162,
-                152,
-                223,
-                111,
-                151,
-                206,
-                247
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
               ]
             }
           }
@@ -1331,7 +2820,7 @@
         },
         {
           "name": "marketplace_program",
-          "address": "B6YRVAmjmhN28smZxNfCnuKc19CamBbAEMXsp5KTfWog"
+          "address": "dj9Q3CpHvDHwexCbkgJ5APDx4JsTxPssNebkvP15g1T"
         }
       ],
       "args": [
@@ -1341,6 +2830,359 @@
         },
         {
           "name": "round",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "unlock_challenge_votes",
+      "discriminator": [
+        141,
+        196,
+        219,
+        149,
+        47,
+        78,
+        103,
+        248
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "record closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "challenge",
+          "docs": [
+            "expected address and inspects it directly, since a settled challenge",
+            "is already closed."
+          ]
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "The voter's share ledger, owned by the marketplace; the unlock CPI",
+            "releases the vote's shares from it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "vote_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  99,
+                  104,
+                  97,
+                  108,
+                  108,
+                  101,
+                  110,
+                  103,
+                  101,
+                  45,
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "cpi_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  112,
+                  105,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "marketplace_program",
+          "address": "dj9Q3CpHvDHwexCbkgJ5APDx4JsTxPssNebkvP15g1T"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "unlock_proposal_votes",
+      "discriminator": [
+        102,
+        99,
+        64,
+        235,
+        192,
+        142,
+        63,
+        49
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "signer": true
+        },
+        {
+          "name": "rent_payer",
+          "docs": [
+            "record closes."
+          ],
+          "writable": true
+        },
+        {
+          "name": "proposal",
+          "docs": [
+            "expected address and inspects it directly, since a finalized",
+            "proposal is already closed."
+          ]
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "The voter's share ledger, owned by the marketplace; the unlock CPI",
+            "releases the vote's shares from it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "vote_record",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108,
+                  45,
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "arg",
+                "path": "id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "cpi_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  112,
+                  105,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "marketplace_program",
+          "address": "dj9Q3CpHvDHwexCbkgJ5APDx4JsTxPssNebkvP15g1T"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "id",
           "type": "u64"
         }
       ]
@@ -1531,38 +3373,38 @@
             "program": {
               "kind": "const",
               "value": [
-                150,
-                0,
-                77,
-                110,
+                9,
                 104,
-                156,
-                109,
-                243,
-                34,
-                193,
-                39,
-                38,
-                28,
-                210,
-                18,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
                 120,
+                227,
+                91,
+                27,
                 216,
-                155,
-                252,
-                2,
-                25,
-                179,
-                209,
-                171,
-                6,
-                162,
-                152,
-                223,
-                111,
-                151,
-                206,
-                247
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
               ]
             }
           }
@@ -1644,7 +3486,7 @@
         },
         {
           "name": "marketplace_program",
-          "address": "B6YRVAmjmhN28smZxNfCnuKc19CamBbAEMXsp5KTfWog"
+          "address": "dj9Q3CpHvDHwexCbkgJ5APDx4JsTxPssNebkvP15g1T"
         },
         {
           "name": "system_program",
@@ -1655,6 +3497,516 @@
         {
           "name": "asset_id",
           "type": "u64"
+        },
+        {
+          "name": "amount",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "vote_on_challenge",
+      "discriminator": [
+        19,
+        36,
+        128,
+        75,
+        123,
+        135,
+        79,
+        64
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the vote record's rent: the sponsor on the default",
+            "path, or any willing wallet. The record remembers who to refund."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "voter_role",
+          "docs": [
+            "The caller's RealEstateInvestor role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "letting",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "challenge",
+          "docs": [
+            "The live challenge, pinned by the seat's active id."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  99,
+                  104,
+                  97,
+                  108,
+                  108,
+                  101,
+                  110,
+                  103,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "letting.governance.active_challenge",
+                "account": "PropertyLetting"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "The voter's share ledger, owned by the marketplace; the vote locks",
+            "part of it through the CPI."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "vote_record",
+          "docs": [
+            "This challenge's vote record; revoting reuses it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  99,
+                  104,
+                  97,
+                  108,
+                  108,
+                  101,
+                  110,
+                  103,
+                  101,
+                  45,
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "letting.governance.active_challenge",
+                "account": "PropertyLetting"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "cpi_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  112,
+                  105,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "marketplace_program",
+          "address": "dj9Q3CpHvDHwexCbkgJ5APDx4JsTxPssNebkvP15g1T"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "choice",
+          "type": {
+            "defined": {
+              "name": "VoteChoice"
+            }
+          }
+        },
+        {
+          "name": "amount",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "vote_on_proposal",
+      "discriminator": [
+        188,
+        239,
+        13,
+        88,
+        119,
+        199,
+        251,
+        119
+      ],
+      "accounts": [
+        {
+          "name": "voter",
+          "signer": true
+        },
+        {
+          "name": "payer",
+          "docs": [
+            "Whoever fronts the vote record's rent: the sponsor on the default",
+            "path, or any willing wallet, so one protocol key can never decide the",
+            "vote by withholding its signature. The record remembers who to",
+            "refund."
+          ],
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "voter_role",
+          "docs": [
+            "The caller's RealEstateInvestor role, owned by the roles program."
+          ]
+        },
+        {
+          "name": "letting",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  108,
+                  101,
+                  116,
+                  116,
+                  105,
+                  110,
+                  103
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "docs": [
+            "The live proposal, pinned by the seat's active id."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "letting.governance.active_proposal",
+                "account": "PropertyLetting"
+              }
+            ]
+          }
+        },
+        {
+          "name": "holding",
+          "docs": [
+            "The voter's share ledger, owned by the marketplace; the vote locks",
+            "part of it through the CPI."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  104,
+                  97,
+                  114,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                9,
+                104,
+                143,
+                248,
+                46,
+                214,
+                220,
+                158,
+                66,
+                131,
+                87,
+                247,
+                205,
+                24,
+                133,
+                120,
+                227,
+                91,
+                27,
+                216,
+                226,
+                213,
+                102,
+                50,
+                218,
+                150,
+                11,
+                70,
+                36,
+                105,
+                251,
+                182
+              ]
+            }
+          }
+        },
+        {
+          "name": "vote_record",
+          "docs": [
+            "This proposal's vote record; revoting reuses it."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  111,
+                  118,
+                  45,
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108,
+                  45,
+                  118,
+                  111,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "asset_id"
+              },
+              {
+                "kind": "account",
+                "path": "letting.governance.active_proposal",
+                "account": "PropertyLetting"
+              },
+              {
+                "kind": "account",
+                "path": "voter"
+              }
+            ]
+          }
+        },
+        {
+          "name": "cpi_auth",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  99,
+                  112,
+                  105,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "marketplace_program",
+          "address": "dj9Q3CpHvDHwexCbkgJ5APDx4JsTxPssNebkvP15g1T"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "asset_id",
+          "type": "u64"
+        },
+        {
+          "name": "choice",
+          "type": {
+            "defined": {
+              "name": "VoteChoice"
+            }
+          }
         },
         {
           "name": "amount",
@@ -1691,16 +4043,42 @@
       ]
     },
     {
-      "name": "Config",
+      "name": "Challenge",
       "discriminator": [
-        155,
-        12,
-        170,
-        224,
-        30,
+        119,
         250,
-        204,
-        130
+        161,
+        121,
+        119,
+        81,
+        22,
+        208
+      ]
+    },
+    {
+      "name": "GovVote",
+      "discriminator": [
+        159,
+        187,
+        29,
+        31,
+        84,
+        97,
+        194,
+        42
+      ]
+    },
+    {
+      "name": "IncomeCheckpoint",
+      "discriminator": [
+        238,
+        127,
+        245,
+        230,
+        78,
+        209,
+        151,
+        156
       ]
     },
     {
@@ -1717,6 +4095,19 @@
       ]
     },
     {
+      "name": "PropertyIncome",
+      "discriminator": [
+        208,
+        157,
+        165,
+        198,
+        110,
+        82,
+        127,
+        139
+      ]
+    },
+    {
       "name": "PropertyLetting",
       "discriminator": [
         72,
@@ -1730,6 +4121,19 @@
       ]
     },
     {
+      "name": "Proposal",
+      "discriminator": [
+        26,
+        94,
+        189,
+        187,
+        116,
+        136,
+        53,
+        33
+      ]
+    },
+    {
       "name": "ResignationNotice",
       "discriminator": [
         66,
@@ -1740,6 +4144,19 @@
         85,
         78,
         78
+      ]
+    },
+    {
+      "name": "property::state::Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
       ]
     }
   ],
@@ -1862,6 +4279,58 @@
       ]
     },
     {
+      "name": "ChallengeFinalized",
+      "discriminator": [
+        190,
+        192,
+        111,
+        18,
+        82,
+        126,
+        97,
+        230
+      ]
+    },
+    {
+      "name": "ChallengeOpened",
+      "discriminator": [
+        42,
+        83,
+        165,
+        62,
+        80,
+        17,
+        63,
+        181
+      ]
+    },
+    {
+      "name": "ChallengeVoteCast",
+      "discriminator": [
+        243,
+        171,
+        32,
+        243,
+        235,
+        31,
+        128,
+        178
+      ]
+    },
+    {
+      "name": "ChallengeVotesUnlocked",
+      "discriminator": [
+        148,
+        22,
+        49,
+        17,
+        198,
+        42,
+        99,
+        148
+      ]
+    },
+    {
       "name": "ConfigInitialized",
       "discriminator": [
         181,
@@ -1888,6 +4357,58 @@
       ]
     },
     {
+      "name": "IncomeCheckpointClosed",
+      "discriminator": [
+        138,
+        164,
+        217,
+        184,
+        30,
+        103,
+        163,
+        58
+      ]
+    },
+    {
+      "name": "IncomeClaimed",
+      "discriminator": [
+        21,
+        89,
+        144,
+        230,
+        121,
+        18,
+        93,
+        243
+      ]
+    },
+    {
+      "name": "IncomeDistributed",
+      "discriminator": [
+        124,
+        174,
+        84,
+        60,
+        7,
+        67,
+        87,
+        154
+      ]
+    },
+    {
+      "name": "IncomeSettled",
+      "discriminator": [
+        113,
+        243,
+        198,
+        204,
+        165,
+        171,
+        217,
+        31
+      ]
+    },
+    {
       "name": "LettingAgentAdded",
       "discriminator": [
         11,
@@ -1911,6 +4432,71 @@
         174,
         249,
         153
+      ]
+    },
+    {
+      "name": "ProposalCreated",
+      "discriminator": [
+        186,
+        8,
+        160,
+        108,
+        81,
+        13,
+        51,
+        206
+      ]
+    },
+    {
+      "name": "ProposalExecuted",
+      "discriminator": [
+        92,
+        213,
+        189,
+        201,
+        101,
+        83,
+        111,
+        83
+      ]
+    },
+    {
+      "name": "ProposalFinalized",
+      "discriminator": [
+        159,
+        104,
+        210,
+        220,
+        86,
+        209,
+        61,
+        51
+      ]
+    },
+    {
+      "name": "ProposalVoteCast",
+      "discriminator": [
+        214,
+        184,
+        248,
+        130,
+        221,
+        91,
+        236,
+        243
+      ]
+    },
+    {
+      "name": "ProposalVotesUnlocked",
+      "discriminator": [
+        231,
+        249,
+        130,
+        214,
+        92,
+        237,
+        90,
+        236
       ]
     }
   ],
@@ -2054,6 +4640,91 @@
       "code": 6027,
       "name": "NoticePeriodRunning",
       "msg": "The resignation notice period is still running"
+    },
+    {
+      "code": 6028,
+      "name": "ZeroDistribution",
+      "msg": "Distribution amount must be greater than zero"
+    },
+    {
+      "code": 6029,
+      "name": "PaymentMintNotAccepted",
+      "msg": "Payment mint is not accepted by the marketplace"
+    },
+    {
+      "code": 6030,
+      "name": "TooManyIncomeStreams",
+      "msg": "Too many income streams for one property"
+    },
+    {
+      "code": 6031,
+      "name": "UnknownIncomeStream",
+      "msg": "No income stream for this mint"
+    },
+    {
+      "code": 6032,
+      "name": "NothingToClaim",
+      "msg": "Nothing to claim"
+    },
+    {
+      "code": 6033,
+      "name": "HoldingMismatch",
+      "msg": "Holding account does not match the owner"
+    },
+    {
+      "code": 6034,
+      "name": "PaymentAccountMismatch",
+      "msg": "Payment account does not match the mint and owner"
+    },
+    {
+      "code": 6035,
+      "name": "PendingIncome",
+      "msg": "Income is still banked for this checkpoint"
+    },
+    {
+      "code": 6036,
+      "name": "SharesStillHeld",
+      "msg": "Checkpoint owner still holds shares"
+    },
+    {
+      "code": 6037,
+      "name": "ZeroAmount",
+      "msg": "Amount must be greater than zero"
+    },
+    {
+      "code": 6038,
+      "name": "ProposalOngoing",
+      "msg": "A proposal is already running for this property"
+    },
+    {
+      "code": 6039,
+      "name": "ChallengeOngoing",
+      "msg": "A challenge is already running against the agent"
+    },
+    {
+      "code": 6040,
+      "name": "WrongGovernanceId",
+      "msg": "Wrong proposal or challenge id"
+    },
+    {
+      "code": 6041,
+      "name": "AutoApprovalTooSoon",
+      "msg": "Too soon since the last auto-approved request"
+    },
+    {
+      "code": 6042,
+      "name": "SeatVacant",
+      "msg": "No agent is assigned to this property"
+    },
+    {
+      "code": 6043,
+      "name": "NotAHolder",
+      "msg": "Caller holds no shares of this property"
+    },
+    {
+      "code": 6044,
+      "name": "InvalidDetailsHash",
+      "msg": "Details hash must not be zero"
     }
   ],
   "types": [
@@ -2443,83 +5114,215 @@
       }
     },
     {
-      "name": "Config",
+      "name": "Challenge",
+      "docs": [
+        "A holder's move to strike the sitting agent, backed by an XCAV stake the",
+        "challenger loses if the vote goes against them."
+      ],
       "type": {
         "kind": "struct",
         "fields": [
           {
-            "name": "authority",
-            "docs": [
-              "Authority allowed to update parameters."
-            ],
-            "type": "pubkey"
+            "name": "asset_id",
+            "type": "u64"
           },
           {
-            "name": "pending_authority",
+            "name": "id",
             "docs": [
-              "Proposed replacement authority; takes over via `accept_authority`.",
-              "Two-step so a typo'd address can't brick parameter management."
-            ],
-            "type": {
-              "option": "pubkey"
-            }
-          },
-          {
-            "name": "xcav_mint",
-            "docs": [
-              "The XCAV mint agent deposits are paid in."
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "treasury",
-            "docs": [
-              "Owner of the shared protocol treasury (a multisig on mainnet).",
-              "Slashes are paid to this key's token accounts; the program never",
-              "holds them."
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "rent_collector",
-            "docs": [
-              "The sponsor wallet that fronts account rent for holders. Sponsored",
-              "closes send their lamports here, not to the holder."
-            ],
-            "type": "pubkey"
-          },
-          {
-            "name": "agent_deposit",
-            "docs": [
-              "XCAV an agent locks per location they register in."
+              "Monotonic per property; vote records are keyed by it."
             ],
             "type": "u64"
           },
           {
-            "name": "agent_voting_time",
+            "name": "challenger",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
             "docs": [
-              "Seconds an agent election stays open once the first candidacy claims."
+              "The agent on the seat when the challenge opened; the punishment only",
+              "applies while they still hold it."
             ],
+            "type": "pubkey"
+          },
+          {
+            "name": "deposit",
+            "docs": [
+              "The challenger's stake, held in the XCAV vault."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "expiry",
             "type": "i64"
           },
           {
-            "name": "min_voting_quorum_bps",
+            "name": "tally",
+            "type": {
+              "defined": {
+                "name": "Tally"
+              }
+            }
+          },
+          {
+            "name": "quorum_bps",
             "docs": [
-              "Share of a property's supply that must vote for an agent election to",
-              "be valid, in basis points."
+              "Quorum at the moment the vote opened."
             ],
             "type": "u16"
           },
           {
-            "name": "agent_notice_period",
+            "name": "rent_payer",
             "docs": [
-              "Seconds between an agent's resignation notice and the seat opening."
+              "The wallet that fronted the account's rent; refunded at close."
             ],
-            "type": "i64"
+            "type": "pubkey"
           },
           {
             "name": "bump",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ChallengeFinalized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "passed",
+            "type": "bool"
+          },
+          {
+            "name": "slashed",
+            "type": "u64"
+          },
+          {
+            "name": "removed",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ChallengeOpened",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "challenger",
+            "type": "pubkey"
+          },
+          {
+            "name": "agent",
+            "type": "pubkey"
+          },
+          {
+            "name": "deposit",
+            "type": "u64"
+          },
+          {
+            "name": "expiry",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ChallengeVoteCast",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "choice",
+            "type": {
+              "defined": {
+                "name": "VoteChoice"
+              }
+            }
+          },
+          {
+            "name": "power",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ChallengeVotesUnlocked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "power",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "CheckpointEntry",
+      "docs": [
+        "A holder's claim state against the stream at the same index."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "per_share",
+            "docs": [
+              "The stream's `per_share` the holder is paid or banked up to."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "pending",
+            "docs": [
+              "Income banked for the holder but not yet paid out, written when a",
+              "settle runs ahead of a balance change."
+            ],
+            "type": "u64"
           }
         ]
       }
@@ -2575,6 +5378,34 @@
           {
             "name": "agent_notice_period",
             "type": "i64"
+          },
+          {
+            "name": "proposal_voting_time",
+            "type": "i64"
+          },
+          {
+            "name": "low_proposal",
+            "type": "u64"
+          },
+          {
+            "name": "high_proposal",
+            "type": "u64"
+          },
+          {
+            "name": "high_threshold_bps",
+            "type": "u16"
+          },
+          {
+            "name": "auto_approval_cooldown",
+            "type": "i64"
+          },
+          {
+            "name": "challenge_deposit",
+            "type": "u64"
+          },
+          {
+            "name": "agent_slash_amount",
+            "type": "u64"
           }
         ]
       }
@@ -2590,6 +5421,266 @@
           },
           {
             "name": "agent_deposit",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GovState",
+      "docs": [
+        "A property's governance ledger: one live proposal and one live challenge",
+        "at a time, and strikes against the sitting agent."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_count",
+            "docs": [
+              "Ids already used; the next proposal or challenge takes count + 1."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "challenge_count",
+            "type": "u64"
+          },
+          {
+            "name": "active_proposal",
+            "docs": [
+              "The live proposal / challenge id; zero while none. One of each at a",
+              "time per property."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "active_challenge",
+            "type": "u64"
+          },
+          {
+            "name": "strikes",
+            "docs": [
+              "Passed challenges against the sitting agent; three remove them.",
+              "Reset when a new agent takes the seat."
+            ],
+            "type": "u8"
+          },
+          {
+            "name": "last_auto_approval_ts",
+            "docs": [
+              "When the last request was approved without a vote."
+            ],
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GovVote",
+      "docs": [
+        "One holder's vote on one proposal or challenge (the seed prefix says",
+        "which). The voting shares stay locked in the marketplace ShareHolding",
+        "until the record is closed again by the matching unlock instruction."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "docs": [
+              "The proposal or challenge the vote belongs to."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "choice",
+            "type": {
+              "defined": {
+                "name": "VoteChoice"
+              }
+            }
+          },
+          {
+            "name": "power",
+            "docs": [
+              "The shares this vote locked and counts for."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the record's rent; refunded at close."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IncomeCheckpoint",
+      "docs": [
+        "One holder's income position on one property. `entries[i]` tracks",
+        "`streams[i]`; missing tail entries read as zero."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "entries",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "CheckpointEntry"
+                }
+              }
+            }
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the account's rent; refunded at close."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IncomeCheckpointClosed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IncomeClaimed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IncomeDistributed",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "per_share_gain",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IncomeSettled",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "owner",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "IncomeStream",
+      "docs": [
+        "One payment mint's income stream for a property."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "mint",
+            "type": "pubkey"
+          },
+          {
+            "name": "per_share",
+            "docs": [
+              "Cumulative income per share since the stream opened, in raw token",
+              "units. Wide on purpose: a stream lives as long as the property."
+            ],
+            "type": "u128"
+          },
+          {
+            "name": "dust",
+            "docs": [
+              "Remainder of the last distribution below one unit per share, carried",
+              "into the next one so nothing is stranded."
+            ],
             "type": "u64"
           }
         ]
@@ -2723,7 +5814,7 @@
       "name": "PropertyAsset",
       "docs": [
         "A fractionalized property. Created when it is listed and kept for the",
-        "asset's whole life; the Core asset and share mint are attached by",
+        "asset's whole life; the share mint and metadata are attached by",
         "`init_property_assets`."
       ],
       "type": {
@@ -2734,12 +5825,20 @@
             "type": "u64"
           },
           {
-            "name": "core_asset",
+            "name": "name",
             "docs": [
-              "The Metaplex Core asset held in the property vault. Default until the",
-              "assets are initialized."
+              "Display name, e.g. the street address. Empty until the assets are",
+              "initialized."
             ],
-            "type": "pubkey"
+            "type": "string"
+          },
+          {
+            "name": "metadata_uri",
+            "docs": [
+              "IPFS URI of the property's documents and images; the canonical",
+              "off-chain record the frontend and indexers read."
+            ],
+            "type": "string"
           },
           {
             "name": "share_mint",
@@ -2787,10 +5886,54 @@
       }
     },
     {
+      "name": "PropertyIncome",
+      "docs": [
+        "A property's rental income ledger, one stream per payment mint. The",
+        "streams never mix: the mints differ in decimals, so one shared",
+        "accumulator would misprice payouts across them. The funds sit in the",
+        "income vault's token accounts, apart from every other pot, so nothing",
+        "else can spend money already owed to holders."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "streams",
+            "docs": [
+              "Append-only: checkpoints refer to streams by index."
+            ],
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "IncomeStream"
+                }
+              }
+            }
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the account's rent."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "PropertyLetting",
       "docs": [
-        "A property's letting seat: who manages it and the election that fills the",
-        "seat. Created by the first candidacy and kept for the property's life."
+        "A property's letting seat: who manages it, the election that fills the",
+        "seat, and the governance the holders run over the agent. Created by the",
+        "first candidacy and kept for the property's life."
       ],
       "type": {
         "kind": "struct",
@@ -2815,6 +5958,14 @@
             }
           },
           {
+            "name": "governance",
+            "type": {
+              "defined": {
+                "name": "GovState"
+              }
+            }
+          },
+          {
             "name": "rent_payer",
             "docs": [
               "The wallet that fronted the account's rent."
@@ -2824,6 +5975,229 @@
           {
             "name": "bump",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Proposal",
+      "docs": [
+        "The assigned agent's request for holder sign-off on spending for the",
+        "property. Small requests approve on the spot (cooldown-gated) and never",
+        "hit storage; the rest live here for the length of the vote. The money",
+        "itself moves off chain, authorized by the `ProposalExecuted` event."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "docs": [
+              "Monotonic per property; vote records are keyed by it."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "proposer",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "docs": [
+              "What they ask for, in quote units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "details_hash",
+            "docs": [
+              "Hash of the off-chain document describing the work."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "expiry",
+            "docs": [
+              "When voting closes."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "tally",
+            "type": {
+              "defined": {
+                "name": "Tally"
+              }
+            }
+          },
+          {
+            "name": "quorum_bps",
+            "docs": [
+              "Quorum and approval threshold at the moment the vote opened, so a",
+              "config change can't move the goalposts mid-vote. The threshold is",
+              "zero below the high tier."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "threshold_bps",
+            "type": "u16"
+          },
+          {
+            "name": "rent_payer",
+            "docs": [
+              "The wallet that fronted the account's rent; refunded at close."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "proposer",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "expiry",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalExecuted",
+      "docs": [
+        "The authorization the off-chain payment runs on: the SPV pays this",
+        "amount from the property's bank account."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalFinalized",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "approved",
+            "type": "bool"
+          },
+          {
+            "name": "yes",
+            "type": "u32"
+          },
+          {
+            "name": "no",
+            "type": "u32"
+          },
+          {
+            "name": "abstain",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalVoteCast",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "choice",
+            "type": {
+              "defined": {
+                "name": "VoteChoice"
+              }
+            }
+          },
+          {
+            "name": "power",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalVotesUnlocked",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "asset_id",
+            "type": "u64"
+          },
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "voter",
+            "type": "pubkey"
+          },
+          {
+            "name": "power",
+            "type": "u32"
           }
         ]
       }
@@ -2971,11 +6345,359 @@
             "type": "u32"
           },
           {
-            "name": "locked_amount",
+            "name": "locks",
             "docs": [
-              "Shares locked by votes; blocked from transfer until unlocked."
+              "Shares locked by votes, one counter per `LockReason`. Counters are",
+              "additive within a reason but overlap across reasons."
+            ],
+            "type": {
+              "array": [
+                "u32",
+                4
+              ]
+            }
+          },
+          {
+            "name": "listed",
+            "docs": [
+              "Shares committed to open secondary listings. Still counted in",
+              "`amount` — the seller keeps the ledger, and the income that comes",
+              "with it, until the moment of sale — but out of voting and transfers."
             ],
             "type": "u32"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Tally",
+      "docs": [
+        "Share-weighted vote tallies."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "yes",
+            "type": "u32"
+          },
+          {
+            "name": "no",
+            "type": "u32"
+          },
+          {
+            "name": "abstain",
+            "type": "u32"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VoteChoice",
+      "docs": [
+        "A vote's direction. Abstain counts toward quorum but neither side."
+      ],
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Yes"
+          },
+          {
+            "name": "No"
+          },
+          {
+            "name": "Abstain"
+          }
+        ]
+      }
+    },
+    {
+      "name": "marketplace::state::Config",
+      "docs": [
+        "Singleton config holding protocol parameters and the authority."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Authority allowed to update parameters."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "docs": [
+              "Proposed replacement authority; takes over via `accept_authority`.",
+              "Two-step so a typo'd address can't brick parameter management."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "xcav_mint",
+            "docs": [
+              "The XCAV mint listing and lawyer deposits are paid in."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "docs": [
+              "Owner of the shared protocol treasury (a multisig on mainnet). Fees are",
+              "paid to this key's token accounts; the program never holds them."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "rent_collector",
+            "docs": [
+              "The sponsor wallet that fronts account rent for investors. Every",
+              "position close sends its lamports here, not to the investor."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "accepted_payment_mints",
+            "docs": [
+              "Mints a property can be priced and paid in. Every entry must be a",
+              "same-value GBP stablecoin: prices convert between them by decimal",
+              "count alone, so adding a mint of different value would misprice every",
+              "open listing."
+            ],
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "listing_deposit",
+            "docs": [
+              "XCAV a developer locks to list a property."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "lawyer_deposit",
+            "docs": [
+              "XCAV a lawyer locks to join the registry."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "min_property_shares",
+            "docs": [
+              "Fewest shares a property may be split into."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "max_property_shares",
+            "docs": [
+              "Most shares a property may be split into."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "marketplace_fee_bps",
+            "docs": [
+              "Protocol fee taken from the developer's proceeds, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "investor_fee_bps",
+            "docs": [
+              "Fee an investor pays on top of the share price, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "max_ownership_bps",
+            "docs": [
+              "Largest slice of a property one investor may hold, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "claiming_time",
+            "docs": [
+              "Seconds the claim window stays open once the SPV exists."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "legal_process_time",
+            "docs": [
+              "Seconds the legal process may run before it expires."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "lawyer_voting_time",
+            "docs": [
+              "Seconds the SPV lawyer election stays open once the first lawyer claims."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "min_voting_quorum_bps",
+            "docs": [
+              "Share of a property's supply that must vote for the SPV lawyer election",
+              "to be valid, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "next_listing_id",
+            "docs": [
+              "Monotonic id for the next listing."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "next_share_listing_id",
+            "docs": [
+              "Monotonic id for the next secondary share listing."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "property::state::Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "authority",
+            "docs": [
+              "Authority allowed to update parameters."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_authority",
+            "docs": [
+              "Proposed replacement authority; takes over via `accept_authority`.",
+              "Two-step so a typo'd address can't brick parameter management."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "xcav_mint",
+            "docs": [
+              "The XCAV mint agent deposits are paid in."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury",
+            "docs": [
+              "Owner of the shared protocol treasury (a multisig on mainnet).",
+              "Slashes are paid to this key's token accounts; the program never",
+              "holds them."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "rent_collector",
+            "docs": [
+              "The sponsor wallet that fronts account rent for holders. Sponsored",
+              "closes send their lamports here, not to the holder."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "agent_deposit",
+            "docs": [
+              "XCAV an agent locks per location they register in."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "agent_voting_time",
+            "docs": [
+              "Seconds an agent election stays open once the first candidacy claims."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "min_voting_quorum_bps",
+            "docs": [
+              "Share of a property's supply that must vote for an agent election to",
+              "be valid, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "agent_notice_period",
+            "docs": [
+              "Seconds between an agent's resignation notice and the seat opening."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "proposal_voting_time",
+            "docs": [
+              "Seconds a spending proposal or challenge vote stays open."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "low_proposal",
+            "docs": [
+              "Requests at or under this approve without a vote, in quote units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "high_proposal",
+            "docs": [
+              "Requests at or over this need the high threshold, in quote units."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "high_threshold_bps",
+            "docs": [
+              "Yes share of yes+no a high request must reach, in basis points."
+            ],
+            "type": "u16"
+          },
+          {
+            "name": "auto_approval_cooldown",
+            "docs": [
+              "Seconds between auto-approved requests on one property."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "challenge_deposit",
+            "docs": [
+              "XCAV a challenger stakes against the sitting agent."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "agent_slash_amount",
+            "docs": [
+              "XCAV slashed from the agent's location deposit per passed challenge."
+            ],
+            "type": "u64"
           },
           {
             "name": "bump",
@@ -3002,6 +6724,21 @@
       "value": "[97, 103, 101, 110, 116, 45, 118, 111, 116, 101]"
     },
     {
+      "name": "CHALLENGE_SEED",
+      "type": "bytes",
+      "value": "[103, 111, 118, 45, 99, 104, 97, 108, 108, 101, 110, 103, 101]"
+    },
+    {
+      "name": "CHALLENGE_VOTE_SEED",
+      "type": "bytes",
+      "value": "[103, 111, 118, 45, 99, 104, 97, 108, 108, 101, 110, 103, 101, 45, 118, 111, 116, 101]"
+    },
+    {
+      "name": "CHECKPOINT_SEED",
+      "type": "bytes",
+      "value": "[99, 104, 101, 99, 107, 112, 111, 105, 110, 116]"
+    },
+    {
       "name": "CONFIG_SEED",
       "type": "bytes",
       "value": "[99, 111, 110, 102, 105, 103]"
@@ -3015,9 +6752,29 @@
       "value": "[99, 112, 105, 45, 97, 117, 116, 104]"
     },
     {
+      "name": "INCOME_SEED",
+      "type": "bytes",
+      "value": "[105, 110, 99, 111, 109, 101]"
+    },
+    {
+      "name": "INCOME_VAULT_SEED",
+      "type": "bytes",
+      "value": "[105, 110, 99, 111, 109, 101, 45, 118, 97, 117, 108, 116]"
+    },
+    {
       "name": "LETTING_SEED",
       "type": "bytes",
       "value": "[108, 101, 116, 116, 105, 110, 103]"
+    },
+    {
+      "name": "PROPOSAL_SEED",
+      "type": "bytes",
+      "value": "[103, 111, 118, 45, 112, 114, 111, 112, 111, 115, 97, 108]"
+    },
+    {
+      "name": "PROPOSAL_VOTE_SEED",
+      "type": "bytes",
+      "value": "[103, 111, 118, 45, 112, 114, 111, 112, 111, 115, 97, 108, 45, 118, 111, 116, 101]"
     },
     {
       "name": "RESIGNATION_SEED",
