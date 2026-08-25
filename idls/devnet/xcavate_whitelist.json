@@ -1,5 +1,5 @@
 {
-  "address": "2vVARM46pPD4rcHdbXHnYA4vTGN14q6skQAzsQWcHUxn",
+  "address": "7TrzjKpdrEhnfhxuw8tWdH1sjxadazscsG5HXCDPLmaY",
   "metadata": {
     "name": "xcavate_whitelist",
     "version": "0.1.0",
@@ -225,7 +225,7 @@
           "docs": [
             "This program's executable account, tying `program_data` to it."
           ],
-          "address": "2vVARM46pPD4rcHdbXHnYA4vTGN14q6skQAzsQWcHUxn"
+          "address": "7TrzjKpdrEhnfhxuw8tWdH1sjxadazscsG5HXCDPLmaY"
         },
         {
           "name": "program_data",

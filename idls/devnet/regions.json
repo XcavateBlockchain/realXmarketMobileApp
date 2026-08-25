@@ -1,5 +1,5 @@
 {
-  "address": "FYysH5v23qtz4gK4H1yLDHneFwx6PSAT7oQwHcuRyRh",
+  "address": "5iupkzVtWxee48UXh3s615V9sXXuYjsSr61VPuduXdPc",
   "metadata": {
     "name": "regions",
     "version": "0.1.0",
@@ -933,7 +933,7 @@
           "docs": [
             "This program's executable account, tying `program_data` to it."
           ],
-          "address": "FYysH5v23qtz4gK4H1yLDHneFwx6PSAT7oQwHcuRyRh"
+          "address": "5iupkzVtWxee48UXh3s615V9sXXuYjsSr61VPuduXdPc"
         },
         {
           "name": "program_data",
