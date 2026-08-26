@@ -135,6 +135,9 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
             // The page saves the password and the phrase itself, in that order, then hands
             // the phrase back so the Substrate identity comes off the same backup.
             Navigation = (mnemonics) => ContinueAfterAccountCreatedAsync(mnemonics),
+
+            // Onboarding shows the stepper bar, like the other onboarding pages.
+            FirstSetup = true,
         });
 
         popup.MwaChosen = ShowConnectMwaPopupAsync;
