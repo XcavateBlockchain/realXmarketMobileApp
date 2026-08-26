@@ -5,7 +5,7 @@
              xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
             xmlns:pages="clr-namespace:XcavateMobileApp.Pages"
        xmlns:settings="clr-namespace:PlutoFramework.Components.Settings;assembly=PlutoFramework"
-             FlyoutBehavior="{OnPlatform iOS=Disabled, Default=Flyout}"
+             FlyoutBehavior="Disabled"
              x:Class="XcavateMobileApp.XcavateAppShell">
     <ShellContent ContentTemplate="{DataTemplate pages:InvestorMainPage}"
                   Route="Account" >
