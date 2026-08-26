@@ -1,4 +1,5 @@
 using PlutoFramework.Components.Onboarding;
+using PlutoFramework.Model;
 using PlutoFramework.Model.Xcavate;
 
 namespace XcavateMobileApp.Pages;
@@ -25,6 +26,13 @@ public partial class WelcomePage : ContentPage
 
             onboardingInProgressPopupViewModel.IsVisible = true;
         }
+    }
+
+    protected override bool OnBackButtonPressed()
+    {
+        // A visible popup (e.g. the onboarding/import-method/connect-wallet stack) is
+        // dismissed before the page itself goes back.
+        return PopupManager.TryCloseTopPopup() || base.OnBackButtonPressed();
     }
 
     private async void OnLoaded(object? sender, EventArgs e)

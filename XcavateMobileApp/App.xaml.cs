@@ -168,6 +168,9 @@ namespace XcavateMobileApp
 
             DependencyService.Register<ModifyUserProfilePopupViewModel>();
 
+            // Same popup tracking as the framework's own popups (see PopupManager).
+            PopupManager.TrackPopup(DependencyService.Get<ModifyUserProfilePopupViewModel>());
+
             DependencyService.Register<InvestorMainPageViewModel>();
 
             var onboardingPopupViewModel = DependencyService.Get<OnboardingInProgressPopupViewModel>();

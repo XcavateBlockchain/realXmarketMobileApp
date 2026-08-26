@@ -122,6 +122,13 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
         }
     }
 
+    protected override bool OnBackButtonPressed()
+    {
+        // A visible popup (e.g. the transfer or filter popup) is dismissed before the
+        // page itself goes back.
+        return PopupManager.TryCloseTopPopup() || base.OnBackButtonPressed();
+    }
+
     protected override void OnDisappearing()
     {
         _initializationCts?.Cancel();
