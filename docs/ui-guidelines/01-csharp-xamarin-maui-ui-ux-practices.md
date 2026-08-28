@@ -151,6 +151,7 @@ Every page follows the **PageTemplate** control template (defined in
 │  └ TransactionAnalyzerPopup     │
 │  └ WebSignPopup                 │
 │  └ FullPageLoading (ZIndex=20)  │
+│  └ EnterPasswordPopup (1000)    │  <- always above the loader
 └─────────────────────────────────┘
 ```
 
@@ -425,6 +426,8 @@ Three concurrent loading patterns:
 1. **Full-page loader** (`FullPageLoadingView`, ZIndex=20):
    - Animated GIF or `ActivityIndicator`.
    - Shows during account creation, data fetch, signing.
+   - Must never cover `EnterPasswordPopupView` (ZIndex=1000) — the user must
+     always be able to enter a password while something is loading.
 2. **Item-level loader** (`LoadingItemView`):
    - Grey placeholder card in list footer during pagination.
 3. **Skeleton / empty state**:
