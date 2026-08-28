@@ -28,9 +28,9 @@
     <ApplicationIdGuid>36D62217-2B7E-41BF-AAA9-8A559B7F5A88</ApplicationIdGuid>
 
     <!-- Versions -->
-    <ApplicationDisplayVersion>0.48</ApplicationDisplayVersion>
-    <PackageVersion>0.48</PackageVersion>
-    <ApplicationVersion>67</ApplicationVersion>
+    <ApplicationDisplayVersion>0.49</ApplicationDisplayVersion>
+    <PackageVersion>0.49</PackageVersion>
+    <ApplicationVersion>68</ApplicationVersion>
 
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
 
