@@ -70,6 +70,22 @@
     <MtouchInfoPlist>Platforms\iOS\Info.plist</MtouchInfoPlist>
   </PropertyGroup>
 
+  <!-- iOS 26 Observation crash (dotnet/macios#26401 / #26446), keyboard / safe-area
+       variant: the .NET 10 / MAUI runtime faults in libswiftObservation (Apple's
+       frameworks, no managed frames) whenever UIKit recalculates safe-area /
+       traits or shows the keyboard (e.g. the marketplace search box). It is not
+       app code and cannot be fixed from markup. The first-render variant is
+       defused above by MauiXamlInflator=SourceGen; the durable fix is NativeAOT,
+       which removes the Mono bridge suspected of corrupting the pointer. This is
+       OFF by default so the normal Release pipeline is unchanged. Trial it on a
+       macOS box / CI (the iOS workload is not installed on the Linux CI) with:
+         dotnet publish -f net10.0-ios -c Release -p:UseMauiNativeAotIos=true
+       Expect a trimming / rooting pass afterwards: the app uses System.Reflection
+       (incl. NullabilityInfoContext) and generated indexer clients. -->
+  <PropertyGroup Condition="'$(TargetFramework)'=='net10.0-ios' and '$(UseMauiNativeAotIos)'=='true'">
+    <UseNativeAot>true</UseNativeAot>
+  </PropertyGroup>
+
   <PropertyGroup Condition="'$(TargetFramework)'=='net10.0-ios' and '$(Configuration)'=='Debug'">
     <UseInterpreter>true</UseInterpreter>
   </PropertyGroup>
