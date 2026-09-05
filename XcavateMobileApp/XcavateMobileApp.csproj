@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFrameworks>net10.0-android;net10.0-ios</TargetFrameworks>
@@ -33,6 +33,12 @@
     <ApplicationVersion>71</ApplicationVersion>
 
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
+
+    <!-- The XamlC bytecode inflator (default for all non-Debug configurations) emits IL
+         that crashes on iOS 26 at first render (SIGSEGV in libswiftObservation,
+         dotnet/macios#26446). SourceGen generates type-checked C# instead and turns
+         bad markup into a build error. -->
+    <MauiXamlInflator>SourceGen</MauiXamlInflator>
 
     <!-- To develop, package, and publish an app to the Microsoft Store, see: https://aka.ms/MauiTemplateUnpackaged -->
     <WindowsPackageType>None</WindowsPackageType>
