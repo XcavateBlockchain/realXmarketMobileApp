@@ -30,7 +30,9 @@
     <x:String x:Key="PrimaryButtonIcon">xcavatexwhite.png</x:String>
     
     <x:String x:Key="Location">UK</x:String>
-    <x:String x:Key="CurrencyFormat">{0:0.0000}</x:String>
+    <!-- App-wide currency displays are integer-only; the balance page and balance detail
+         page pin their own two-decimal format at their call sites. -->
+    <x:String x:Key="CurrencyFormat">{0:0}</x:String>
     <x:String x:Key="ButtonFontFamily">XcavateFont</x:String>
 
 
