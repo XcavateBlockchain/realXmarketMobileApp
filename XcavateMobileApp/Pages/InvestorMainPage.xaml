@@ -180,6 +180,8 @@
 
         <account:NoAccountPopup ZIndex="10" />
 
+        <solanacomponents:ConnectMwaPopupView ZIndex="10" />
+
         <kilt:NoDidPopupView ZIndex="10" />
 
         <xcavate:UserProfileNotCreatedPopupView ZIndex="10" />
