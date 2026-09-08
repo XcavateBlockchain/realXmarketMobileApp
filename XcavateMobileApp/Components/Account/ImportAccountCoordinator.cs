@@ -66,7 +66,7 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
 
     private static Task NavigateToAppShellAsync()
     {
-        Application.Current!.MainPage = new XcavateAppShell();
+        App.SetRootPage(new XcavateAppShell());
         return Task.CompletedTask;
     }
 

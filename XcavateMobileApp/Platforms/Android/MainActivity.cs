@@ -1,4 +1,4 @@
-﻿using Android.App;
+using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
@@ -31,13 +31,19 @@ public class MainActivity : MauiAppCompatActivity
         public WindowInsetsCompat? OnApplyWindowInsets(global::Android.Views.View? v, WindowInsetsCompat? insets) => applyInsets(v, insets);
     }
 
-    protected override void OnCreate(Bundle savedInstanceState)
+    protected override void OnCreate(Bundle? savedInstanceState)
     {
         // Android 15 (targetSdk 35) enforces edge-to-edge by default.
         // Ask the window/content view to fit system bars and cutouts.
         if (Window is not null)
         {
+            // SetDecorFitsSystemWindows is an Android-only API. This file is the
+            // Android activity (Platforms/Android, compiled only for the android
+            // TFM), so the call is correct here - the platform analyzer can't infer
+            // that TFM scoping, hence the targeted suppression rather than a global NoWarn.
+#pragma warning disable CA1416, CA1422
             Window.SetDecorFitsSystemWindows(true);
+#pragma warning restore CA1416, CA1422
         }
 
         base.OnCreate(savedInstanceState);
@@ -53,6 +59,12 @@ public class MainActivity : MauiAppCompatActivity
                 }
 
                 var systemInsets = insets.GetInsets(WindowInsetsCompat.Type.SystemBars() | WindowInsetsCompat.Type.DisplayCutout());
+
+                if (systemInsets is null)
+                {
+                    return insets;
+                }
+
                 view.SetPadding(systemInsets.Left, systemInsets.Top, systemInsets.Right, systemInsets.Bottom);
                 return insets;
             }));

@@ -2,7 +2,7 @@ namespace XcavateMobileApp.Pages;
 
 public partial class UserProfilePage : ContentPage
 {
-    public static UserProfileViewModel ViewModel;
+    public static UserProfileViewModel? ViewModel;
     public UserProfilePage(UserProfileViewModel viewModel)
 	{
         NavigationPage.SetHasNavigationBar(this, false);

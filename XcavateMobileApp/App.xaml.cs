@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Maui.Hosting;
 using PlutoFramework.Components.Account;
 using PlutoFramework.Components.Loading;
 using PlutoFramework.Components.Notifications;
@@ -20,11 +21,22 @@ namespace XcavateMobileApp
     {
         private bool _isInitialized;
 
+        private static Window? _window;
+
+        public static Window? Window => _window;
+
+        public static void SetRootPage(Page page) => _window?.Page = page;
+
         public App()
         {
             InitializeComponent();
 
-            MainPage = new ContentPage
+            Dispatcher.Dispatch(async () => await InitializeAsync());
+        }
+
+        private static Page CreateLoadingPage()
+        {
+            return new ContentPage
             {
                 Content = new Grid
                 {
@@ -39,8 +51,17 @@ namespace XcavateMobileApp
                     },
                 },
             };
+        }
 
-            Dispatcher.Dispatch(async () => await InitializeAsync());
+        protected override Window CreateWindow(IActivationState? activationState)
+        {
+            var window = base.CreateWindow(activationState);
+
+            window.Page = CreateLoadingPage();
+
+            _window = window;
+
+            return window;
         }
 
         private async Task InitializeAsync()
@@ -163,7 +184,7 @@ namespace XcavateMobileApp
 
             NavigationModel.SetWelcomeShell = () =>
             {
-                Application.Current.MainPage = new OnboardingShell();
+                SetRootPage(new OnboardingShell());
             };
 
             DependencyService.Register<ModifyUserProfilePopupViewModel>();
@@ -178,11 +199,11 @@ namespace XcavateMobileApp
 
             // Either key counts. New accounts are Solana-only; users onboarded before that
             // change still hold a Substrate key and must not be pushed back into onboarding.
-            MainPage = OnboardingModel.IsOnboardingCompleted() switch
+            SetRootPage(OnboardingModel.IsOnboardingCompleted() switch
             {
                 true when KeysModel.HasSolanaKey() || KeysModel.HasSubstrateKey() => new XcavateAppShell(),
                 _ => new OnboardingShell(),
-            };
+            });
 
             StartNotificationServices();
 

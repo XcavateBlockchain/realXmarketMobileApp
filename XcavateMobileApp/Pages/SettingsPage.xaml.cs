@@ -18,12 +18,12 @@ public partial class SettingsPage : PageTemplate
         BindingContext = new SettingsViewModel();
     }
 
-    async void OnPredefinedLayoutsClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    async void OnPredefinedLayoutsClicked(System.Object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         await Navigation.PushAsync(new PredefinedLayoutsPage());
     }
 
-    async void OnLogOutClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    async void OnLogOutClicked(System.Object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         var popupViewModel = DependencyService.Get<LogOutPopupViewModel>();
 
@@ -56,22 +56,22 @@ public partial class SettingsPage : PageTemplate
 
         popupViewModel.IsVisible = true;
     }
-    async void OnDeveloperSettingsClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    async void OnDeveloperSettingsClicked(System.Object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         await Navigation.PushAsync(new DeveloperSettingsPage());
     }
 
-    async void OnNotificationsClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    async void OnNotificationsClicked(System.Object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         await Navigation.PushAsync(new PlutoFramework.Components.Notifications.NotificationsPage());
     }
 
-    async void OnNotificationTestingClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    async void OnNotificationTestingClicked(System.Object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         await Navigation.PushAsync(new NotificationTestingPage());
     }
 
-    async void OnXcavateProfileClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    async void OnXcavateProfileClicked(System.Object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         await NavigationModel.NavigateToUserPageAsync();
     }
@@ -138,7 +138,7 @@ public partial class SettingsPage : PageTemplate
         await Navigation.PushAsync(new ModifyPropertyPage(property));*/
     }
 
-    async void OnCreditsClicked(System.Object sender, Microsoft.Maui.Controls.TappedEventArgs e)
+    async void OnCreditsClicked(System.Object? sender, Microsoft.Maui.Controls.TappedEventArgs e)
     {
         await Navigation.PushAsync(new CreditsPage());
     }

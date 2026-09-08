@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Maui.Alerts;
+using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.Buttons;
@@ -270,7 +270,7 @@ namespace XcavateMobileApp.Pages
         {
             if (!FirstSetup)
             {
-                await Application.Current.MainPage.Navigation.PopAsync();
+                await Shell.Current.Navigation.PopAsync();
 
                 return;
             }
@@ -349,7 +349,7 @@ namespace XcavateMobileApp.Pages
 
             if (!FirstSetup)
             {
-                await Application.Current.MainPage.Navigation.PopAsync();
+                await Shell.Current.Navigation.PopAsync();
             }
             else
             {
@@ -450,7 +450,7 @@ namespace XcavateMobileApp.Pages
         private void finishFirstSetup()
         {
             OnboardingModel.SetOnboardingStage(OnboardingStage.Finished);
-            Application.Current.MainPage = new XcavateAppShell();
+            App.SetRootPage(new XcavateAppShell());
         }
 
         private void MoveImages()

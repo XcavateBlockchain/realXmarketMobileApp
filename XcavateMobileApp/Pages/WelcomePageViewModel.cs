@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.Account;
 using PlutoFramework.Model;
@@ -35,7 +35,7 @@ namespace XcavateMobileApp.Pages
         [RelayCommand]
         public void BrowseProperties()
         {
-            Application.Current.MainPage = new NoAccountShell();
+            App.SetRootPage(new NoAccountShell());
         }
 
         [RelayCommand]

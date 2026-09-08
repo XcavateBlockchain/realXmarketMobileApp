@@ -38,8 +38,8 @@ namespace XcavateMobileApp.Pages
         };
 
         public string FullName => User.FullName;
-        public ImageSource ProfilePicture => User.ProfilePicture;
-        public ImageSource ProfileBackground => User.ProfileBackground;
+        public ImageSource? ProfilePicture => User.ProfilePicture;
+        public ImageSource? ProfileBackground => User.ProfileBackground;
         public string AccountCreatedAtText => User.AccountCreatedAt is null ? "" : $"Account created {User.AccountCreatedAt?.ToString("MMMM")}, {User.AccountCreatedAt?.Year}";
         public UserRoleEnum UserRole => User.Role;
         public bool DeveloperStatsIsVisible => User.Role == UserRoleEnum.Developer;

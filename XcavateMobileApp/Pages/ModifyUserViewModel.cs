@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.Buttons;
 using PlutoFramework.Model;
@@ -10,13 +10,13 @@ namespace XcavateMobileApp.Pages
     public partial class ModifyUserViewModel : ObservableObject
     {
         [ObservableProperty]
-        private string title;
+        private string? title;
 
         [ObservableProperty]
-        private ImageSource profilePicture;
+        private ImageSource? profilePicture;
 
         [ObservableProperty]
-        private ImageSource profileBackground;
+        private ImageSource? profileBackground;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SaveButtonState))]
@@ -45,10 +45,18 @@ namespace XcavateMobileApp.Pages
         [RelayCommand]
         public async Task PickProfilePictureAsync()
         {
-            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
+            var results = await MediaPicker.PickPhotosAsync(new MediaPickerOptions
             {
-                Title = "Select a profile picture"
+                Title = "Select a profile picture",
+                SelectionLimit = 1,
             });
+
+            if (results is null || results.Count == 0)
+            {
+                return;
+            }
+
+            var result = results[0];
 
             if (result == null)
             {
@@ -79,10 +87,18 @@ namespace XcavateMobileApp.Pages
         [RelayCommand]
         public async Task PickProfileBackgroundAsync()
         {
-            var result = await MediaPicker.PickPhotoAsync(new MediaPickerOptions
+            var results = await MediaPicker.PickPhotosAsync(new MediaPickerOptions
             {
-                Title = "Select a profile background"
+                Title = "Select a profile background",
+                SelectionLimit = 1,
             });
+
+            if (results is null || results.Count == 0)
+            {
+                return;
+            }
+
+            var result = results[0];
 
             if (result == null)
             {
@@ -112,13 +128,15 @@ namespace XcavateMobileApp.Pages
         }
 
         [RelayCommand]
-        public Task CancelAsync() => Application.Current.MainPage.Navigation.PopAsync();
+        public Task CancelAsync() => Shell.Current.Navigation.PopAsync();
 
         [RelayCommand]
         public async Task SaveAsync()
         {
             // Save the user profile
-            if (UserProfilePage.ViewModel is null)
+            var userProfileViewModel = UserProfilePage.ViewModel;
+
+            if (userProfileViewModel is null)
             {
                 return;
             }
@@ -131,16 +149,16 @@ namespace XcavateMobileApp.Pages
                 LastName = LastName,
                 Email = Email,
                 PhoneNumber = PhoneNumber,
-                Role = UserProfilePage.ViewModel.User.Role,
-                DeveloperStats = UserProfilePage.ViewModel.User.DeveloperStats,
-                AccountCreatedAt = UserProfilePage.ViewModel.User.AccountCreatedAt,
+                Role = userProfileViewModel.User.Role,
+                DeveloperStats = userProfileViewModel.User.DeveloperStats,
+                AccountCreatedAt = userProfileViewModel.User.AccountCreatedAt,
                 ProfilePicture = XcavateFileModel.GetSavedProfilePicture(),
                 ProfileBackground = XcavateFileModel.GetSavedProfileBackground(),
             };
 
-            UserProfilePage.ViewModel.User = newUserInfo;
+            userProfileViewModel.User = newUserInfo;
 
-            await Application.Current.MainPage.Navigation.PopAsync();
+            await Shell.Current.Navigation.PopAsync();
 
             await XcavateUserDatabase.SaveUserInformationAsync(newUserInfo);
         }
