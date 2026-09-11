@@ -55,13 +55,16 @@ namespace XcavateMobileApp
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            var window = base.CreateWindow(activationState);
+            // MAUI 10's base Application.CreateWindow throws unless MainPage is set or an
+            // IWindowCreator service is registered, so build the window directly.
+            if (Windows.Count > 0)
+            {
+                return Windows[0];
+            }
 
-            window.Page = CreateLoadingPage();
+            _window = new Window(CreateLoadingPage());
 
-            _window = window;
-
-            return window;
+            return _window;
         }
 
         private async Task InitializeAsync()
