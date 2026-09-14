@@ -2,15 +2,15 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlutoFramework;
 using PlutoFramework.Components.XcavateProperty;
-using PlutoFramework.Constants;
 using PlutoFramework.Model;
 using PlutoFramework.Model.Currency;
+using PlutoFramework.Model.Xcavate;
 using PlutoFrameworkCore.Xcavate;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using UniqueryPlus.Nfts;
 using NftKey = (UniqueryPlus.NftTypeEnum, System.Numerics.BigInteger, System.Numerics.BigInteger);
-using PropertyWrapperModel = PlutoFramework.Components.XcavateProperty.XcavatePropertyModel;
+using XcavatePropertyModel = PlutoFramework.Components.XcavateProperty.XcavatePropertyModel;
 
 namespace XcavateMobileApp.Pages;
 
@@ -36,6 +36,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private string lastLoadedPropertyType = string.Empty;
     private string lastLoadedPropertyName = string.Empty;
     private bool hasLoadedQuery;
+    private readonly object searchDebounceLock = new();
+    private CancellationTokenSource? searchDebounceCts;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TotalTokensText))]
@@ -52,6 +54,10 @@ public partial class InvestorMainPageViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(RoiText))]
     private double roi;
     public string RoiText => $"{Roi:P1}";
+
+    [ObservableProperty]
+    private string searchText = string.Empty;
+
     public InvestorMainPageViewModel()
     {
         filterPopupViewModel = DependencyService.Get<PropertyMarketplaceFilterPopupViewModel>();
@@ -121,7 +127,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
         BoughtActive = false;
         OwnedButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
         BoughtButtonState = PlutoFramework.Components.Buttons.ButtonStateEnum.GrayEnabled;
-        
+
         await RestartOwnedPropertiesLoadAsync(CancellationToken.None).ConfigureAwait(false);
     }
 
@@ -130,6 +136,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
         includesTownCity = NormalizeFilterValue(filterPopupViewModel.SelectedTownCity);
         includesPropertyType = NormalizeFilterValue(filterPopupViewModel.SelectedPropertyType);
         includesPropertyName = filterPopupViewModel.SearchText?.Trim() ?? string.Empty;
+        SearchText = includesPropertyName;
 
         OwnedActive = false;
         BoughtActive = false;
@@ -145,6 +152,76 @@ public partial class InvestorMainPageViewModel : ObservableObject
         }
 
         filterPopupViewModel.IsVisible = false;
+    }
+
+    [RelayCommand]
+    private async Task SearchAsync()
+    {
+        CancelPendingDebouncedSearch();
+        await ExecuteSearchAsync(SearchText).ConfigureAwait(false);
+    }
+
+    partial void OnSearchTextChanged(string value)
+    {
+        filterPopupViewModel.SearchText = value ?? string.Empty;
+        _ = DebouncedSearchAsync(value ?? string.Empty);
+    }
+
+    private async Task DebouncedSearchAsync(string currentSearchText)
+    {
+        var token = CreateDebounceToken();
+
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
+            await ExecuteSearchAsync(currentSearchText, token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException)
+        {
+            // Expected when the user keeps typing.
+        }
+    }
+
+    private async Task ExecuteSearchAsync(string currentSearchText, CancellationToken token = default)
+    {
+        var normalizedSearchText = currentSearchText?.Trim() ?? string.Empty;
+
+        if (IsSameLoadedQuery(normalizedSearchText, includesTownCity, includesPropertyType))
+        {
+            return;
+        }
+
+        includesPropertyName = normalizedSearchText;
+        filterPopupViewModel.SearchText = normalizedSearchText;
+
+        await RestartOwnedPropertiesLoadAsync(token).ConfigureAwait(false);
+        RememberLoadedQuery();
+    }
+
+    private CancellationToken CreateDebounceToken()
+    {
+        CancellationTokenSource newDebounceCts;
+
+        lock (searchDebounceLock)
+        {
+            searchDebounceCts?.Cancel();
+            searchDebounceCts?.Dispose();
+
+            newDebounceCts = new CancellationTokenSource();
+            searchDebounceCts = newDebounceCts;
+        }
+
+        return newDebounceCts.Token;
+    }
+
+    private void CancelPendingDebouncedSearch()
+    {
+        lock (searchDebounceLock)
+        {
+            searchDebounceCts?.Cancel();
+            searchDebounceCts?.Dispose();
+            searchDebounceCts = null;
+        }
     }
 
     private async Task RestartOwnedPropertiesLoadAsync(CancellationToken externalToken)
@@ -240,14 +317,17 @@ public partial class InvestorMainPageViewModel : ObservableObject
     {
         token.ThrowIfCancellationRequested();
 
-        if (!KeysModel.HasSubstrateKey())
+        // The investor's positions live in the Xcavate Solana marketplace, indexed at
+        // indexer-devnet.xcavate.io - the wallet that signs there is the Solana key, not
+        // the Substrate one.
+        var selectedOwnerAddress = KeysModel.GetSolanaAddress();
+
+        if (string.IsNullOrWhiteSpace(selectedOwnerAddress))
         {
             ResetOwnedProperties();
             OwnedPropertiesLoading = false;
             return;
         }
-
-        var selectedOwnerAddress = KeysModel.GetSubstrateKey(0);
 
         var shouldReload = !clientLoaded ||
                            !string.Equals(ownerAddress, selectedOwnerAddress, StringComparison.Ordinal) ||
@@ -274,6 +354,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
     public void CancelOngoingLoading()
     {
+        CancelPendingDebouncedSearch();
+
         lock (loadingLock)
         {
             loadingCts?.Cancel();
@@ -348,69 +430,79 @@ public partial class InvestorMainPageViewModel : ObservableObject
                 OwnedPropertiesLoading = true;
             });
 
-            IReadOnlyList<XcavatePaseoNftsPalletNft> page;
+            // The devnet indexer answers the town/type/name filters client-side, and the
+            // Purchased/Reserved toggles select a subset of the investor's positions: a raw
+            // page can filter down to nothing while deeper pages still match, and a scroll
+            // that appends nothing never re-fires the page's load-more - so keep fetching
+            // raw pages until something passes or the position feed ends.
+            var newItems = new List<XcavateNftWrapper>();
 
-            if (OwnedActive)
+            while (newItems.Count == 0 && hasMore)
             {
-                page = await XcavateIndexerModel.GetOwnedPropertiesAsync(first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
-            }
-            else if (BoughtActive)
-            {
-                page = await XcavateIndexerModel.GetBoughtPropertiesAsync(first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
-            }
-            else if (filterActive)
-            {
-                page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesWithFilterAsync(first: PageSize, offset: offset, tokenOwner: ownerAddress, includesTownCity: includesTownCity, includesPropertyType: includesPropertyType, includesPropertyName: includesPropertyName).ConfigureAwait(false);
-            }
-            else
-            {
-                page = await XcavateIndexerModel.GetOwnedAndBoughtPropertiesAsync(first: PageSize, offset: offset, tokenOwner: ownerAddress).ConfigureAwait(false);
-            }
+                var page = await XcavateMarketplaceIndexerModel.GetInvestorPropertiesAsync(
+                        ownerAddress,
+                        first: PageSize,
+                        offset: offset,
+                        token: token)
+                    .ConfigureAwait(false);
 
-            token.ThrowIfCancellationRequested();
+                token.ThrowIfCancellationRequested();
 
-            if (page.Count == 0)
-            {
-                hasMore = false;
-                return;
-            }
-
-            offset += page.Count;
-
-            var wrappedBatch = await Task.WhenAll(
-                page.Select(property => PropertyWrapperModel.ToXcavateNftWrapperAsync(property, token)))
-                .ConfigureAwait(false);
-
-            token.ThrowIfCancellationRequested();
-
-            var toAdd = new List<XcavateNftWrapper>(wrappedBatch.Length);
-            foreach (var wrappedProperty in wrappedBatch)
-            {
-                if (ownedPropertiesDict.ContainsKey(wrappedProperty.Key))
+                if (page.Count == 0)
                 {
-                    continue;
+                    hasMore = false;
+                    break;
                 }
 
-                ownedPropertiesDict[wrappedProperty.Key] = wrappedProperty;
-                toAdd.Add(wrappedProperty);
+                offset += page.Count;
+
+                if (page.Count < PageSize)
+                {
+                    hasMore = false;
+                }
+
+                var matchingProperties = page
+                    .Where(property => MatchesMode(property) && XcavateMarketplaceIndexerModel.MatchesFilter(
+                        property.Listing,
+                        includesTownCity,
+                        includesPropertyType,
+                        includesPropertyName))
+                    .ToList();
+
+                var wrappedBatch = await Task.WhenAll(
+                        matchingProperties.Select(property => XcavatePropertyModel.ToXcavateNftWrapperAsync(property.Listing, token)))
+                    .ConfigureAwait(false);
+
+                token.ThrowIfCancellationRequested();
+
+                foreach (var wrappedProperty in wrappedBatch)
+                {
+                    if (ownedPropertiesDict.ContainsKey(wrappedProperty.Key))
+                    {
+                        continue;
+                    }
+
+                    ownedPropertiesDict[wrappedProperty.Key] = wrappedProperty;
+                    newItems.Add(wrappedProperty);
+                }
             }
 
-            if (toAdd.Count > 0)
+            if (newItems.Count > 0)
             {
                 MainThread.BeginInvokeOnMainThread(() =>
                 {
-                    foreach (var wrappedProperty in toAdd)
+                    if (token.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    foreach (var wrappedProperty in newItems)
                     {
                         OwnedProperties.Add(wrappedProperty);
                     }
 
                     RecalculatePortfolioMetrics();
                 });
-            }
-
-            if (page.Count < PageSize)
-            {
-                hasMore = false;
             }
         }
         catch (OperationCanceledException)
@@ -433,6 +525,26 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
             loadMoreSemaphore.Release();
         }
+    }
+
+    /// <summary>
+    /// The mode toggle applied to a raw position before anything is shown: "Purchased"
+    /// keeps the properties with bought shares, "Reserved" the ones with reserved shares,
+    /// and no toggle keeps everything the investor holds.
+    /// </summary>
+    private bool MatchesMode(XcavateSolanaInvestorProperty property)
+    {
+        if (OwnedActive)
+        {
+            return property.BoughtShares > 0;
+        }
+
+        if (BoughtActive)
+        {
+            return property.ReservedShares > 0;
+        }
+
+        return true;
     }
 
     private void ResetOwnedProperties()
