@@ -35,6 +35,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private string lastLoadedTownCity = string.Empty;
     private string lastLoadedPropertyType = string.Empty;
     private string lastLoadedPropertyName = string.Empty;
+    private bool lastLoadedOwned;
+    private bool lastLoadedBought;
     private bool hasLoadedQuery;
     private readonly object searchDebounceLock = new();
     private CancellationTokenSource? searchDebounceCts;
@@ -145,7 +147,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
         filterActive = true;
 
-        if (!IsSameLoadedQuery(includesPropertyName, includesTownCity, includesPropertyType))
+        if (!IsSameLoadedQuery(includesPropertyName, includesTownCity, includesPropertyType, OwnedActive, BoughtActive))
         {
             await RestartOwnedPropertiesLoadAsync(CancellationToken.None).ConfigureAwait(false);
             RememberLoadedQuery();
@@ -186,7 +188,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
     {
         var normalizedSearchText = currentSearchText?.Trim() ?? string.Empty;
 
-        if (IsSameLoadedQuery(normalizedSearchText, includesTownCity, includesPropertyType))
+        if (IsSameLoadedQuery(normalizedSearchText, includesTownCity, includesPropertyType, OwnedActive, BoughtActive))
         {
             return;
         }
@@ -331,7 +333,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
         var shouldReload = !clientLoaded ||
                            !string.Equals(ownerAddress, selectedOwnerAddress, StringComparison.Ordinal) ||
-                           !IsSameLoadedQuery(includesPropertyName, includesTownCity, includesPropertyType);
+                           !IsSameLoadedQuery(includesPropertyName, includesTownCity, includesPropertyType, OwnedActive, BoughtActive);
 
         clientLoaded = true;
         ownerAddress = selectedOwnerAddress;
@@ -430,61 +432,56 @@ public partial class InvestorMainPageViewModel : ObservableObject
                 OwnedPropertiesLoading = true;
             });
 
-            // The devnet indexer answers the town/type/name filters client-side, and the
-            // Purchased/Reserved toggles select a subset of the investor's positions: a raw
-            // page can filter down to nothing while deeper pages still match, and a scroll
-            // that appends nothing never re-fires the page's load-more - so keep fetching
-            // raw pages until something passes or the position feed ends.
-            var newItems = new List<XcavateNftWrapper>();
+            // Every filter runs server-side (ADR-34): the toggles pick owned/reserved
+            // positions, the search bar matches the property name or postcode, the
+            // popup's dropdowns match town/city and property type - so every position
+            // the indexer returns is one to show, and `offset` pages straight through
+            // the filtered result set.
+            var page = await XcavateMarketplaceIndexerModel.GetInvestorPropertiesAsync(
+                    ownerAddress,
+                    owned: OwnedActive ? true : null,
+                    reserved: BoughtActive ? true : null,
+                    name: string.IsNullOrEmpty(includesPropertyName) ? null : includesPropertyName,
+                    townCity: string.IsNullOrEmpty(includesTownCity) ? null : includesTownCity,
+                    propertyType: string.IsNullOrEmpty(includesPropertyType) ? null : includesPropertyType,
+                    first: PageSize,
+                    offset: offset,
+                    token: token)
+                .ConfigureAwait(false);
 
-            while (newItems.Count == 0 && hasMore)
+            token.ThrowIfCancellationRequested();
+
+            if (page.Count == 0)
             {
-                var page = await XcavateMarketplaceIndexerModel.GetInvestorPropertiesAsync(
-                        ownerAddress,
-                        first: PageSize,
-                        offset: offset,
-                        token: token)
-                    .ConfigureAwait(false);
-
-                token.ThrowIfCancellationRequested();
-
-                if (page.Count == 0)
-                {
-                    hasMore = false;
-                    break;
-                }
-
+                hasMore = false;
+            }
+            else
+            {
                 offset += page.Count;
 
                 if (page.Count < PageSize)
                 {
                     hasMore = false;
                 }
+            }
 
-                var matchingProperties = page
-                    .Where(property => MatchesMode(property) && XcavateMarketplaceIndexerModel.MatchesFilter(
-                        property.Listing,
-                        includesTownCity,
-                        includesPropertyType,
-                        includesPropertyName))
-                    .ToList();
+            var wrappedBatch = await Task.WhenAll(
+                    page.Select(property => XcavatePropertyModel.ToXcavateNftWrapperAsync(property.Listing, token)))
+                .ConfigureAwait(false);
 
-                var wrappedBatch = await Task.WhenAll(
-                        matchingProperties.Select(property => XcavatePropertyModel.ToXcavateNftWrapperAsync(property.Listing, token)))
-                    .ConfigureAwait(false);
+            token.ThrowIfCancellationRequested();
 
-                token.ThrowIfCancellationRequested();
+            var newItems = new List<XcavateNftWrapper>();
 
-                foreach (var wrappedProperty in wrappedBatch)
+            foreach (var wrappedProperty in wrappedBatch)
+            {
+                if (ownedPropertiesDict.ContainsKey(wrappedProperty.Key))
                 {
-                    if (ownedPropertiesDict.ContainsKey(wrappedProperty.Key))
-                    {
-                        continue;
-                    }
-
-                    ownedPropertiesDict[wrappedProperty.Key] = wrappedProperty;
-                    newItems.Add(wrappedProperty);
+                    continue;
                 }
+
+                ownedPropertiesDict[wrappedProperty.Key] = wrappedProperty;
+                newItems.Add(wrappedProperty);
             }
 
             if (newItems.Count > 0)
@@ -527,26 +524,6 @@ public partial class InvestorMainPageViewModel : ObservableObject
         }
     }
 
-    /// <summary>
-    /// The mode toggle applied to a raw position before anything is shown: "Purchased"
-    /// keeps the properties with bought shares, "Reserved" the ones with reserved shares,
-    /// and no toggle keeps everything the investor holds.
-    /// </summary>
-    private bool MatchesMode(XcavateSolanaInvestorProperty property)
-    {
-        if (OwnedActive)
-        {
-            return property.BoughtShares > 0;
-        }
-
-        if (BoughtActive)
-        {
-            return property.ReservedShares > 0;
-        }
-
-        return true;
-    }
-
     private void ResetOwnedProperties()
     {
         offset = 0;
@@ -587,12 +564,14 @@ public partial class InvestorMainPageViewModel : ObservableObject
         Roi = totalInvested > 0 ? ((double)totalIncome / totalInvested) * 12 : 0;
     }
 
-    private bool IsSameLoadedQuery(string searchText, string townCity, string propertyType)
+    private bool IsSameLoadedQuery(string searchText, string townCity, string propertyType, bool owned, bool bought)
     {
         return hasLoadedQuery
             && string.Equals(lastLoadedPropertyName, searchText ?? string.Empty, StringComparison.Ordinal)
             && string.Equals(lastLoadedTownCity, townCity ?? string.Empty, StringComparison.Ordinal)
-            && string.Equals(lastLoadedPropertyType, propertyType ?? string.Empty, StringComparison.Ordinal);
+            && string.Equals(lastLoadedPropertyType, propertyType ?? string.Empty, StringComparison.Ordinal)
+            && lastLoadedOwned == owned
+            && lastLoadedBought == bought;
     }
 
     private void RememberLoadedQuery()
@@ -600,7 +579,8 @@ public partial class InvestorMainPageViewModel : ObservableObject
         lastLoadedPropertyName = includesPropertyName;
         lastLoadedTownCity = includesTownCity;
         lastLoadedPropertyType = includesPropertyType;
+        lastLoadedOwned = OwnedActive;
+        lastLoadedBought = BoughtActive;
         hasLoadedQuery = true;
     }
-
 }
