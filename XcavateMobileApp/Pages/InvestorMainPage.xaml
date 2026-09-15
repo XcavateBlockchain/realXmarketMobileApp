@@ -96,33 +96,6 @@
                                                   IsVisible="False" />
 
                     <VerticalStackLayout Spacing="5">
-                        <Border Stroke="#3C4A74"
-                                StrokeThickness="2"
-                                HeightRequest="36"
-                                StrokeShape="RoundRectangle 18">
-                            <Grid ColumnDefinitions="*,Auto" VerticalOptions="Center">
-                                <Entry Grid.Column="0"
-                                       Margin="14,0,0,0"
-                                       Placeholder="Search"
-                                       Text="{Binding SearchText, Mode=TwoWay}"
-                                       ReturnType="Search"
-                                       ReturnCommand="{Binding SearchCommand}"
-                                       VerticalOptions="Center"
-                                       BackgroundColor="Transparent"
-                                       ClearButtonVisibility="Never" />
-                                <Image Grid.Column="1"
-                                       Source="xcavatesearch.svg"
-                                       HeightRequest="18"
-                                       WidthRequest="18"
-                                       Margin="0,0,14,0"
-                                       VerticalOptions="Center">
-                                    <Image.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding SearchCommand}" />
-                                    </Image.GestureRecognizers>
-                                </Image>
-                            </Grid>
-                        </Border>
-
                         <Grid Margin="0,0,0,5" ColumnDefinitions="Auto,Auto,*,62" ColumnSpacing="10">
                             <buttons:ElevatedButton Grid.Column="0"
                                                      Text="Purchased"

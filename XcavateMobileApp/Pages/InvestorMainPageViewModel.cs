@@ -38,8 +38,6 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private bool lastLoadedOwned;
     private bool lastLoadedBought;
     private bool hasLoadedQuery;
-    private readonly object searchDebounceLock = new();
-    private CancellationTokenSource? searchDebounceCts;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TotalTokensText))]
@@ -56,9 +54,6 @@ public partial class InvestorMainPageViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(RoiText))]
     private double roi;
     public string RoiText => $"{Roi:P1}";
-
-    [ObservableProperty]
-    private string searchText = string.Empty;
 
     public InvestorMainPageViewModel()
     {
@@ -138,7 +133,6 @@ public partial class InvestorMainPageViewModel : ObservableObject
         includesTownCity = NormalizeFilterValue(filterPopupViewModel.SelectedTownCity);
         includesPropertyType = NormalizeFilterValue(filterPopupViewModel.SelectedPropertyType);
         includesPropertyName = filterPopupViewModel.SearchText?.Trim() ?? string.Empty;
-        SearchText = includesPropertyName;
 
         OwnedActive = false;
         BoughtActive = false;
@@ -154,76 +148,6 @@ public partial class InvestorMainPageViewModel : ObservableObject
         }
 
         filterPopupViewModel.IsVisible = false;
-    }
-
-    [RelayCommand]
-    private async Task SearchAsync()
-    {
-        CancelPendingDebouncedSearch();
-        await ExecuteSearchAsync(SearchText).ConfigureAwait(false);
-    }
-
-    partial void OnSearchTextChanged(string value)
-    {
-        filterPopupViewModel.SearchText = value ?? string.Empty;
-        _ = DebouncedSearchAsync(value ?? string.Empty);
-    }
-
-    private async Task DebouncedSearchAsync(string currentSearchText)
-    {
-        var token = CreateDebounceToken();
-
-        try
-        {
-            await Task.Delay(TimeSpan.FromSeconds(1), token).ConfigureAwait(false);
-            await ExecuteSearchAsync(currentSearchText, token).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            // Expected when the user keeps typing.
-        }
-    }
-
-    private async Task ExecuteSearchAsync(string currentSearchText, CancellationToken token = default)
-    {
-        var normalizedSearchText = currentSearchText?.Trim() ?? string.Empty;
-
-        if (IsSameLoadedQuery(normalizedSearchText, includesTownCity, includesPropertyType, OwnedActive, BoughtActive))
-        {
-            return;
-        }
-
-        includesPropertyName = normalizedSearchText;
-        filterPopupViewModel.SearchText = normalizedSearchText;
-
-        await RestartOwnedPropertiesLoadAsync(token).ConfigureAwait(false);
-        RememberLoadedQuery();
-    }
-
-    private CancellationToken CreateDebounceToken()
-    {
-        CancellationTokenSource newDebounceCts;
-
-        lock (searchDebounceLock)
-        {
-            searchDebounceCts?.Cancel();
-            searchDebounceCts?.Dispose();
-
-            newDebounceCts = new CancellationTokenSource();
-            searchDebounceCts = newDebounceCts;
-        }
-
-        return newDebounceCts.Token;
-    }
-
-    private void CancelPendingDebouncedSearch()
-    {
-        lock (searchDebounceLock)
-        {
-            searchDebounceCts?.Cancel();
-            searchDebounceCts?.Dispose();
-            searchDebounceCts = null;
-        }
     }
 
     private async Task RestartOwnedPropertiesLoadAsync(CancellationToken externalToken)
@@ -356,8 +280,6 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
     public void CancelOngoingLoading()
     {
-        CancelPendingDebouncedSearch();
-
         lock (loadingLock)
         {
             loadingCts?.Cancel();
