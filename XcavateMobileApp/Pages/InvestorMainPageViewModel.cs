@@ -61,7 +61,22 @@ public partial class InvestorMainPageViewModel : ObservableObject
         filterPopupViewModel.ApplyRequested = ApplyFiltersAsync;
         filterPopupViewModel.CancelRequested = async () => await HandleFilterCancelAsync().ConfigureAwait(false);
         OwnedProperties.CollectionChanged += OnOwnedPropertiesCollectionChanged;
+
+        // A confirmed marketplace transaction (a reserve, buy or claim) changes this
+        // wallet's positions and the totals computed from them, so the page's figures are
+        // pre-transaction ones. This view model is a session-wide singleton - like
+        // SolanaBalanceCellView it has no disposal hook, so it never unsubscribes: the
+        // static event can only keep a singleton alive.
+        XcavateMarketplaceTransactionModel.TransactionConfirmed += OnMarketplaceTransactionConfirmed;
     }
+
+    /// <summary>
+    /// Runs on the main thread - the event already is - and fire-and-forget: the re-fetch
+    /// is pure async I/O, so nothing blocks the UI while it runs. RefreshAsync's own
+    /// isRefreshInProgress guard absorbs a concurrent pull-to-refresh.
+    /// </summary>
+    private void OnMarketplaceTransactionConfirmed(object? sender, EventArgs e) =>
+        MainThread.BeginInvokeOnMainThread(() => _ = RefreshAsync(CancellationToken.None));
 
     partial void OnOwnedActiveChanged(bool value)
     {
