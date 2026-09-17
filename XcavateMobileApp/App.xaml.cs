@@ -177,7 +177,7 @@ namespace XcavateMobileApp
                     Mint = "71G3dc4B9p9QBosLx3XhWY3ULRPAxjopngsin66M9HUb",
                     Symbol = "tGBP",
                     Decimals = 9,
-                    PinnedUsdPrice = 1.00,
+                    PinnedUsdPrice = 1.35135135135,
                 }
             ];
 
