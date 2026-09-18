@@ -64,7 +64,7 @@
                     <dappconnection:DAppConnectionView />
 
                     <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
-                        <xcavate:XcavateCell Title="Property shares"
+                        <xcavate:XcavateCell Title="Property tokens"
                                              Value="{Binding TotalTokensText}"
                                              RollingTicker="True"
                                              Grid.Column="0" />

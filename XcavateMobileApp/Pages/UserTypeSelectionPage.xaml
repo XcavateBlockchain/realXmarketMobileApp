@@ -112,7 +112,7 @@
                                     </FormattedString>
                                 </Label.FormattedText>
                             </Label>
-                            <Label Text="Buy &amp; sell digital shares in real assets"
+                            <Label Text="Buy &amp; sell digital tokens in real assets"
                                        HeightRequest="70"
                                        HorizontalTextAlignment="Center"/>
                         </VerticalStackLayout>
