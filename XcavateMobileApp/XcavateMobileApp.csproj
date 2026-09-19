@@ -30,9 +30,9 @@
     <ApplicationIdGuid>36D62217-2B7E-41BF-AAA9-8A559B7F5A88</ApplicationIdGuid>
 
     <!-- Versions -->
-    <ApplicationDisplayVersion>0.72</ApplicationDisplayVersion>
-    <PackageVersion>0.72</PackageVersion>
-    <ApplicationVersion>91</ApplicationVersion>
+    <ApplicationDisplayVersion>0.73</ApplicationDisplayVersion>
+    <PackageVersion>0.73</PackageVersion>
+    <ApplicationVersion>92</ApplicationVersion>
 
     <MauiStrictXamlCompilation>true</MauiStrictXamlCompilation>
 
