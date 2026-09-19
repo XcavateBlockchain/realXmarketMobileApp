@@ -39,4 +39,10 @@
     <Style TargetType="Label">
         <Setter Property="FontFamily" Value="XcavateFont" />
     </Style>
+
+    <!-- The implicit Label style does not apply to Span (used in FormattedText),
+         so spans would silently render with the system font without this. -->
+    <Style TargetType="Span">
+        <Setter Property="FontFamily" Value="XcavateFont" />
+    </Style>
 </ResourceDictionary>
