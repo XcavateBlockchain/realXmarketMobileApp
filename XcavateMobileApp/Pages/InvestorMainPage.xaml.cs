@@ -1,12 +1,17 @@
+using Microsoft.Maui.Layouts;
 using PlutoFramework;
 using PlutoFramework.Components.NetworkSelect;
+using PlutoFramework.Components.Solana;
 using PlutoFramework.Model;
 using PlutoFramework.Model.Sumsub;
+using PlutoFrameworkCore.Solana;
 
 namespace XcavateMobileApp.Pages;
 
 public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
 {
+    private const double HeaderHeight = 65;
+
     /// <summary>
     /// Everything MainPageLayoutUpdater loads on this page. <c>substrateBalanceCellView</c> is
     /// invisible and belongs here purely as a loader: it is the only caller of
@@ -34,7 +39,37 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
 
         MainPageLayoutUpdater.MainPage = this;
 
+        ApplyDevnetBannerOffset();
+
+        SolanaNetworkModel.ClusterChanged += OnClusterChanged;
+
         Loaded += OnLoaded;
+    }
+
+    private void OnClusterChanged(object? sender, SolanaCluster cluster)
+    {
+        // Same orphan guard as SolanaBalanceCellView.OnClusterChanged: a page left behind
+        // when Application.Current.MainPage was replaced stays subscribed to the static
+        // event forever.
+        if (Handler is null)
+        {
+            return;
+        }
+
+        MainThread.BeginInvokeOnMainThread(ApplyDevnetBannerOffset);
+    }
+
+    /// <summary>
+    /// The header grows by the devnet warning strip's height while it is showing, so the
+    /// content below it must move down by the same amount.
+    /// </summary>
+    private void ApplyDevnetBannerOffset()
+    {
+        var headerHeight = HeaderHeight + SolanaDevnetWarningView.ExtraHeight;
+
+        mainRefreshView.Margin = new Thickness(0, headerHeight, 0, 65);
+
+        AbsoluteLayout.SetLayoutBounds(particleStreamView, new Rect(0, headerHeight, 1, 100));
     }
 
     private async void OnLoaded(object? sender, EventArgs e)

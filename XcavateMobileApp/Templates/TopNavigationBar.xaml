@@ -1,13 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                     xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
                     xmlns:card="clr-namespace:PlutoFramework.Components.Card;assembly=PlutoFramework"
+                    xmlns:solana="clr-namespace:PlutoFramework.Components.Solana;assembly=PlutoFramework"
                     x:Class="XcavateMobileApp.Templates.TopNavigationBar">
     <x:Double x:Key="TopNavigationBarHeight">65</x:Double>
 
     <ControlTemplate x:Key="TopNavigationBarTemplate">
-        <xcavate:PageBottomBarView  HasShadow="{TemplateBinding HasShadow}"
+        <Grid RowDefinitions="*,Auto">
+        <xcavate:PageBottomBarView  Grid.Row="0"
+                                    HasShadow="{TemplateBinding HasShadow}"
                                     Padding="10"
                                     ColumnSpacing="10">
             <xcavate:PageBottomBarView.ColumnDefinitions>
@@ -98,5 +101,8 @@
 
             <card:TopPillBackgroundView Grid.ColumnSpan="4" HeightRequest="65" TranslationY="-65" Margin="-10" />
         </xcavate:PageBottomBarView>
+
+        <solana:SolanaDevnetWarningView Grid.Row="1" />
+        </Grid>
     </ControlTemplate>
 </ResourceDictionary>
