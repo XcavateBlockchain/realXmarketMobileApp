@@ -198,9 +198,13 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(NoOwnedProperties))]
+    [NotifyPropertyChangedFor(nameof(ShowSkeleton))]
     private bool ownedPropertiesLoading;
 
     public bool NoOwnedProperties => !OwnedPropertiesLoading && OwnedProperties.Count == 0;
+
+    /// <summary>True while the list is still empty and loading (initial load / refresh).</summary>
+    public bool ShowSkeleton => OwnedPropertiesLoading && OwnedProperties.Count == 0;
 
     [ObservableProperty]
     private bool ownedActive = false;
@@ -479,6 +483,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
     private void OnOwnedPropertiesCollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
         OnPropertyChanged(nameof(NoOwnedProperties));
+        OnPropertyChanged(nameof(ShowSkeleton));
     }
 
     private void RecalculatePortfolioMetrics()
