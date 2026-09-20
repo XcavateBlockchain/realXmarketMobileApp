@@ -5,6 +5,9 @@ using PlutoFramework.Constants;
 using System.Reflection;
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Maui;
 
 
 
@@ -38,7 +41,13 @@ public static class MauiProgram
         builder.ConfigureFonts(fonts =>
         {
             fonts.AddFont("xcavatefont.ttf", "XcavateFont");
+            fonts.AddFont("xcavatefontextrabold.ttf", "XcavateFontExtraBold");
         });
+
+#if ANDROID || IOS
+        builder.Services.Replace(ServiceDescriptor.Singleton<IFontManager>(
+            serviceProvider => new WeightAwareFontManager(serviceProvider.GetRequiredService<IFontRegistrar>(), serviceProvider)));
+#endif
 
         var app = builder.Build();
 

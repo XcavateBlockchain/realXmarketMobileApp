@@ -42,8 +42,9 @@ gradient stops in `SliderView.xaml`).
 
 ### 1.2 Typography
 
-- Custom font: `xcavatefont.ttf` registered as `"XcavateFont"` in
-  `MauiProgram.cs`.
+- Custom font: `xcavatefont.ttf` (DM Sans variable font) registered as
+  `"XcavateFont"` in `MauiProgram.cs`, plus the static ExtraBold cut
+  `xcavatefontextrabold.ttf` registered as `"XcavateFontExtraBold"`.
 - All default `Label`, `Button`, `Entry`, `Editor`, `Picker`, etc. styles
   set `FontFamily="XcavateFont"`.
 - Base font size across the app: **14** (styles), **20** for section headers,
@@ -51,7 +52,10 @@ gradient stops in `SliderView.xaml`).
 - `FontAutoScalingEnabled="False"` on `Button`, `Label`, `Entry`, `Editor`
   to prevent platform text-size adjustments from breaking layout.
 - **Bold** (`FontAttributes="Bold"`) is used for all values, titles, and
-  interactive text. Thin / medium is not used anywhere.
+  interactive text. The platforms cannot resolve a bold face of the variable
+  font, so `WeightAwareFontManager` (registered in `MauiProgram.cs`) routes
+  bold `XcavateFont` requests to the ExtraBold (wght 800) cut. Thin / medium
+  is not used anywhere.
 
 ### 1.3 Spacing and sizing
 

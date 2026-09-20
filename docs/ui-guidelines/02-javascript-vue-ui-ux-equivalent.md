@@ -103,7 +103,7 @@ In Vue:
   --font-size-header-small: 20px;
   --font-size-header-large: 25px;
   --font-size-value: 30px;
-  --font-weight-bold: 700;
+  --font-weight-bold: 800;  /* C# renders bold XcavateFont as the ExtraBold (wght 800) cut */
 
   /* Match C#: no platform font scaling */
   text-size-adjust: none;
