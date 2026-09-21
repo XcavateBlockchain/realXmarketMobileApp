@@ -449,6 +449,38 @@ Three concurrent loading patterns:
   }
   ```
 - `Console.WriteLine` used for logging (no structured logging framework).
+- **Webview load failures** (`WebViewErrorView` + `WebViewLoadFailureMonitor`):
+  every page that hosts a `WebView` shows an in-place error overlay instead of a
+  blank webview. The overlay is a centered column on the page background
+  (`AppThemeBinding` White / `#0a0a0a`): FontAwesome `exclamation-triangle`
+  glyph in `DangerousRed` (size 48), bold 24 title, `#A6A6A6` 14 message, and a
+  200 px `ElevatedButton` "Retry". Titles: "Page Not Found" for HTTP 404,
+  "Page Unavailable" otherwise. Wire-up is one line per host page:
+
+  ```xaml
+  <webview:WebViewErrorView x:Name="webErrorView"
+                            AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 1"
+                            AbsoluteLayout.LayoutFlags="All" />
+  ```
+
+  ```csharp
+  WebViewLoadFailureMonitor.Attach(webView, webErrorView);
+  ```
+
+  The monitor raises the overlay when `Navigated` reports a failed
+  navigation (no network, DNS failure, refused connection) and on http
+  statuses >= 400, which it detects after every successful navigation by
+  reading `performance.getEntriesByType('navigation')[0].responseStatus`
+  through `EvaluateJavaScriptAsync` (an http error page still loads
+  "successfully" — only its response status exposes it). Retry
+  re-navigates to the last URL; a successful navigation hides the overlay
+  again. Hosted by:
+  `MessageWebViewPage`, `WebViewPage`, `ExtensionWebViewPage`,
+  `SumsubWebSDKPage`, `AgreementPage`, `HelpPage`, and `AdvancedWebView`
+  (which covers the leaderboard, Calamar and staking dashboards).
+  `PropertyMapView` is exempt: it renders a Google Maps `<iframe>` inside a
+  local HTML document, so the top-level load never fails natively and a
+  failed map degrades to the existing hide-the-view behaviour.
 
 ### 5.5 Transaction status
 
