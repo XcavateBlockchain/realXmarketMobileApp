@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Configuration;
-using Microsoft.Maui.Hosting;
 using PlutoFramework.Components.Account;
 using PlutoFramework.Components.Loading;
 using PlutoFramework.Components.Notifications;
@@ -183,6 +182,7 @@ namespace XcavateMobileApp
 
             PlutoConfigurationModel.WhitelistedDApps = [
                 "realxmessenger.xcavate.io",
+                "roles.xcavate.io",
             ];
 
             NavigationModel.SetWelcomeShell = () =>
