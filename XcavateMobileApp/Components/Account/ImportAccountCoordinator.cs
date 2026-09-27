@@ -5,6 +5,7 @@ using PlutoFramework.Components.Password;
 using PlutoFramework.Components.Solana;
 using PlutoFramework.Model;
 using PlutoFramework.Model.Xcavate;
+using PlutoFramework.Model.Xcavate.Profile;
 using XcavateMobileApp.Pages;
 
 namespace XcavateMobileApp.Components.Account;
@@ -52,15 +53,32 @@ public class ImportAccountCoordinator : IImportAccountCoordinator
         };
     }
 
-    public static Task NavigateToProfileRegistrationAsync()
+    public static async Task NavigateToProfileRegistrationAsync()
     {
+        XcavateProfile.Client.Profile? profile = null;
+
+        try
+        {
+            // A recovered address can already publish a profile; prefill from it so the
+            // page does not present blank fields over data the server already holds. A
+            // failed read must not block onboarding - the fields just start empty.
+            profile = await new XcavateProfileService().GetProfileAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Failed to read the stored profile for onboarding prefill: " + ex);
+        }
+
         var viewModel = new ModifyUserProfilePageViewModel
         {
             Title = "Register public profile",
             FirstSetup = true,
+            Nickname = profile?.Nickname ?? string.Empty,
+            Bio = profile?.Bio ?? string.Empty,
+            ProfilePicture = ProfilePictureImageSourceModel.Create(profile?.ProfilePicture),
         };
 
-        return Shell.Current.Navigation.PushAsync(new ModifyUserProfilePage(viewModel));
+        await Shell.Current.Navigation.PushAsync(new ModifyUserProfilePage(viewModel));
     }
 
     private static Task NavigateToAppShellAsync()
