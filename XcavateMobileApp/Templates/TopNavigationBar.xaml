@@ -4,11 +4,12 @@
                     xmlns:xcavate="clr-namespace:PlutoFramework.Components.Xcavate;assembly=PlutoFramework"
                     xmlns:card="clr-namespace:PlutoFramework.Components.Card;assembly=PlutoFramework"
                     xmlns:solana="clr-namespace:PlutoFramework.Components.Solana;assembly=PlutoFramework"
+                    xmlns:keys="clr-namespace:PlutoFramework.Components.Keys;assembly=PlutoFramework"
                     x:Class="XcavateMobileApp.Templates.TopNavigationBar">
     <x:Double x:Key="TopNavigationBarHeight">65</x:Double>
 
     <ControlTemplate x:Key="TopNavigationBarTemplate">
-        <Grid RowDefinitions="*,Auto">
+        <Grid RowDefinitions="*,Auto,Auto">
         <xcavate:PageBottomBarView  Grid.Row="0"
                                     HasShadow="{TemplateBinding HasShadow}"
                                     Padding="10"
@@ -103,6 +104,8 @@
         </xcavate:PageBottomBarView>
 
         <solana:SolanaDevnetWarningView Grid.Row="1" />
+
+        <keys:X25519MissingWarningView Grid.Row="2" />
         </Grid>
     </ControlTemplate>
 </ResourceDictionary>

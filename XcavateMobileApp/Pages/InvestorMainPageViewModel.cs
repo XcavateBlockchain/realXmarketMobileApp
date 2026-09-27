@@ -5,6 +5,7 @@ using PlutoFramework.Components.XcavateProperty;
 using PlutoFramework.Model;
 using PlutoFramework.Model.Currency;
 using PlutoFramework.Model.Xcavate;
+using PlutoFrameworkCore.Solana;
 using PlutoFrameworkCore.Xcavate;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -68,6 +69,11 @@ public partial class InvestorMainPageViewModel : ObservableObject
         // SolanaBalanceCellView it has no disposal hook, so it never unsubscribes: the
         // static event can only keep a singleton alive.
         XcavateMarketplaceTransactionModel.TransactionConfirmed += OnMarketplaceTransactionConfirmed;
+
+        // The owned list is read from the selected network's marketplace deployment, so a
+        // network switch re-reads it. Same singleton lifetime and no-unsubscribe convention
+        // as the subscription above.
+        SolanaNetworkModel.ClusterChanged += OnSolanaClusterChanged;
     }
 
     /// <summary>
@@ -77,6 +83,17 @@ public partial class InvestorMainPageViewModel : ObservableObject
     /// </summary>
     private void OnMarketplaceTransactionConfirmed(object? sender, EventArgs e) =>
         MainThread.BeginInvokeOnMainThread(() => _ = RefreshAsync(CancellationToken.None));
+
+    private void OnSolanaClusterChanged(object? sender, SolanaCluster cluster)
+    {
+        // The empty-state caption depends on the selected cluster, so swap it the moment the
+        // switch lands; the list itself is re-read by the refresh.
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            OnPropertyChanged(nameof(NoOwnedPropertiesMessage));
+            _ = RefreshAsync(CancellationToken.None);
+        });
+    }
 
     partial void OnOwnedActiveChanged(bool value)
     {
@@ -203,6 +220,15 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
     public bool NoOwnedProperties => !OwnedPropertiesLoading && OwnedProperties.Count == 0;
 
+    /// <summary>
+    /// The empty-owned-list caption. A cluster with no marketplace deployment explains
+    /// itself instead of implying the user's transactions are merely pending.
+    /// </summary>
+    public string NoOwnedPropertiesMessage =>
+        !XcavateDeploymentModel.IsDeployed(SolanaNetworkModel.SelectedCluster)
+            ? XcavateDeploymentModel.NotDeployedMessage(SolanaNetworkModel.SelectedCluster)
+            : "Your purchased properties will appear here once your transactions are completed.";
+
     /// <summary>True while the list is still empty and loading (initial load / refresh).</summary>
     public bool ShowSkeleton => OwnedPropertiesLoading && OwnedProperties.Count == 0;
 
@@ -262,9 +288,9 @@ public partial class InvestorMainPageViewModel : ObservableObject
     {
         token.ThrowIfCancellationRequested();
 
-        // The investor's positions live in the Xcavate Solana marketplace, indexed at
-        // indexer-devnet.xcavate.io - the wallet that signs there is the Solana key, not
-        // the Substrate one.
+        // The investor's positions live in the Xcavate Solana marketplace on the selected
+        // network, read through that cluster's Xcavate indexer - the wallet that signs
+        // there is the Solana key, not the Substrate one.
         var selectedOwnerAddress = KeysModel.GetSolanaAddress();
 
         if (string.IsNullOrWhiteSpace(selectedOwnerAddress))
@@ -359,6 +385,14 @@ public partial class InvestorMainPageViewModel : ObservableObject
 
         token.ThrowIfCancellationRequested();
 
+        // Positions come from the selected cluster's marketplace deployment; where there
+        // is none the owned list stays empty rather than erroring.
+        if (!XcavateDeploymentModel.IsDeployed(SolanaNetworkModel.SelectedCluster))
+        {
+            hasMore = false;
+            return;
+        }
+
         await loadMoreSemaphore.WaitAsync(token).ConfigureAwait(false);
 
         try
@@ -379,6 +413,7 @@ public partial class InvestorMainPageViewModel : ObservableObject
             // the indexer returns is one to show, and `offset` pages straight through
             // the filtered result set.
             var page = await XcavateMarketplaceIndexerModel.GetInvestorPropertiesAsync(
+                    SolanaNetworkModel.SelectedCluster,
                     ownerAddress,
                     owned: OwnedActive ? true : null,
                     reserved: BoughtActive ? true : null,

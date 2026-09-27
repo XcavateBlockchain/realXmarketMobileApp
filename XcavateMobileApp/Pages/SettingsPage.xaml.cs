@@ -3,7 +3,6 @@ using PlutoFramework.Components.CustomLayouts;
 using PlutoFramework.Components.Settings;
 using PlutoFramework.Components.Xcavate;
 using PlutoFramework.Model;
-using PlutoFramework.Model.SQLite;
 using PlutoFramework.Model.Xcavate;
 using PlutoFramework.Templates.PageTemplate;
 
@@ -47,11 +46,7 @@ public partial class SettingsPage : PageTemplate
                 return;
             }
 
-            ClearStateModel.Clear();
-
-            await SQLiteModel.DeleteAllDatabasesAsync();
-
-            await Shell.Current.GoToAsync("//LoggedOutPage");
+            await LogOutModel.LogOutAsync();
         };
 
         popupViewModel.IsVisible = true;

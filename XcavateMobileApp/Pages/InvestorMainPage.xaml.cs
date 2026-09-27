@@ -1,5 +1,6 @@
 using Microsoft.Maui.Layouts;
 using PlutoFramework;
+using PlutoFramework.Components.Keys;
 using PlutoFramework.Components.NetworkSelect;
 using PlutoFramework.Components.Solana;
 using PlutoFramework.Model;
@@ -43,6 +44,8 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
 
         SolanaNetworkModel.ClusterChanged += OnClusterChanged;
 
+        X25519WarningModel.AvailabilityChanged += OnX25519AvailabilityChanged;
+
         Loaded += OnLoaded;
     }
 
@@ -59,13 +62,24 @@ public partial class InvestorMainPage : ContentPage, IPlutoFrameworkMainPage
         MainThread.BeginInvokeOnMainThread(ApplyDevnetBannerOffset);
     }
 
+    private void OnX25519AvailabilityChanged(object? sender, EventArgs e)
+    {
+        // Same orphan guard as OnClusterChanged above.
+        if (Handler is null)
+        {
+            return;
+        }
+
+        MainThread.BeginInvokeOnMainThread(ApplyDevnetBannerOffset);
+    }
+
     /// <summary>
-    /// The header grows by the devnet warning strip's height while it is showing, so the
+    /// The header grows by the warning strips' heights while they are showing, so the
     /// content below it must move down by the same amount.
     /// </summary>
     private void ApplyDevnetBannerOffset()
     {
-        var headerHeight = HeaderHeight + SolanaDevnetWarningView.ExtraHeight;
+        var headerHeight = HeaderHeight + SolanaDevnetWarningView.ExtraHeight + X25519MissingWarningView.ExtraHeight;
 
         mainRefreshView.Margin = new Thickness(0, headerHeight, 0, 65);
 

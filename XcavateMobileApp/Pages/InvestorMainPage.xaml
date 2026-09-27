@@ -139,7 +139,7 @@
 
                         <loading:SkeletonCardView ItemMargin="0,0,0,10"
                                                   IsVisible="{Binding ShowSkeleton}" />
-                        <Label Text="Your purchased properties will appear here once your transactions are completed."
+                        <Label Text="{Binding NoOwnedPropertiesMessage}"
                                TextColor="#A6A6A6"
                                HorizontalOptions="Center"
                                Margin="20, 40, 20, 40"
