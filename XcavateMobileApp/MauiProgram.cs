@@ -1,7 +1,8 @@
-﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui;
 using System.Globalization;
 using PlutoFramework;
 using PlutoFramework.Constants;
+using PlutoFrameworkCore.Solana;
 using System.Reflection;
 
 using Microsoft.Extensions.Configuration;
@@ -52,6 +53,16 @@ public static class MauiProgram
         var app = builder.Build();
 
         MauiAppBuilderExtensions.Services = app.Services;
+
+        // The Solana programs' Anchor IDLs ship as embedded resources (linked from
+        // idls/{cluster}/ in the csproj) so transaction error pages can decode custom
+        // program errors into the program authors' own words. A cluster without bundled
+        // IDLs - mainnet until those programs deploy - registers nothing, and its
+        // failures keep the node's raw reason.
+        SolanaProgramErrorCatalogs.RegisterFromAssembly(
+            Assembly.GetExecutingAssembly(), "XcavateMobileApp.Idls.Devnet.", SolanaCluster.Devnet);
+        SolanaProgramErrorCatalogs.RegisterFromAssembly(
+            Assembly.GetExecutingAssembly(), "XcavateMobileApp.Idls.Mainnet.", SolanaCluster.Mainnet);
 
         AppContext.SetSwitch("System.Reflection.NullabilityInfoContext.IsSupported", true);
 

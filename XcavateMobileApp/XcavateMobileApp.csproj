@@ -201,6 +201,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <!-- Anchor IDLs, linked from the repo's idls/ folder - the same source of truth
+         XcavateProgramAddresses transcribes program addresses from. The programs' error
+         tables decode "custom program error" codes into the program authors' own words
+         (see SolanaProgramErrorCatalogs). A program update lands by dropping the new
+         IDL into idls/{cluster}/ - the glob and the LogicalName prefix pick it up with
+         no code change. idls/mainnet holds only a placeholder today, so the Mainnet
+         glob matches nothing and no catalog registers until those IDLs are provided. -->
+    <EmbeddedResource Include="..\idls\devnet\*.json">
+      <LogicalName>XcavateMobileApp.Idls.Devnet.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\idls\mainnet\*.json">
+      <LogicalName>XcavateMobileApp.Idls.Mainnet.%(Filename)%(Extension)</LogicalName>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\realXmarketPlutoFramework\PlutoFramework\PlutoFramework.csproj" />
   </ItemGroup>
 
