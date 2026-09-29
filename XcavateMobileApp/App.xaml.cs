@@ -178,6 +178,13 @@ namespace XcavateMobileApp
                     Decimals = 9,
                     PinnedUsdPrice = 1.35135135135,
                 }
+                new SolanaTokenWhitelistEntry {
+                    Cluster = SolanaCluster.Devnet,
+                    Mint = "H9JAnSzaX66KioeboojT8Ng7Aw2xKLbNoCuNfWZjisYd",
+                    Symbol = "tGBP",
+                    Decimals = 9,
+                    PinnedUsdPrice = 1.35135135135,
+                }
             ];
 
             PlutoConfigurationModel.WhitelistedDApps = [
