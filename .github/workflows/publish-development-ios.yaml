@@ -28,7 +28,12 @@ jobs:
   publish-ios:
     runs-on: macos-latest
     environment: appstore
-    timeout-minutes: 120
+    # 360 is the GitHub-hosted runner maximum. The Release publish spends ~2h
+    # in the LLVM AOT phase (dotnet/macios#21597, unfixed as of .NET 10; the
+    # durable fix is the CoreCLR iOS runtime in .NET 11). We deliberately keep
+    # LLVM enabled so the App Store binary stays fully optimized, and give the
+    # job headroom instead. Runner minutes are free for this public repo.
+    timeout-minutes: 360
 
     env:
       DOTNET_NOLOGO: true

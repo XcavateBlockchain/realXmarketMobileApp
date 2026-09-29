@@ -206,6 +206,15 @@ iOS app → `GoogleService-Info.plist`.
 
 ## Troubleshooting
 
+- **"The job has exceeded the maximum execution time of Xh0m0s" / the publish
+  step sits for hours after "IL stripping assemblies"** — the LLVM Mono AOT
+  phase is pathologically slow for this app (dotnet/macios#21597, unfixed as
+  of .NET 10; the durable fix is the CoreCLR iOS runtime in .NET 11). LLVM
+  stays enabled so the App Store binary keeps full optimization; the job
+  timeout is therefore set to the GitHub-hosted maximum (360 min). If the
+  build ever outgrows that, the remaining levers are a larger macOS runner,
+  or `<MtouchUseLlvm>false</MtouchUseLlvm>` for iOS Release (builds in
+  minutes, but ships less-optimized native code).
 - **"No 'Apple Distribution' identity found"** — the `.p12` was exported
   without the private key, or contains a Development certificate. Re-export
   following the certificate section above.
