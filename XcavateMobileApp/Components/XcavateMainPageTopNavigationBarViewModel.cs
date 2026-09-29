@@ -1,4 +1,4 @@
-﻿
+
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlutoFramework.Components.Account;
@@ -28,7 +28,9 @@ namespace XcavateMobileApp.Components
         [RelayCommand]
         public async Task OpenMessagingAsync()
         {
-            await Shell.Current.Navigation.PushAsync(new MessageWebViewPage());
+            // The gate (MessengerAccessModel) raises NoAccountPopup or the create/import
+            // X25519 popup instead of opening the page when the account is not ready.
+            await MessengerAccessModel.TryOpenMessagesAsync();
         }
 
         [RelayCommand]

@@ -58,8 +58,19 @@ jobs:
         with:
           dotnet-version: 10.0.x
 
+      # Pinned workload set: set 10.0.112.1 (published 2026-09-28) ships .NET for
+      # iOS 27.0.10722, which requires Xcode 27.0 - but no GitHub runner image has
+      # it (macos-26 tops out at Xcode 26.6; Xcode 27 is public preview only, and
+      # App Store uploads need a release Xcode). Set 10.0.112 is the newest set
+      # with .NET for iOS 26.5.10318 (requires Xcode 26.5; MAUI is 10.0.20, the
+      # version this app shipped with all along).
+      # "dotnet workload restore --version" is broken in SDK 10.0.110 (fails with
+      # a spurious "--skip-manifest-update/--sdk-version" error), so install the
+      # workloads restore would pull (incl. the implicit maui-tizen/wasm-tools)
+      # explicitly. When the runner image ships Xcode 27, drop the pin or bump
+      # the set - set <-> workload versions: https://github.com/dotnet/macios/releases
       - name: Install required .NET workloads
-        run: dotnet workload restore "$PROJECT"
+        run: dotnet workload install maui-android maui-ios maui-tizen wasm-tools --version 10.0.112
 
       # Fail fast on missing secrets, before a version number gets consumed.
       - name: Check required secrets

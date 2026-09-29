@@ -10,7 +10,8 @@ What one run does, in order:
 1. Checks out `publish-development` including the `realXmarketPlutoFramework`
    submodule (and its nested `Substrate.NET.Wallet` submodule).
 2. Installs the latest stable Xcode, the .NET 10 SDK and the MAUI workloads the
-   project needs.
+   project needs, pinned to workload set 10.0.112 (the newest set whose .NET for
+   iOS works with the runner images' Xcode; see the troubleshooting section).
 3. **Auto-increments the app version** in `XcavateMobileApp/XcavateMobileApp.csproj`
    (see below) and pushes that bump back to the branch with `[skip ci]` so it
    does not re-trigger the workflow.
@@ -235,8 +236,21 @@ iOS app → `GoogleService-Info.plist`.
   (check the repo's Settings → Actions → General → Workflow permissions).
 - **Workload / Xcode version errors** (`NETSDK...`, "requires Xcode X or
   later") — the runner's latest-stable Xcode and the .NET 10 iOS workload have
-  drifted apart. Pin an explicit version in the workflow's *Select latest
-  stable Xcode* step (`xcode-version: '26.0'` style) until images catch up.
+  drifted apart. Which side moved determines the remedy:
+  - *The workload moved ahead of the runner's Xcode* (e.g. it requires
+    Xcode 27.0 while the macos-26 image tops out at 26.6 — happened on
+    2026-09-28 when .NET for iOS 27.0.10722 shipped): pin the workload set in
+    the *Install required .NET workloads* step (`--version 10.0.112` style).
+    Set ↔ workload versions are listed with every release at
+    https://github.com/dotnet/macios/releases; pick the newest set whose
+    `Microsoft.NET.Sdk.iOS` requires an Xcode the image has. Remove the pin
+    once the runner image ships the required Xcode. Note that
+    `dotnet workload restore --version` is broken in SDK 10.0.110 (spurious
+    `--skip-manifest-update`/`--sdk-version` error), hence the explicit
+    `dotnet workload install` in the workflow.
+  - *The runner's Xcode moved ahead of the workload*: pin an explicit version
+    in the *Select latest stable Xcode* step (`xcode-version: '26.0'` style)
+    until the workload catches up.
 - **"The app requests the entitlement 'aps-environment' ... but the provisioning
   profile doesn't contain this entitlement"** - the App Store profile predates push
   notifications. Enable the **Push Notifications** capability on the

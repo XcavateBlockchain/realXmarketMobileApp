@@ -19,6 +19,7 @@
              xmlns:buttons="clr-namespace:PlutoFramework.Components.Buttons;assembly=PlutoFramework"
              xmlns:components="clr-namespace:XcavateMobileApp.Components"
              xmlns:account="clr-namespace:PlutoFramework.Components.Account;assembly=PlutoFramework"
+             xmlns:keys="clr-namespace:PlutoFramework.Components.Keys;assembly=PlutoFramework"
              xmlns:password="clr-namespace:PlutoFramework.Components.Password;assembly=PlutoFramework"
              xmlns:kilt="clr-namespace:PlutoFramework.Components.Kilt;assembly=PlutoFramework"
              xmlns:sumsub="clr-namespace:PlutoFramework.Components.Sumsub;assembly=PlutoFramework"
@@ -180,6 +181,10 @@
         <networkselect:MultiNetworkSelectView x:Name="networksView"  IsVisible="False" />
 
         <account:NoAccountPopup ZIndex="10" />
+
+        <!-- Raised by the messenger gate (MessengerAccessModel) from the top navigation
+             bar; hosted here because this page is not a PageTemplate. -->
+        <keys:X25519KeyRequiredPopupView ZIndex="10" />
 
         <solanacomponents:ConnectMwaPopupView ZIndex="10" />
 
