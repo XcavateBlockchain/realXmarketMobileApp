@@ -1432,6 +1432,57 @@ function dismiss(id: string) { toastStore.remove(id) }
 </style>
 ```
 
+**D. Bottom-sheet button bar (standard)**
+
+Every sheet with 1–2 buttons gets a button bar absolutely positioned at the
+sheet bottom (mirrors the C# Pattern A/B button grid):
+
+```vue
+<template>
+  <!-- ... sheet content ... -->
+  <div class="sheet-button-bar" :class="{ stacked: twoPrimaryChoices }">
+    <button v-if="hasCancel" class="btn-secondary" @click="cancel">Cancel</button>
+    <button class="btn-primary" @click="confirm">Confirm</button>
+  </div>
+</template>
+
+<style scoped>
+.sheet-button-bar {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 80px;            /* 145px when .stacked */
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 0 10px 10px;    /* horizontal + bottom inset */
+}
+.sheet-button-bar.stacked {
+  height: 145px;
+  flex-direction: column;  /* two stacked full-width primary buttons */
+  align-items: stretch;
+  justify-content: center;
+}
+.sheet-button-bar > button {
+  flex: 1;
+  height: 48px;            /* C# ButtonHeight */
+}
+.sheet-content {
+  padding-bottom: 90px;    /* 155px when stacked — content clears the bar */
+}
+</style>
+```
+
+- **Side-by-side flex row** — Cancel/secondary + Confirm/primary pair, or a
+  single button alone.
+- **Stacked full-width column** — two primary route choices
+  ("Create New Account" vs "Import Account").
+- Same metrics as C#: bar 80/145 px, button height 48 px, gap 15 px,
+  10 px horizontal + bottom inset.
+- Content bottom padding 90 px (side-by-side) / 155 px (stacked);
+  short auto-height content needs none.
+- Exemptions: 0-button sheets, 3+ button sheets, and scrollable option-list
+  selectors (country/network/asset/token pickers).
+
 ### 3.12 Risk warning banner
 
 ```vue
