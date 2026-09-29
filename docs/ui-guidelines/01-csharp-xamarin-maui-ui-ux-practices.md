@@ -335,6 +335,78 @@ Three popup types, all rendered as overlays within the page's `AbsoluteLayout`:
 - `Shell.PresentationMode="ModalNotAnimated"` for full-screen overlays.
 - Uses `Shell.PresentationMode="NotAnimated"` for smoother transitions.
 
+**Popup button area (standard):**
+
+Every popup with 1–2 buttons uses a bottom-anchored button grid: an outer
+`AbsoluteLayout` (position-proportional, bottom-anchored, full width)
+wrapping an inner `Grid`, both with
+`AbsoluteLayout.LayoutFlags="PositionProportional, WidthProportional"`.
+
+**Pattern B — side-by-side pair or single button:**
+- Cancel/secondary + Confirm/primary pairs, and any single-button popup.
+- Outer bounds `0.5, 1, 1, 80`; inner Grid bounds `0.5, 0.5, 1, 50`.
+
+```xml
+<AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5, 1, 1, 80"
+                AbsoluteLayout.LayoutFlags="PositionProportional, WidthProportional">
+    <Grid AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 50"
+          AbsoluteLayout.LayoutFlags="PositionProportional, WidthProportional"
+          ColumnSpacing="15" Margin="10, 0, 10, 10"
+          ColumnDefinitions="*, *">
+        <buttons:BasicGrayButton Text="Cancel" Grid.Column="0"
+                                 Command="{Binding CancelCommand}"/>
+        <buttons:PlutoFrameworkElevatedButton Text="Confirm" Grid.Column="1"
+                                              Command="{Binding ConfirmCommand}"/>
+    </Grid>
+</AbsoluteLayout>
+```
+
+- 1-button variant: single `*` column, one button.
+
+**Pattern A — two stacked full-width primary buttons:**
+- Two primary route choices (e.g. "Create New Account" vs "Import Account").
+- Outer bounds `0.5, 1, 1, 145`; inner Grid bounds `0.5, 0.5, 1, 115`;
+  one `*` column, two `*` rows.
+
+```xml
+<AbsoluteLayout AbsoluteLayout.LayoutBounds="0.5, 1, 1, 145"
+                AbsoluteLayout.LayoutFlags="PositionProportional, WidthProportional">
+    <Grid AbsoluteLayout.LayoutBounds="0.5, 0.5, 1, 115"
+          AbsoluteLayout.LayoutFlags="PositionProportional, WidthProportional"
+          ColumnSpacing="15" RowSpacing="15" Margin="10, 0, 10, 10"
+          ColumnDefinitions="*" RowDefinitions="*, *">
+        <buttons:ElevatedButton Text="Create New Account" Grid.Row="0"
+                                Command="{Binding CreateAccountCommand}"/>
+        <buttons:ElevatedButton Text="Import Account" Grid.Row="1"
+                                Command="{Binding ImportAccountCommand}"/>
+    </Grid>
+</AbsoluteLayout>
+```
+
+**Selection rule:** Cancel+Confirm → Pattern B side-by-side; single action →
+Pattern B one column; two primary route choices → Pattern A stacked.
+
+**Exemptions** (no button grid):
+- Popups with 0 buttons.
+- Popups with 3+ buttons.
+- Scrollable option-list selectors (country/network/asset/token pickers).
+
+**Geometry tokens:**
+- Button height from the `ButtonHeight` static resource (48 px).
+- Grid row area 50 px (B) / 115 px (A); spacing 15 px; horizontal/bottom
+  inset 10 px.
+
+**Content clearance:** full-size/scrollable content must clear the button
+area — bottom margin ≥ 90 for Pattern B, ≥ 155 for Pattern A (a full-size
+`ScrollView` uses `Margin="0, 0, 0, 90"`). Top-anchored `AutoSize` content
+stacks need no extra padding.
+
+**Reference implementations:**
+- Pattern A: `PlutoFramework/Components/Account/NoAccountPopup.xaml`.
+- Pattern B (2 buttons): `PlutoFramework/Components/Password/EnterPasswordPopupView.xaml`.
+- Pattern B (1 button): `PlutoFramework/Components/Account/CreateAccountPopup.xaml`.
+- Copy-paste template: `PlutoFramework/Components/000ComponentTemplate/NewPopupViewTemplate.xaml`.
+
 ---
 
 ## 4. Layout primitives
