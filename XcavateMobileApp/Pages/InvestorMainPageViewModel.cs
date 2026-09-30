@@ -11,6 +11,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using UniqueryPlus.Nfts;
 using NftKey = (UniqueryPlus.NftTypeEnum, System.Numerics.BigInteger, System.Numerics.BigInteger);
+using PropertyModel = PlutoFramework.Model.Xcavate.XcavatePropertyModel;
 using XcavatePropertyModel = PlutoFramework.Components.XcavateProperty.XcavatePropertyModel;
 
 namespace XcavateMobileApp.Pages;
@@ -526,19 +527,34 @@ public partial class InvestorMainPageViewModel : ObservableObject
         TotalTokens = (uint)OwnedProperties.Sum(x => x.TokensBought + x.TokensOwned);
         var totalInvested = OwnedProperties.Sum(x => (long)((x.TokensBought + x.TokensOwned) * ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.PricePerToken ?? 0));
         TotalInvested = totalInvested;
-        decimal totalIncome = OwnedProperties.Sum(x =>
-        {
-            decimal rentalIncome = ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.EstimatedRentalIncome ?? 0;
-            decimal tokens = ((INftXcavateMetadata)x.NftBase).XcavateMetadata?.Financials.NumberOfTokens ?? 0;
 
-            if (tokens == 0)
+        decimal totalIncome = 0m;
+        decimal investedAtYieldScale = 0m;
+
+        foreach (var property in OwnedProperties)
+        {
+            var financials = ((INftXcavateMetadata)property.NftBase).XcavateMetadata?.Financials;
+
+            if (financials is null)
             {
-                return 0;
+                continue;
             }
 
-            return (x.TokensBought + x.TokensOwned) * (rentalIncome / tokens);
-        });
-        Roi = totalInvested > 0 ? ((double)totalIncome / totalInvested) * 12 : 0;
+            var shares = property.TokensBought + property.TokensOwned;
+            var shareCount = PropertyModel.GetYieldShareCount(financials);
+
+            if (shareCount > 0)
+            {
+                totalIncome += shares * (financials.EstimatedRentalIncome / shareCount);
+            }
+
+            // A yield ratio must not mix the document's rental income with chain-priced
+            // figures: since SharePriceDecimals moved to 9 the two live in different
+            // price scales. Both sides come from the document's own financials.
+            investedAtYieldScale += shares * PropertyModel.GetYieldPricePerToken(financials);
+        }
+
+        Roi = investedAtYieldScale > 0 ? (double)(totalIncome / investedAtYieldScale) * 12 : 0;
     }
 
     private bool IsSameLoadedQuery(string searchText, string townCity, string propertyType, bool owned, bool bought)
