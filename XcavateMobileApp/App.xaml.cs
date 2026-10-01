@@ -28,6 +28,8 @@ namespace XcavateMobileApp
 
         public App()
         {
+            UserAppTheme = AppTheme.Light;
+
             InitializeComponent();
 
             Dispatcher.Dispatch(async () => await InitializeAsync());
