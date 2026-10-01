@@ -28,6 +28,8 @@ namespace XcavateMobileApp
 
         public App()
         {
+            UserAppTheme = AppTheme.Light;
+
             InitializeComponent();
 
             Dispatcher.Dispatch(async () => await InitializeAsync());
@@ -146,6 +148,7 @@ namespace XcavateMobileApp
                     Cluster = SolanaCluster.Mainnet,
                     Mint = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
                     Symbol = "USDC",
+                    Name = "USD Coin",
                     Decimals = 6,
                     PinnedUsdPrice = 1.00,
                 },
@@ -154,6 +157,7 @@ namespace XcavateMobileApp
                     Cluster = SolanaCluster.Devnet,
                     Mint = "4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU",
                     Symbol = "USDC",
+                    Name = "USD Coin",
                     Decimals = 6,
                     PinnedUsdPrice = 1.00,
                 },
@@ -161,6 +165,7 @@ namespace XcavateMobileApp
                     Cluster = SolanaCluster.Devnet,
                     Mint = "8umv4NXybZFGiT3tQb1DqJ6DXxLa3rLNhPbcqbQsjXxW",
                     Symbol = "tUSDC",
+                    Name = "test USD Coin",
                     Decimals = 6,
                     PinnedUsdPrice = 1.00,
                 },
@@ -168,6 +173,7 @@ namespace XcavateMobileApp
                     Cluster = SolanaCluster.Devnet,
                     Mint = "8dW943dozaNPdRRaW6xpV2vxFv1Kcpz3z63Nji3VLups",
                     Symbol = "XCAV",
+                    Name = "Xcavate",
                     Decimals = 9,
                     PinnedUsdPrice = 1.00,
                 },
@@ -175,6 +181,7 @@ namespace XcavateMobileApp
                     Cluster = SolanaCluster.Devnet,
                     Mint = "71G3dc4B9p9QBosLx3XhWY3ULRPAxjopngsin66M9HUb",
                     Symbol = "tGBP",
+                    Name = "tokenised GBP",
                     Decimals = 9,
                     PinnedUsdPrice = 1.35135135135,
                 },
@@ -182,6 +189,7 @@ namespace XcavateMobileApp
                     Cluster = SolanaCluster.Devnet,
                     Mint = "H9JAnSzaX66KioeboojT8Ng7Aw2xKLbNoCuNfWZjisYd",
                     Symbol = "tGBP",
+                    Name = "tokenised GBP",
                     Decimals = 9,
                     PinnedUsdPrice = 1.35135135135,
                 }
